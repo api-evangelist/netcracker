@@ -366,3 +366,101 @@ actions:
     platform is genuinely public and ships four real, parsing OpenAPI/Swagger
     contracts, which were harvested verbatim. CAMARA is named in marketing and
     implemented nowhere; that distinction is the finding, not a gap in the research.
+enrichmentRound2:
+  date: '2026-07-25'
+  summary: >-
+    The second pass went deep into github.com/Netcracker and materially changed three
+    round-1 conclusions. Netcracker DOES ship first-party client libraries, DOES run
+    first-party MCP servers, DOES publish agent skills, and DOES publish a Postman
+    collection — all inside the open-source Qubership platform, none of it on
+    netcracker.com. The commercial/partner-gated verdict for the telecom business is
+    unchanged, as is the CAMARA finding.
+  corrections:
+  - field: findings.sdks.firstParty
+    was: none found
+    now: >-
+      Real first-party clients exist. Go modules are semver-tagged and go-gettable
+      (github.com/netcracker/qubership-core-lib-go-maas-client/v3 v3.5.5,
+      qubership-core-lib-go-dbaas-base-client v3.5.5,
+      qubership-core-lib-go-dbaas-postgres-client v4.4.5, plus Mongo/Cassandra/
+      ClickHouse/OpenSearch/ArangoDB siblings). Java clients live in
+      qubership-core-java-libs (groupId com.netcracker.cloud.maas.client) and the
+      TypeScript stack under the @netcracker scope. The round-1 npm search was correct
+      but incomplete — the reason nothing is on npmjs.com or Maven Central is that
+      Netcracker publishes those artifacts to GitHub Packages, stated outright in the
+      aux-tools README ("The repository resolves @netcracker/* packages from GitHub
+      Packages"). Container images are public on ghcr.io.
+  - field: findings.postman.publicWorkspace
+    was: false
+    now: >-
+      Still no public Postman WORKSPACE, but there is a first-party public repository of
+      Postman collections — Netcracker/qubership-apihub-postman-collections (active,
+      pushed 2026-07-21), with a synthetic-test-data collection and an e2e regression
+      folder.
+  - field: mcp
+    was: not assessed
+    now: >-
+      Two first-party MCP servers. (1) apihub-mcp, built into the APIHUB backend, served
+      over streamable HTTP at /api/v1/mcp/ behind security.SecureMCP, 15-minute session
+      idle TTL, 7 tools (search_api_operations, get_api_operation_specification,
+      get_api_operation_diff, get_document plus three deprecated REST-only aliases), a
+      dynamic mcp://api-packages-list resource, auto-registered bundled resources, and a
+      generate_ids_document prompt. (2) apihub-api-diff, a local stdio server exposing
+      one tool, apihub_api_diff. Tool names, descriptions and input schemas were read
+      verbatim from the published Go/TypeScript source; a live tools/list was impossible
+      because APIHUB is self-hosted and no public instance exists.
+  - field: agentSkills
+    was: not assessed
+    now: >-
+      Netcracker publishes an agent-skill surface of its own — 170 SKILL.md files and 22
+      AGENTS.md files across the org, organised by an apm.yml / agent-packages/
+      convention that targets Cursor and Claude and mirrors into .claude/skills,
+      .agents/skills and .cursor/skills.
+  - field: tmForum
+    was: claimed only
+    now: >-
+      One TM Forum artifact IS implemented in public code — the DBaaS aggregator returns
+      a TmfErrorResponse envelope (id, referenceError, code, reason, status, @type,
+      @schemaLocation) on 46 responses. Still no TMF API number, resource model or
+      certificate published.
+  - field: compliance
+    was: not assessed
+    now: >-
+      The Cybersecurity services page publishes Netcracker's own compliance posture:
+      external audits including PCI DSS and ISO 27001/27018/22301 plus SOC reporting,
+      NIST CSF alignment, GDPR/CCPA/LGPD/PIPL/PIPEDA, and third-party penetration
+      testing. No dedicated trust portal, no certificate downloads, no audit dates.
+  - field: securityDisclosure
+    was: no security.txt
+    now: >-
+      Still no /.well-known/security.txt on any host, but a real disclosure process is
+      published in repository SECURITY.md files — report to opensourcegroup@netcracker.com,
+      fixes ship as a patch of the latest stable release, older releases get no security
+      patches by default.
+  unchanged:
+  - No developer portal on netcracker.com; developer./developers./docs./api. still do not resolve.
+  - No CAMARA implementation anywhere; marketing mention only.
+  - No AsyncAPI document of Netcracker's own (APIHUB consumes, renders, diffs and lints other teams' AsyncAPI).
+  - No GraphQL endpoint; no public gRPC service endpoint (one internal EventBus .proto is published in qubership-core-control-plane).
+  - No webhooks, no rate-limit headers, no /.well-known/ documents, no status page, no SLA, no pricing or signup.
+  artifactsAdded:
+  - packages/netcracker-packages.yml
+  - mcp/netcracker-mcp.yml
+  - mcp/netcracker-tool-crosswalk.yml
+  - skills/ (2 verbatim provider skills + 4 generated + _index.yml)
+  - llms/netcracker-llms.txt
+  - conventions/netcracker-conventions.yml
+  - errors/netcracker-problem-types.yml
+  - lifecycle/netcracker-lifecycle.yml
+  - changelog/netcracker-changelog.yml
+  - conformance/netcracker-conformance.yml
+  - cli/netcracker-cli.yml
+  - components/netcracker-components.yml
+  - data-model/netcracker-data-model.yml
+  - sandbox/netcracker-sandbox.yml
+  - well-known/netcracker-well-known.yml
+  - security/ (domain-security, vulnerability-disclosure, trust-center)
+  - authentication/netcracker-authentication.yml
+  - agentic-access/netcracker-agentic-access.yml
+  - overlays/ (4)
+  - grpc/netcracker-qubership-control-plane-bus.proto

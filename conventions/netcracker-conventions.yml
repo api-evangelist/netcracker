@@ -1,0 +1,103 @@
+generated: '2026-07-25'
+method: derived
+source: >-
+  openapi/netcracker-qubership-apihub-registry-openapi.yml,
+  openapi/netcracker-qubership-apihub-admin-openapi.yml,
+  openapi/netcracker-qubership-dbaas-openapi.json,
+  openapi/netcracker-qubership-maas-swagger.yml, plus the published APIHUB docs
+scope: Qubership open-source platform APIs (the only Netcracker APIs with a public contract).
+authentication:
+  styles: [http bearer (JWT), apiKey header (api-key), apiKey header (X-Personal-Access-Token), apiKey cookie (apihub-access-token / apihub-refresh-token), http basic]
+  federation: SAML/OIDC/LDAP SSO through an operator-supplied identity provider (Keycloak in the reference deployment).
+  oauth2: false
+  details: authentication/netcracker-authentication.yml
+  guidance: >-
+    Interactive/browser flows use the apihub-access-token cookie; automation uses either a
+    package-scoped api-key or a user-issued X-Personal-Access-Token. The aux-tools
+    documentation is explicit about which tool needs which: apihub-op-group-creator requires
+    X-Personal-Access-Token, apihub-portal-package-copy requires an api-key (workspace-wide
+    listing usually needs a key scoped to `*`).
+idempotency:
+  supported: partial
+  header: null
+  parameter: clientMessageId
+  scope: AI chat message send (sendAiChatMessage / sendAiChatMessageStream)
+  format: uuid
+  semantics: >-
+    "Optional client-supplied idempotency key. If the server sees a duplicate
+    clientMessageId for the same chat it returns the previous assistant response instead of
+    re-sending to the LLM." Echoed back on user messages so the client can reconcile
+    optimistic UI state.
+  retention: not documented
+  also:
+  - operation: cancelRunningMigrations
+    note: 'Documented as idempotent: "safely returns success when no migration is running."'
+  gap: >-
+    There is NO general idempotency-key header for the publish, package, version or DBaaS
+    write operations — retry safety there depends on the operation's own semantics
+    (publish returns a publishId whose status is polled).
+pagination:
+  style: page-number
+  params:
+    page: {in: query, type: number, default: 0, note: paging starts at 0}
+    limit: {in: query, type: number, default: 100, minimum: 1, maximum: 100}
+  response: array payloads keyed by resource (e.g. packages, operations); no cursor and no total-count envelope.
+  agent_guidance: >-
+    The MCP search tool mirrors the same contract (limit 10-100, page from 0) and instructs
+    agents to open with limit=100 and then page.
+filtering_and_search:
+  text_filter: textFilter query parameter across list operations (21 occurrences)
+  global_search:
+    operation: postSearchV4
+    levels: [operations, packages, documents, ddl, mcp]
+    syntax: 'lexical full-text; -word excludes a term, "quoted phrase" forces an exact phrase'
+    note: not semantic, not fuzzy, not substring.
+versioning:
+  request: URI path (/api/v1 … /api/v4), major versions run side by side
+  resource_versioning: >-
+    Packages carry versions and revisions; version strings are package-specific (YYYY.Q such
+    as 2026.2, semver, or free-form) and versions have a status (draft / release).
+  details: lifecycle/netcracker-lifecycle.yml
+async_operations:
+  pattern: submit-then-poll
+  examples:
+  - {submit: postExport, poll: getExportIdStatus}
+  - {submit: postPackagesIdPublish, poll: getPackagesIdPublishIdStatus}
+  - {submit: postOperationGroupPublish, poll: getOperationGroupPublishStatus}
+  - {submit: DashboardPublishWithOperationsGroupV2, poll: getDashboardPublishWithOperationsGroupStatus}
+  note: Long-running work returns an id; clients poll a status endpoint rather than receiving a callback. There are no webhooks.
+streaming:
+  sse:
+    operation: sendAiChatMessageStream
+    events: [message.assistant.delta, message.assistant.completed, done]
+    note: The only streaming surface; MCP uses streamable HTTP with a 15-minute session idle TTL.
+error_envelope:
+  shape: {status: int, code: string, message: string, params: object, debug: string}
+  rfc9457: false
+  alternate: TmfErrorResponse (TM Forum shape) in the DBaaS aggregator
+  details: errors/netcracker-problem-types.yml
+request_tracing:
+  request_id_header: null
+  note: No X-Request-Id / traceparent / correlation-id header is documented in any spec.
+rate_limiting:
+  documented: false
+  headers: none
+  note: >-
+    No 429 response, no RateLimit headers and no quota documentation in any published spec —
+    consistent with self-hosted software where limits are the operator's concern. One
+    application-level limit is documented: a maximum of 3 pinned AI chats per user.
+metadata_and_expansion:
+  expansion: null
+  sparse_fields: null
+  note: Not offered; responses are fixed shapes per operation.
+observability:
+  metrics: 'GET /metrics (getMetrics) returns Prometheus metrics'
+  business_metrics: >-
+    The backend records named business metrics including mcp_session_initialized,
+    mcp_search_operations_tool_called and mcp_get_operation_spec_tool_called.
+cross_links:
+  authentication: authentication/netcracker-authentication.yml
+  errors: errors/netcracker-problem-types.yml
+  lifecycle: lifecycle/netcracker-lifecycle.yml
+  mcp: mcp/netcracker-mcp.yml
+  data_model: data-model/netcracker-data-model.yml

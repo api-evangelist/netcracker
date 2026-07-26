@@ -1,0 +1,62 @@
+generated: '2026-07-25'
+method: derived
+source: openapi/netcracker-qubership-apihub-admin-openapi.yml, openapi/netcracker-qubership-apihub-registry-openapi.yml,
+  openapi/netcracker-qubership-dbaas-openapi.json, openapi/netcracker-qubership-maas-swagger.yml
+summary:
+  types:
+  - apiKey
+  - http
+  api_key_in:
+  - cookie
+  - header
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: 'Bearer token authentication (JWT). Default security scheme for API usage. Provide
+    Authorization: Bearer <token>.'
+  sources:
+  - openapi/netcracker-qubership-apihub-admin-openapi.yml
+  - openapi/netcracker-qubership-apihub-registry-openapi.yml
+  - openapi/netcracker-qubership-dbaas-openapi.json
+- name: CookieAuth
+  type: apiKey
+  in: cookie
+  parameter: apihub-access-token
+  description: Authentication via the `apihub-access-token` cookie.
+  sources:
+  - openapi/netcracker-qubership-apihub-admin-openapi.yml
+  - openapi/netcracker-qubership-apihub-registry-openapi.yml
+- name: api-key
+  type: apiKey
+  in: header
+  parameter: api-key
+  description: API key authentication. Send the key in the api-key header.
+  sources:
+  - openapi/netcracker-qubership-apihub-admin-openapi.yml
+  - openapi/netcracker-qubership-apihub-registry-openapi.yml
+- name: PersonalAccessToken
+  type: apiKey
+  in: header
+  parameter: X-Personal-Access-Token
+  description: Personal access token authentication. Send the token in the X-Personal-Access-Token
+    header; use for user-issued/script access.
+  sources:
+  - openapi/netcracker-qubership-apihub-admin-openapi.yml
+  - openapi/netcracker-qubership-apihub-registry-openapi.yml
+- name: RefreshTokenAuth
+  type: apiKey
+  in: cookie
+  parameter: apihub-refresh-token
+  description: Authentication via refresh token cookie
+  sources:
+  - openapi/netcracker-qubership-apihub-admin-openapi.yml
+  - openapi/netcracker-qubership-apihub-registry-openapi.yml
+- name: BasicAuth
+  type: http
+  scheme: basic
+  description: Login/password authentication.
+  sources:
+  - openapi/netcracker-qubership-apihub-registry-openapi.yml
+  - openapi/netcracker-qubership-maas-swagger.yml

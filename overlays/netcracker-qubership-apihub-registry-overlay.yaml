@@ -1,0 +1,34 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Qubership APIHUB Registry API
+  version: 1.0.0
+extends: openapi/netcracker-qubership-apihub-registry-openapi.yml
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: netcracker
+    x-apievangelist-generated: '2026-07-25'
+    x-apievangelist-access: "open-source, self-hosted (Apache-2.0) \u2014 no vendor-hosted deployment"
+    x-apievangelist-artifacts:
+      authentication: authentication/netcracker-authentication.yml
+      conventions: conventions/netcracker-conventions.yml
+      errors: errors/netcracker-problem-types.yml
+      lifecycle: lifecycle/netcracker-lifecycle.yml
+      data_model: data-model/netcracker-data-model.yml
+      agentic_access: agentic-access/netcracker-agentic-access.yml
+      mcp: mcp/netcracker-mcp.yml
+      skills: skills/_index.yml
+- target: $.info
+  update:
+    x-apievangelist-mcp:
+      server: apihub-mcp
+      url_pattern: https://{apihub-host}/api/v1/mcp/
+      transport: streamable-http
+      tools: 7
+      crosswalk: mcp/netcracker-tool-crosswalk.yml
+- target: $.info
+  update:
+    x-apievangelist-idempotency:
+      supported: partial
+      parameter: clientMessageId
+      scope: AI chat message send

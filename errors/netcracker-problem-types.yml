@@ -1,0 +1,144 @@
+generated: '2026-07-25'
+method: derived
+source: >-
+  openapi/netcracker-qubership-apihub-registry-openapi.yml,
+  openapi/netcracker-qubership-apihub-admin-openapi.yml,
+  openapi/netcracker-qubership-dbaas-openapi.json,
+  openapi/netcracker-qubership-maas-swagger.yml
+format: vendor-json
+rfc9457: false
+note: >-
+  No application/problem+json anywhere in the Qubership specs — errors use a vendor JSON
+  envelope, not RFC 9457. Two distinct envelopes coexist: the APIHUB ErrorResponse
+  (status/code/message/params/debug) and, in DBaaS, a TM Forum-shaped TmfErrorResponse.
+  Error codes below are the examples the OpenAPI itself publishes; message strings carry
+  $placeholders that are filled from params.
+envelopes:
+- name: ErrorResponse
+  used_by: [APIHUB Registry API, APIHUB System Administrators API, DBaaS Aggregator API]
+  occurrences: 519
+  content_type: application/json
+  fields:
+    status: HTTP status code as an integer; expected to match the actual HTTP response status.
+    code: Internal string error code. Mandatory in response.
+    message: Human-readable error message for diagnostics and safe client display.
+    params: Optional key/value parameters used to format or contextualize the message.
+    debug: Optional debug details (stack traces); development/test only, may contain sensitive data.
+  required: [status, code, message]
+- name: TmfErrorResponse
+  used_by: [DBaaS Aggregator API]
+  occurrences: 46
+  content_type: application/json
+  shape: TM Forum error structure
+  fields: [id, referenceError, code, reason, message, status, source, meta, errors, '@type', '@schemaLocation']
+  note: >-
+    The only place in Netcracker's public surface where a TM Forum data shape is actually
+    implemented rather than claimed — the DBaaS aggregator returns TMF-style errors.
+status_code_inventory:
+  '400': 138
+  '401': 223
+  '403': 142
+  '404': 173
+  '405': 2
+  '406': 3
+  '409': 34
+  '410': 5
+  '422': 9
+  '4XX': 1
+  '500': 241
+  '501': 1
+  '502': 1
+  '5XX': 1
+code_families:
+  APIHUB-####: core registry errors (3xxx not found, 41xx auth, 8000 internal)
+  APIHUB-COMMON-####: shared validation errors
+  APIHUB-AI-####: Honey AI chat errors
+  APIHUB-EF-####: ephemeral file/download-token errors
+  numeric (8500/8600): referential-integrity and version-status rules
+problems:
+- status: 404
+  code: APIHUB-3020
+  title: Package not found
+  message: package with packageId = $packageId not found
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#getPackagesId
+- status: 404
+  code: APIHUB-3050
+  title: Published version not found
+  message: Published version $version not found
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#getPackagesIdVersionsIdV4
+- status: 404
+  code: APIHUB-3043
+  title: File not found by slug
+  message: File for path $fileId not found
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#getPackagesIdVersionsIdFilesSlugRaw
+- status: 400
+  code: APIHUB-COMMON-4001
+  title: Incorrect input parameters
+  message: Incorrect input parameters
+  remediation: Validate query/body parameters against the operation schema before retrying.
+- status: 401
+  code: APIHUB-4101
+  title: Authentication required
+  message: Authentication required
+  remediation: >-
+    Supply one of the accepted credentials — bearer JWT, api-key header, X-Personal-Access-Token,
+    or the apihub-access-token cookie. See authentication/netcracker-authentication.yml.
+- status: 500
+  code: APIHUB-8000
+  title: Internal server error
+  message: InternalServerError
+- status: 409
+  code: '8500'
+  title: Resource referenced by a dashboard
+  message: >-
+    Cannot delete version $version of package $packageId: it is referenced by these dashboard
+    versions: $dashboards. Remove the references or delete the dashboards, then retry.
+  remediation: Remove the referencing dashboard versions first; the message names them in params.
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#deletePackagesIdVersionsId
+- status: 400
+  code: '8600'
+  title: Release/draft version-status rule violated
+  message: >-
+    Version $version for package $packageId cannot be published with the 'release' status
+    because previous version $previousVersion is in the 'draft' status.
+  remediation: Promote the previous version to release, or publish this one as a draft.
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#postPackagesIdPublish
+- status: 404
+  code: APIHUB-AI-3001
+  title: AI chat not found
+  message: chat with chatId = $chatId not found
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#getAiChat
+- status: 400
+  code: APIHUB-AI-4003
+  title: Pinned-chat limit exceeded
+  message: 'Cannot pin chat: user already has 3 pinned chats (the limit is 3)'
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#updateAiChat
+- status: 400
+  code: APIHUB-AI-4001
+  title: AI chat request validation failed
+  message: Message exceeds maximum length of 32000 characters
+  params: {max: 32000}
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#sendAiChatMessage
+- status: 404
+  code: APIHUB-EF-3001
+  title: Ephemeral file not found
+  message: ephemeral file with fileId = $fileId not found
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#downloadEphemeralFile
+- status: 410
+  code: APIHUB-EF-4101
+  title: Download token expired
+  message: download token expired, please request the file again
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#downloadEphemeralFile
+- status: 401
+  code: APIHUB-EF-3003
+  title: Download token missing
+  message: Missing token query parameter
+  source_operation: openapi/netcracker-qubership-apihub-registry-openapi.yml#downloadEphemeralFile
+agent_guidance:
+  source: mcp/netcracker-mcp.yml
+  rule: >-
+    The apihub-mcp server instructs agents that a tool result beginning with
+    "Failed to check user privileges", or stating the user lacks privileges/access, is an
+    AUTHORIZATION error: stop, do not retry, do not try other packages or versions to work
+    around it, and tell the user to request access. This is explicitly distinguished from
+    an empty search result, which may be retried with different terms or an explicit release.

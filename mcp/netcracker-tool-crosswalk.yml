@@ -1,0 +1,132 @@
+generated: '2026-07-25'
+method: derived
+source: mcp/netcracker-mcp.yml + openapi/netcracker-qubership-apihub-registry-openapi.yml
+note: >-
+  Binds every apihub-mcp tool to the APIHUB Registry OpenAPI operation(s) that back it.
+  Mapping is by name + semantics read from the published Go handlers and tool
+  descriptions; a live tools/list against a running instance was not possible (APIHUB is
+  self-hosted, no public deployment), so confidence is set honestly per row.
+surfaces:
+  openapi: openapi/netcracker-qubership-apihub-registry-openapi.yml
+  openapi_operations: 126
+  mcp:
+    server: apihub-mcp
+    url_pattern: https://{apihub-host}/api/v1/mcp/
+    gated: true
+    gated_note: route wrapped in security.SecureMCP; tools/list requires APIHUB credentials
+  graphql:
+    endpoint: null
+    note: >-
+      APIHUB stores and renders GraphQL specifications belonging to other teams, but
+      exposes no GraphQL endpoint of its own — its own contract is REST.
+crosswalk:
+- tool: search_api_operations
+  category: discovery
+  rest:
+  - postSearchV4
+  - postSearch
+  - getPackagesIdVersionsIdApiTypeOperations
+  binding: rest
+  confidence: high
+  note: >-
+    Backed by the global search (searchLevel=operations, apiType rest|graphql|asyncapi);
+    the per-version operations list is the same index the tool pages through when a
+    packageId is supplied via the group parameter.
+- tool: get_api_operation_specification
+  category: contract
+  rest:
+  - getPackagesIdVersionsIdApiTypeOperationsId
+  binding: rest
+  confidence: high
+  note: Tool arguments (apiType, packageId, version, operationId) are exactly this operation's path params.
+- tool: get_api_operation_diff
+  category: change-management
+  rest:
+  - getPackagesIdVersionsApiTypeOperationsIdChanges
+  - getPackagesIdVersionsApiTypeOperationsIdChangesSummary
+  binding: rest
+  confidence: high
+  note: >-
+    previousVersion maps to the comparison target of the single-operation changelog;
+    the summary operation supplies the severity roll-up.
+- tool: get_document
+  category: contract
+  rest:
+  - getPackagesIdVersionsIdDocumentsSlugV2
+  - getPackagesIdVersionsIdFilesSlugRaw
+  binding: rest
+  confidence: high
+  note: >-
+    slug is the documentId returned by search; documentData corresponds to the raw
+    published file, documentType/format to the document detail record.
+- tool: search_rest_api_operations
+  category: discovery
+  rest:
+  - postSearchV4
+  binding: rest
+  confidence: medium
+  note: Deprecated REST-only alias; behaves as search_api_operations with apiType=rest.
+- tool: get_rest_api_operations_specification
+  category: contract
+  rest:
+  - getPackagesIdVersionsIdApiTypeOperationsId
+  binding: rest
+  confidence: medium
+  note: Deprecated REST-only alias.
+- tool: get_rest_api_operation_diff
+  category: change-management
+  rest:
+  - getPackagesIdVersionsApiTypeOperationsIdChanges
+  binding: rest
+  confidence: medium
+  note: Deprecated REST-only alias.
+- tool: apihub_api_diff
+  category: change-management
+  server: apihub-api-diff
+  rest: []
+  binding: local
+  confidence: high
+  note: >-
+    Local stdio server; operates on two files on the agent's own machine through the
+    @netcracker/qubership-apihub-api-processor library. It has no REST backing operation
+    because it never talks to an APIHUB instance.
+mcp_resources:
+- resource: mcp://api-packages-list
+  rest:
+  - getPackages
+  - getPackagesIdVersionsV3
+  binding: rest
+  confidence: high
+  note: Package metadata plus up to 100 release versions per package.
+mcp_only:
+- tool: apihub_api_diff
+  reason: >-
+    Local file-to-file diff executed client-side by the aux-tools binary; no public REST
+    operation performs a diff of two arbitrary uploaded documents.
+- tool: generate_ids_document (prompt)
+  reason: >-
+    MCP prompt, not a tool and not a REST endpoint — server-side asset composition
+    (IDS template + rules) bundled in the backend image.
+rest_only:
+- capability: Publication
+  operations: [postPackagesIdPublish, getPackagesIdPublishIdStatus, DashboardPublishWithOperationsGroup, DashboardPublishWithOperationsGroupV2, postOperationGroupPublish, getOperationGroupPublishStatus, getPublishStatuses, getPackagesIdAvailableStatuses]
+- capability: Package and version administration
+  operations: [postPackages, patchPackagesId, deletePackagesId, patchPackagesIdVersionsIdV2, deletePackagesIdVersionsId, getPackageIdVersionIdCopy, getPackagesIdVersionsIdRevisionsV3]
+- capability: Export
+  operations: [postExport, getExportIdStatus, getPackagesIdVersionsIdSources, getPackagesIdVersionsIdDoc, getPackagesIdVersionsIdApiTypeOperationsExport, getPackageIdVersionIdChangesExportV3, generateShareabilityReport]
+- capability: Operation groups
+  operations: [PostPackageIdVersionApiTypeGroupsV3, patchPackageIdVersionApiTypeGroupName, getPackagesIdVersionsIdApiTypeGroups, getPackagesIdVersionsIdApiTypeGroupsGroupName, getPackageIdVersionApiTypeGroupNameTemplate, postGenerateDocumentV3]
+- capability: Access control and identity
+  operations: [postPackagesIdApiKeysV4, getPackagesIdApiKeysV4, deletePackagesIdApiKeysId, postPersonalAccessToken, getPersonalAccessToken, deletePersonalAccessToken, getPermissions, getRoles, postPackagesIdMembers, getPackagesIdMembers, patchPackagesIdMembersId, deletePackagesIdMembersId, postAuthSAML, logoutUser]
+- capability: DDL and MCP contract catalog
+  operations: [getPackageVersionDdlEntities, getPackageVersionDdlEntity, getPackageVersionDdlChanges, getPackageVersionMcpEntities, getPackageVersionMcpEntity, getPackageVersionMcpEntitiesExport]
+- capability: Deprecation tracking
+  operations: [getPackageIdVersionDeprecatedSummaryV3, getPackagesIdVersionsIdApiTypeDeprecations, getPackagesIdVersionsApiTypeOperationsIddeprecatedItems, getPackagesIdVersionsIdApiTypeDeprecatedOperationsExport]
+- capability: AI chat (Honey assistant)
+  operations: [listAiChats, createAiChat, getAiChat, updateAiChat, deleteAiChat, listAiChatMessages, sendAiChatMessage, sendAiChatMessageStream]
+coverage:
+  tools_named: 8
+  tools_bound_to_rest: 7
+  mcp_only: 2
+  rest_operations_total: 126
+  rest_operations_with_a_tool: 9

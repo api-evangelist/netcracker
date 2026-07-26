@@ -1,0 +1,81 @@
+generated: '2026-07-25'
+method: searched
+source: https://github.com/Netcracker/qubership-apihub-aux-tools
+note: >-
+  Netcracker ships no single branded CLI. What it publishes is a set of first-party
+  command-line tools inside the open-source Qubership platform — three of them talk to the
+  APIHUB REST API this repo catalogues, which makes them the real CLI surface for that API.
+  Binaries are built from source (Go/Node), not distributed through a package manager.
+clis:
+- name: apihub-api-diff
+  language: node
+  repo: https://github.com/Netcracker/qubership-apihub-aux-tools/tree/main/apihub-api-diff
+  install:
+  - {method: source, command: 'npm install && npm run build'}
+  - {method: binary, command: 'npm run build:binary  # writes dist/apihub-api-diff'}
+  usage: apihub-api-diff <previous-file> <current-file> [options]
+  targets_api: local files (uses @netcracker/qubership-apihub-api-processor)
+  flags:
+  - {flag: '-f, --format <json|md|html>', description: 'Output format. Default: json'}
+  - {flag: '-o, --output <file>', description: Output file; stdout for json/md, diff.html for html}
+  - {flag: '--output-dir <directory>', description: Directory for the default output file}
+  - {flag: '--fail-on <level>', description: 'Exit code 2 on breaking, risky, any or never. Default: never'}
+  - {flag: '--include-values', description: Include raw before/after values in JSON output}
+  - {flag: '--title <text>', description: Report title}
+  - {flag: '-q, --quiet', description: Suppress status messages}
+  - {flag: '-h, --help', description: Show help}
+  subcommands:
+  - {command: mcp, description: 'Run the same binary as a local MCP server over stdio (see mcp/netcracker-mcp.yml)'}
+  ci_use: '--fail-on breaking makes it a CI gate for backward compatibility.'
+- name: apihub-op-group-creator
+  language: go
+  repo: https://github.com/Netcracker/qubership-apihub-aux-tools/tree/main/apihub-op-group-creator
+  install: {method: source, command: 'cd apihub-op-group-creator && go build .'}
+  targets_api: netcracker:qubership-apihub-registry-api
+  auth: X-Personal-Access-Token
+  purpose: >-
+    Lists REST operations for a package version, keeps those whose custom tags match
+    -x-key / -x-value, creates or recreates an operation group, assigns the matching
+    operations and waits for the async export of the aggregated document.
+  backing_operations:
+  - getPackagesIdVersionsIdApiTypeOperations
+  - PostPackageIdVersionApiTypeGroupsV3
+  - postGenerateDocumentV3
+  - postExport
+  - getExportIdStatus
+- name: apihub-portal-package-copy
+  language: go
+  repo: https://github.com/Netcracker/qubership-apihub-aux-tools/tree/main/apihub-portal-package-copy
+  install: {method: source, command: 'cd apihub-portal-package-copy && go build .'}
+  targets_api: netcracker:qubership-apihub-registry-api
+  auth: api-key header (workspace-wide listing usually needs a key scoped to `*`)
+  purpose: >-
+    Copies published packages (optionally whole workspace subtrees) between APIHUB
+    instances using original sources + publish config, preserving previousVersion chains and
+    in-scope refs after ID remapping.
+  flags:
+  - {flag: '--retry-after-fail', description: Resume publish from checkpoint without re-fetching}
+  - {flag: '--force-refresh-fetch', description: Re-download artifacts}
+  - {flag: '--versions *', description: Version scope control}
+  - {flag: '--source-root-id *', description: Workspace scope control}
+  - {flag: '--exclude-packages', description: Exclusion list}
+  backing_operations:
+  - getPackagesIdVersionsIdSources
+  - getPackagesIdVersionsIdConfig
+  - getPackages
+  - postPackages
+  - postPackagesIdPublish
+  - getPackagesIdPublishIdStatus
+- name: apihub-build-config-diff
+  language: go
+  repo: https://github.com/Netcracker/qubership-apihub-aux-tools/tree/main/apihub-build-config-diff
+  install: {method: source, command: 'cd apihub-build-config-diff && go build .'}
+  targets_api: local files
+  purpose: Compares the refs arrays of two APIHUB build config JSON files and reports added, removed and changed refs.
+other_platform_clis:
+- {name: qubership-inventory-tool-cli, repo: 'https://github.com/Netcracker/qubership-inventory-tool-cli'}
+- {name: qubership-cloud-passport-cli, repo: 'https://github.com/Netcracker/qubership-cloud-passport-cli'}
+- {name: qubership-core-bulk-release, repo: 'https://github.com/Netcracker/qubership-core-bulk-release', description: 'CLI to perform the release procedure for all Core components simultaneously'}
+requirements:
+  build: Go 1.23 and Node.js >= 20
+  access: APIHUB permissions (personal access token or API key, depending on the tool) and network access to the target instance.

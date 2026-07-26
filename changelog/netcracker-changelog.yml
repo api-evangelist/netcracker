@@ -1,0 +1,82 @@
+generated: '2026-07-25'
+method: searched
+source: https://netcracker.github.io/apihub/releases/
+also:
+- https://github.com/Netcracker/qubership-apihub/releases
+- https://github.com/Netcracker/qubership-apihub-backend/releases
+scope: Qubership APIHUB (the open-source product). Netcracker publishes no changelog for any commercial BSS/OSS product.
+versioning:
+  scheme: semver
+  cadence: new releases every 4-6 weeks
+  current: 2.12.0
+  current_date: '2026-07-15'
+  spec_version: '2026.1'
+  spec_version_note: The published APIHUB Registry/Admin OpenAPI documents carry their own info.version of 2026.1.
+entries:
+- version: 2.12.0
+  date: '2026-07-15'
+  highlights:
+  - MCP & DDL catalog contracts in the UI — browse and basic scenarios
+  - DDL API document model and DdlTableViewer in api-doc-viewer
+  - AsyncAPI diff rendering in Doc View
+  - Mermaid diagrams in Markdown documents; optional custom CA mounts for TLS
+- version: 2.11.1
+  date: '2026-06-22'
+  highlights:
+  - Faster global search; obsolete search indexes removed
+  - API key auth fixed for endpoints without packageId; MCP tools authorization tightened
+  - Honey (AI assistant) can be disabled via ai.chat.enabled
+  - Diff false positives for allOf->oneOf combiner refs fixed
+- version: 2.11.0
+  date: '2026-06-01'
+  highlights:
+  - Honey AI Assistant productized (backend + Portal UI)
+  - AsyncAPI Quality Check in the Portal
+  - MCP tools now return linter results; metrics for MCP tools and AI chat
+  - Node.js 24 LTS across frontend libraries; OAS 3.1 exclusiveMin/Max numeric support
+- version: 2.10.0
+  date: '2026-05-12'
+  highlights:
+  - AsyncAPI operation groups — backend, UI, processor and group export
+  - Hardened nginx client and proxy timeouts
+  - Migration cleanup no longer blocks operations; MCP stream session memory growth fixed
+- version: 2.9.0
+  date: '2026-04-26'
+  highlights:
+  - Document shareability in Activity History; sharable report and bulk update
+  - AsyncAPI API change classification
+  - MCP tools and AI chat business metrics
+  - AsyncAPI publish reliability and diff/classification fixes
+- version: 2.8.0
+  date: '2026-04-09'
+  highlights:
+  - AsyncAPI phase 2/3 — full support: rendering, diff, global search, agent discovery
+  - GraphQL global search for operations (UI + backend)
+  - REST & GraphQL quality gates — Spectral linting fully enabled
+  - Sharable/non-sharable meta-marker for document export control
+- version: 2.7.0
+  date: '2026-03-24'
+  highlights:
+  - 'MCP tool for API changes: new get_rest_api_operation_diff MCP tool'
+  - GraphQL bulk mode in the Breaking Changes dashboard with CSV import/export
+  - AI linter productization — multiple linters per API type
+  - AsyncAPI quality check backend support
+- version: 2.6.0
+  date: '2026-02-06'
+  highlights:
+  - AsyncAPI initial backend support
+  - OAS 3.0/3.1 cross-version comparison improvements
+  - Common Go library for API spec exposure
+  - Runtime log-level management across all services
+- version: 2.5.2
+  date: '2025-12-16'
+  highlights:
+  - MCP Server PoC — first MCP server + AI chat integration
+  - LLM onboarding to APIHUB for API quality measurement
+  - OAS 3.1 pathItem refs support in REST Playground
+component_releases:
+  qubership-apihub-backend:
+    latest: 1.19.0
+    date: '2026-07-15'
+    url: https://github.com/Netcracker/qubership-apihub-backend/releases
+    note: Backend components version independently of the umbrella APIHUB product release train.

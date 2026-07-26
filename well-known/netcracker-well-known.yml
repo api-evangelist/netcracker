@@ -1,0 +1,39 @@
+generated: '2026-07-25'
+method: searched
+source: live probes 2026-07-25
+result: none
+note: >-
+  No /.well-known/ discovery document is served on any Netcracker host. The APIHUB
+  server URL templated in the OpenAPI (https://{apihub}.qubership.org) does not resolve
+  at all — APIHUB is self-hosted software, so its OIDC/OAuth discovery documents belong
+  to whichever Keycloak (or other IdP) an operator wires into their own deployment, not
+  to a Netcracker-operated domain. Recorded as verified absence, not as an untested gap.
+hosts:
+- host: https://www.netcracker.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/mcp.json, status: 404}
+- host: https://netcracker.github.io
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/mcp.json, status: 404}
+- host: https://qubership.org
+  status: 000
+  note: does not resolve; templated OpenAPI server variable only
+security_txt:
+  published: false
+  substitute:
+    kind: repository SECURITY.md
+    url: https://github.com/Netcracker/qubership-apihub/blob/main/SECURITY.md
+    contact: opensourcegroup@netcracker.com
+    see: security/netcracker-vulnerability-disclosure.yml

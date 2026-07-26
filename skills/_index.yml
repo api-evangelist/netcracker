@@ -1,0 +1,55 @@
+generated: '2026-07-25'
+method: generated
+note: >-
+  Two provenance classes below. The first two files are Netcracker's OWN published agent
+  instructions, saved verbatim — Netcracker ships a real first-party agent-skill surface:
+  170 SKILL.md files and 22 AGENTS.md files across the Qubership GitHub organization, wired
+  by an `apm.yml` / `agent-packages/` package convention that targets Cursor and Claude. The
+  rest are API Evangelist skills generated for the marquee flows of the catalogued APIs;
+  every operationId in them was grepped out of the harvested specs.
+provider_published:
+  convention:
+    manifest: apm.yml
+    packages_dir: agent-packages/<package>/.apm/skills/<skill>/SKILL.md
+    targets: [cursor, claude]
+    mirrors: [.claude/skills/, .agents/skills/, .cursor/skills/]
+  inventory:
+    skill_files_in_org: 170
+    agents_md_files_in_org: 22
+    examples:
+    - Netcracker/qubership-apihub-backend :: .agents/skills/apihub-go-developer/SKILL.md
+    - Netcracker/qubership-apihub-api-diff :: agent-packages/api-diff-authoring/.apm/skills/api-diff-authoring/SKILL.md
+    - Netcracker/qubership-apihub-api-doc-viewer :: agent-packages/api-doc-viewer-using/.apm/skills/api-doc-viewer-using/SKILL.md
+    - Netcracker/qubership-core-control-plane :: agent-packages/core-mesh-to-istio-migration/.apm/skills/core-mesh-to-istio-migration/SKILL.md
+    - Netcracker/qubership-ai-agent-telemetry :: agent-packages/ai-agent-telemetry-configure/.apm/skills/ai-agent-telemetry-configure/SKILL.md
+skills:
+- file: netcracker-qubership-apihub-AGENTS.md
+  name: Qubership APIHUB (deployment) — Agent Instructions
+  method: searched
+  source: https://github.com/Netcracker/qubership-apihub/blob/main/AGENTS.md
+  verbatim: true
+- file: netcracker-apihub-deployment-authoring.md
+  name: apihub-deployment-authoring
+  method: searched
+  source: https://github.com/Netcracker/qubership-apihub/blob/main/agent-packages/apihub-deployment-authoring/.apm/skills/apihub-deployment-authoring/SKILL.md
+  verbatim: true
+- file: netcracker-publish-api-version.md
+  name: Publish an API version to APIHUB
+  method: generated
+  api: openapi/netcracker-qubership-apihub-registry-openapi.yml
+  operations: [getPackages, getPackagesId, postPackages, postPackagesIdPublish, getPackagesIdPublishIdStatus, getPackagesIdVersionsV3, getPackagesIdVersionsIdV4, patchPackagesIdVersionsIdV2, getVersionProblems]
+- file: netcracker-review-api-changes.md
+  name: Review API changes between two versions
+  method: generated
+  api: openapi/netcracker-qubership-apihub-registry-openapi.yml
+  operations: [postCompare, getPackageIdVersionChangesSummary, getPackagesIdVersionsIdApiTypeChangesV4, getPackagesIdVersionsApiTypeOperationsIdChanges, getPackagesIdVersionsApiTypeOperationsIdChangesSummary, getPackageIdVersionIdChangesExportV3, getPackageIdVersionDeprecatedSummaryV3, getPackagesIdVersionsIdApiTypeDeprecations]
+- file: netcracker-discover-api-operations.md
+  name: Discover API operations in an APIHUB catalog
+  method: generated
+  api: openapi/netcracker-qubership-apihub-registry-openapi.yml
+  operations: [postSearchV4, getPackages, getPackagesIdVersionsV3, getPackagesIdVersionsIdApiTypeOperations, getPackagesIdVersionsIdApiTypeOperationsId, getPackagesIdVersionsIdDocuments, getPackagesIdVersionsIdDocumentsSlugV2, getPackagesIdVersionsIdFilesSlugRaw, getPackagesIdVersionsIdApiTypeTags]
+- file: netcracker-provision-messaging.md
+  name: Provision messaging with Qubership MaaS
+  method: generated
+  api: openapi/netcracker-qubership-maas-swagger.yml
+  operations: [GetOrCreateTopicV2, GetTopicByClassifierV2, SearchTopicsV2, DeleteTopic, GetOrCreateVHost, GetVHostAndConfigByClassifier, DeleteVHost, ApplyConfigV2, GetAllKafkaInstances, GetAllRabbitInstances, GetTenantsByNamespace, GetReport]

@@ -1,0 +1,60 @@
+generated: '2026-07-25'
+method: searched
+source: github.com/Netcracker repositories (package.json, README) probed 2026-07-25
+note: >-
+  Netcracker publishes a family of embeddable front-end components that render API
+  artifacts — the same ones the APIHUB Portal UI is built from. They are React/TypeScript
+  libraries distributed through GitHub Packages (an org token is required), not through
+  npmjs.com. There are no hosted/embeddable widgets on netcracker.com.
+families:
+- family: Specification viewers
+  loader: React component libraries
+  registry: github-packages
+  components:
+  - name: "@netcracker/qubership-apihub-api-doc-viewer"
+    repo: https://github.com/Netcracker/qubership-apihub-api-doc-viewer
+    description: >-
+      Interactive documentation viewer for a single operation or document — parameters,
+      schemas, security. Extended in release 2.12.0 with a DdlTableViewer for DDL contracts.
+  - name: "@netcracker/qubership-apihub-apispec-view"
+    repo: https://github.com/Netcracker/qubership-apihub-apispec-view
+    description: Specification rendering component used by the Portal's Doc view.
+  - name: "@netcracker/qubership-apihub-class-view"
+    version: 1.0.5
+    repo: https://github.com/Netcracker/qubership-apihub-class-view
+    description: Class/model diagram view for schema relationships.
+- family: Try-it / playground
+  components:
+  - name: qubership-apihub-rest-playground
+    repo: https://github.com/Netcracker/qubership-apihub-rest-playground
+    description: >-
+      The interactive REST console embedded in the Portal. Supports OAS 3.1 pathItem refs
+      (release 2.5.2). Non-cloud environments proxy calls through the registry's
+      /playground/proxy operation (getAgentsIdNamespacesIdServicesProxy).
+- family: Model / processing libraries behind the components
+  components:
+  - name: "@netcracker/qubership-apihub-http-spec"
+    version: 5.5.11
+    description: HTTP spec model consumed by the viewers.
+  - name: "@netcracker/qubership-apihub-graphapi"
+    version: 1.0.11
+    description: Normalized GraphQL model (the GraphAPI specification) the GraphQL views render.
+  - name: "@netcracker/qubership-apihub-api-unifier"
+    version: 2.9.0
+    description: Unified processing of JSON Schema / OpenAPI / GraphQL (allOf merge, $ref resolve, simplify).
+- family: IDE extensions
+  components:
+  - name: qubership-apihub-vscode
+    repo: https://github.com/Netcracker/qubership-apihub-vscode
+    description: VS Code extension for working with APIHUB from the editor.
+  - name: qubership-integration-platform vscode-extension
+    repo: https://github.com/Netcracker/qubership-integration-platform/tree/main/vscode-extension
+    description: >-
+      QIP editor extension with OpenAPI/Swagger/AsyncAPI detection, parsing and validation
+      (OpenAPI 3.2 documents are imported through the 3.1 parser).
+- family: Full front-end application
+  components:
+  - name: qubership-apihub-ui
+    repo: https://github.com/Netcracker/qubership-apihub-ui
+    image: ghcr.io/netcracker/qubership-apihub-ui
+    description: The Portal + Agents React SPAs served behind nginx; deployable, not embeddable.

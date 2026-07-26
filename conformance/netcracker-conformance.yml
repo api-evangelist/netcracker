@@ -1,0 +1,127 @@
+generated: '2026-07-25'
+method: searched
+source: >-
+  Derived from the four harvested Qubership OpenAPI/Swagger documents, plus searched
+  claims on netcracker.com (API Management product page, Cybersecurity services page) and
+  TM Forum press releases.
+note: >-
+  Netcracker's conformance story is split. The COMMERCIAL side claims deep TM Forum Open
+  API conformance (Platinum badge, Ready for ODA) but publishes no TMF specification,
+  no TMF API numbers and no certificate a developer can read. The OPEN-SOURCE side
+  publishes real specs, and exactly one TM Forum artifact is actually implemented in
+  public: the TmfErrorResponse envelope in the DBaaS aggregator API. Everything below
+  separates claimed from verified.
+standards:
+- id: openapi-3.0
+  conforms: true
+  evidence: APIHUB Registry (3.0.3) and Admin (3.0.3) documents parse as OpenAPI 3.0.3.
+  verified: true
+- id: openapi-3.1
+  conforms: true
+  evidence: DBaaS Aggregator API is OpenAPI 3.1.0.
+  verified: true
+- id: swagger-2.0
+  conforms: true
+  evidence: Qubership MaaS ships a Swagger 2.0 definition.
+  verified: true
+- id: tmforum-open-api
+  conforms: partial
+  claimed: true
+  evidence: >-
+    Claimed: "TM Forum Platinum Badge for Open API", "Ready for ODA" Level 6, 2019 TM Forum
+    Excellence Award for adopting the broadest range of Open APIs and contributing
+    conformance toolkits. Verified in public artifacts: only the TmfErrorResponse error
+    envelope in openapi/netcracker-qubership-dbaas-openapi.json (46 responses).
+  sources:
+  - https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
+  - https://www.netcracker.com/news/press-releases/netcracker-achieves-ready-for-oda-status-for-its-bss-oss-portfolio
+  gap: No TMF API number, conformance certificate or TMF-shaped resource model is published.
+- id: tmforum-oda
+  conforms: claimed
+  evidence: '"Ready for ODA" certification for the BSS/OSS portfolio, announced 2023-12-13.'
+  verified: false
+- id: camara
+  conforms: false
+  evidence: >-
+    Named in product marketing as a standard the platform aligns with and can monetize.
+    No CAMARA API is implemented, specified or callable in any public Netcracker surface;
+    "camara" appears 0 times in the site sitemap and there is no participation trail in
+    org:camaraproject.
+- id: gsma-open-gateway
+  conforms: false
+  evidence: No membership, subdomain, page or press release found. Netcracker is a vendor, not an operator.
+- id: mef
+  conforms: claimed
+  evidence: Named alongside TM Forum in the API standardization blog post and the API Management product page.
+  verified: false
+- id: 3gpp-nef
+  conforms: false
+  evidence: 3GPP named as an alignment standard; no NEF/SCEF or network-exposure API is published.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    No oauth2 securityScheme in any published spec and no authorization server on any
+    Netcracker domain. APIHUB integrates an operator-supplied Keycloak for SSO instead.
+- id: oidc
+  conforms: partial
+  evidence: >-
+    APIHUB documents OIDC/SAML/LDAP enterprise SSO as a deployment option (Keycloak ships in
+    the reference docker-compose), but the IdP belongs to the deploying organization; no
+    discovery document is served by Netcracker.
+- id: saml2
+  conforms: true
+  evidence: 'Registry API exposes SAML authentication: postAuthSAML (POST /api/v2/auth/saml) and the legacy getLoginSsoSaml.'
+  verified: true
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: No application/problem+json in any spec; a vendor ErrorResponse envelope is used. See errors/netcracker-problem-types.yml.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: >-
+    No Sunset or Deprecation header is documented; deprecation is expressed as OpenAPI
+    `deprecated` flags (16 operations) and tracked in-product.
+- id: json-api
+  conforms: false
+- id: odata
+  conforms: false
+- id: fhir
+  conforms: false
+- id: scim2
+  conforms: false
+- id: asyncapi
+  conforms: partial
+  evidence: >-
+    APIHUB reads, renders, diffs, lints and search-indexes AsyncAPI documents as a first-class
+    API type (full support shipped in releases 2.6-2.10), and the MCP tools accept
+    apiType=asyncapi — but Netcracker publishes no AsyncAPI document of its own.
+- id: graphql
+  conforms: partial
+  evidence: >-
+    APIHUB catalogues GraphQL (global search, diff, the @netcracker/qubership-apihub-graphapi
+    normalized model); Netcracker exposes no GraphQL endpoint of its own.
+- id: model-context-protocol
+  conforms: true
+  evidence: >-
+    Two first-party MCP servers (apihub-mcp streamable-HTTP at /api/v1/mcp/, apihub-api-diff
+    stdio), MCP JSON schemas for revisions 2024-11-05 / 2025-03-26 / 2025-06-18 / 2025-11-25
+    vendored in qubership-apihub-api-processor, and MCP contracts catalogued as a first-class
+    artifact type in the registry API.
+  verified: true
+  see: mcp/netcracker-mcp.yml
+- id: spectral
+  conforms: true
+  evidence: APIHUB's API Linter runs Spectral rulesets for OpenAPI and AsyncAPI as a release quality gate.
+  verified: true
+- id: prometheus-metrics
+  conforms: true
+  evidence: 'Registry API exposes getMetrics (GET /metrics) returning Prometheus metrics.'
+  verified: true
+compliance_program:
+  published: true
+  url: https://www.netcracker.com/portfolio/services/netcracker-cybersecurity
+  certifications: [PCI DSS, ISO 27001, ISO 27018, ISO 22301, SOC reporting]
+  frameworks: [NIST Cybersecurity Framework]
+  privacy: [GDPR, CCPA, LGPD, PIPL, PIPEDA]
+  see: security/netcracker-trust-center.yml
+licensing:
+  open_source: Apache-2.0 across the Qubership platform (27+ repositories).

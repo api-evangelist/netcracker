@@ -1,0 +1,52 @@
+generated: '2026-07-25'
+method: searched
+source: https://netcracker.github.io/apihub/deploy/
+hosted_sandbox: false
+test_credentials_published: false
+note: >-
+  There is no vendor-hosted sandbox, no free trial and no test-vs-live key separation —
+  those concepts do not apply, because every Netcracker API with a public contract is
+  self-hosted software. What Netcracker does publish is a documented way to stand the whole
+  product up locally in minutes, which is the only way to exercise the API. No test tokens,
+  magic identifiers or fixture values are published, and none are invented here.
+local_environment:
+  name: Qubership APIHUB local deployment
+  license: Apache-2.0
+  methods:
+  - method: docker-compose
+    recommended_for: development
+    steps:
+    - git clone https://github.com/Netcracker/qubership-apihub.git
+    - cd qubership-apihub/docker-compose
+    - docker compose up -d
+    url: http://localhost:8080
+    variants:
+    - docker-compose/apihub-generic
+    - docker-compose/with-keycloak
+    note: Every release ships a production-ready compose configuration with all six services pre-configured.
+  - method: helm
+    recommended_for: production
+    chart: helm-templates/qubership-apihub
+    note: Full configurability via values.yaml — RBAC, resource limits, S3, SSO, monitoring.
+  - method: local-k8s-quickstart
+    recommended_for: developer/R&D clusters (Kind/Rancher), explicitly not production
+    chart: helm-templates/local-k8s-quickstart
+  - method: source
+    note: All 27+ repositories are Apache-2.0; build any component and run the full test suite.
+  services: [apihub-backend, apihub-ui, postgresql, minio, keycloak (optional), k8s-agent]
+  images: [ghcr.io/netcracker/qubership-apihub-backend, ghcr.io/netcracker/qubership-apihub-build-task-consumer, ghcr.io/netcracker/qubership-apihub-ui]
+  docs:
+  - https://github.com/Netcracker/qubership-apihub/blob/main/docs/installation-guide.md
+  - https://github.com/Netcracker/qubership-apihub/blob/main/docs/admin-guide.md
+interactive_console:
+  name: REST Playground
+  kind: in-product try-it console
+  repo: https://github.com/Netcracker/qubership-apihub-rest-playground
+  proxy_operation: getAgentsIdNamespacesIdServicesProxy
+  note: >-
+    Ships inside the Portal so a consumer can call a catalogued operation from the docs page;
+    for non-cloud environments calls are relayed through the registry's /playground/proxy
+    endpoint. It is part of your own deployment, not a Netcracker-hosted console.
+test_fixtures:
+  repo: https://github.com/Netcracker/qubership-apihub-test-service
+  note: A test service used by the project's own suites; not documented as a consumer sandbox.

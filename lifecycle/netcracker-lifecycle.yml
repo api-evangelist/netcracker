@@ -1,0 +1,76 @@
+generated: '2026-07-25'
+method: searched
+source: https://netcracker.github.io/apihub/releases/
+scope: Qubership APIHUB and the Qubership platform components. No lifecycle policy is published for any commercial Netcracker product.
+versioning:
+  api_scheme: uri-path
+  api_versions_in_use: [/api/v1, /api/v2, /api/v3, /api/v4, /api/v4 (activity)]
+  note: >-
+    The APIHUB registry API runs four URI-path major versions side by side and marks the
+    superseded operations `deprecated: true` rather than removing them (e.g. postSearch
+    /api/v3/search/{searchLevel} is deprecated in favour of postSearchV4).
+  product_scheme: semver
+  product_current: 2.12.0
+  spec_version: '2026.1'
+  cadence: new releases every 4-6 weeks
+  docs: https://netcracker.github.io/apihub/releases/
+deprecation:
+  policy_url: https://netcracker.github.io/apihub/releases/
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  mechanism: >-
+    OpenAPI `deprecated: true` plus in-product deprecation tracking — APIHUB itself ships
+    deprecated-operation summaries, per-version deprecated lists, deprecated-item detail per
+    operation and an xlsx export, which is how the vendor expects deprecation to be consumed.
+  in_product_operations:
+  - getPackageIdVersionDeprecatedSummaryV3
+  - getPackagesIdVersionsIdApiTypeDeprecations
+  - getPackagesIdVersionsApiTypeOperationsIddeprecatedItems
+  - getPackagesIdVersionsIdApiTypeDeprecatedOperationsExport
+  note: >-
+    No written deprecation/sunset policy (no notice period, no removal timeline) is published
+    anywhere. What exists is the mechanism, not the promise.
+deprecated_operations:
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#getSystemConfiguration
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#DashboardPublishWithOperationsGroup
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#postGenerateDocumentV3
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#getPackagesIdVersionsIdExportGroupNameV3
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#getPackagesIdVersionsIdFilesSlugDoc
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#getPackagesIdVersionsIdDoc
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#getExtendedUser
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#getPackagesIdAvailableStatuses
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#getLoginSsoSaml
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#postAuthSAML
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#postSearch
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#getVersionChanges
+- openapi/netcracker-qubership-apihub-registry-openapi.yml#getVersionProblems
+- openapi/netcracker-qubership-dbaas-openapi.json#POST /api/dbaas/declarative/namespaces/{namespace}/service/{serviceName}
+- openapi/netcracker-qubership-dbaas-openapi.json#GET /api/dbaas/declarative/status/{trackingId}
+- openapi/netcracker-qubership-dbaas-openapi.json#GET /api/v3/dbaas/{namespace}/databases/statuses
+deprecated_mcp_tools:
+- search_rest_api_operations
+- get_rest_api_operations_specification
+- get_rest_api_operation_diff
+support:
+  channels:
+  - {type: GitHub Issues, url: 'https://github.com/Netcracker/qubership-apihub/issues'}
+  - {type: Email (open source), url: 'mailto:opensourcegroup@netcracker.com'}
+  - {type: Corporate contact, url: 'https://www.netcracker.com/contact-us'}
+  note: >-
+    The APIHUB landing site links a Discussions tab, but
+    https://github.com/Netcracker/qubership-apihub/discussions returns 404 — discussions are
+    not enabled on the repo.
+status_page: null
+status_page_note: >-
+  There is no status page and there cannot be one in the usual sense: every published
+  Netcracker API is self-hosted software, so availability belongs to the operator's own
+  deployment. netcracker.com publishes no status/uptime page either.
+sla:
+  url: null
+  published: false
+  note: Commercial SLAs are contract-gated; the open-source platform ships Apache-2.0 with no warranty.
+support_window:
+  security_fixes: >-
+    Security fixes land in a patch of the latest stable release; older versions do not get
+    security releases by default (SECURITY.md).

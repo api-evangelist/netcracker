@@ -1,0 +1,25 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Qubership DBaaS Aggregator API
+  version: 1.0.0
+extends: openapi/netcracker-qubership-dbaas-openapi.json
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: netcracker
+    x-apievangelist-generated: '2026-07-25'
+    x-apievangelist-access: "open-source, self-hosted (Apache-2.0) \u2014 no vendor-hosted deployment"
+    x-apievangelist-artifacts:
+      authentication: authentication/netcracker-authentication.yml
+      conventions: conventions/netcracker-conventions.yml
+      errors: errors/netcracker-problem-types.yml
+      lifecycle: lifecycle/netcracker-lifecycle.yml
+      data_model: data-model/netcracker-data-model.yml
+      agentic_access: agentic-access/netcracker-agentic-access.yml
+      mcp: mcp/netcracker-mcp.yml
+      skills: skills/_index.yml
+- target: $.info
+  update:
+    x-apievangelist-tmforum:
+      error_envelope: TmfErrorResponse
+      note: the only TM Forum data shape implemented in Netcracker public code

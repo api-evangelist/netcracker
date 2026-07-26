@@ -73,6 +73,12 @@ apis:
     url: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
   - type: SourceCode
     url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: Overlay
+    url: overlays/netcracker-qubership-apihub-registry-overlay.yaml
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
 - aid: netcracker:qubership-apihub-admin-api
   name: Qubership APIHUB System Administrators API
   description: >-
@@ -96,6 +102,8 @@ apis:
     url: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
   - type: SourceCode
     url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: Overlay
+    url: overlays/netcracker-qubership-apihub-admin-overlay.yaml
 - aid: netcracker:qubership-maas-api
   name: Qubership MaaS (Messaging as a Service) API
   description: >-
@@ -118,6 +126,10 @@ apis:
     url: https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
   - type: SourceCode
     url: https://github.com/Netcracker/qubership-maas
+  - type: Overlay
+    url: overlays/netcracker-qubership-maas-overlay.yaml
+  - type: SDKs
+    url: packages/netcracker-packages.yml
 - aid: netcracker:qubership-dbaas-aggregator-api
   name: Qubership DBaaS Aggregator API
   description: >-
@@ -142,11 +154,79 @@ apis:
     url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
   - type: SourceCode
     url: https://github.com/Netcracker/qubership-dbaas
+  - type: Overlay
+    url: overlays/netcracker-qubership-dbaas-overlay.yaml
+  - type: SDKs
+    url: packages/netcracker-packages.yml
 common:
+- type: AgenticAccess
+  url: agentic-access/netcracker-agentic-access.yml
+- type: DomainSecurity
+  url: security/netcracker-domain-security.yml
+- type: Authentication
+  url: authentication/netcracker-authentication.yml
+- type: Packages
+  url: packages/netcracker-packages.yml
+- type: SDKs
+  url: packages/netcracker-packages.yml
+- type: MCPServer
+  url: mcp/netcracker-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/netcracker-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/netcracker-llms.txt
+- type: WellKnown
+  url: well-known/netcracker-well-known.yml
+- type: Conventions
+  url: conventions/netcracker-conventions.yml
+- type: Idempotency
+  url: conventions/netcracker-conventions.yml
+- type: ErrorCatalog
+  url: errors/netcracker-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/netcracker-lifecycle.yml
+- type: ChangeLog
+  url: changelog/netcracker-changelog.yml
+- type: ChangeLog
+  url: https://netcracker.github.io/apihub/releases/
+- type: Conformance
+  url: conformance/netcracker-conformance.yml
+- type: Compliance
+  url: https://www.netcracker.com/portfolio/services/netcracker-cybersecurity
+- type: TrustCenter
+  url: security/netcracker-trust-center.yml
+- type: VulnerabilityDisclosure
+  url: security/netcracker-vulnerability-disclosure.yml
+- type: Security
+  url: https://github.com/Netcracker/qubership-apihub/blob/main/SECURITY.md
+- type: CLI
+  url: cli/netcracker-cli.yml
+- type: Components
+  url: components/netcracker-components.yml
+- type: DataModel
+  url: data-model/netcracker-data-model.yml
+- type: Sandbox
+  url: sandbox/netcracker-sandbox.yml
+- type: Protobuf
+  url: grpc/netcracker-qubership-control-plane-bus.proto
 - type: Website
   url: https://www.netcracker.com/
 - type: Documentation
   url: https://netcracker.github.io/
+- type: GettingStarted
+  url: https://netcracker.github.io/apihub/deploy/
+- type: Support
+  url: https://github.com/Netcracker/qubership-apihub/issues
+- type: Postman
+  url: https://github.com/Netcracker/qubership-apihub-postman-collections
+- type: TermsOfService
+  url: https://www.netcracker.com/terms-of-use
+- type: PrivacyPolicy
+  url: https://www.netcracker.com/privacy-notice
+- type: ContactUs
+  url: https://www.netcracker.com/contact-us
 - type: GitHubOrganization
   url: https://github.com/Netcracker
 - type: LinkedIn

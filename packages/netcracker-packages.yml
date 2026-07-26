@@ -1,0 +1,165 @@
+generated: '2026-07-25'
+method: searched
+source: >-
+  github.com/Netcracker repositories (go.mod, package.json, pom.xml, helm values,
+  docker-compose) probed 2026-07-25, plus npmjs.com, PyPI, Maven Central and pkg.go.dev
+  registry probes
+note: >-
+  Netcracker publishes NO client library for any commercial BSS/OSS product — those are
+  partner-gated. Everything below belongs to the open-source Qubership platform. Two
+  distribution facts matter: (1) the Go client libraries for MaaS and DBaaS are real,
+  semver-tagged, `go get`-able modules straight from GitHub; (2) the TypeScript
+  (@netcracker/*) and Java (com.netcracker.cloud.*) artifacts are published to GitHub
+  Packages, NOT to npmjs.com or Maven Central — npm search "qubership" returns 0 packages,
+  Maven Central search "qubership" returns 0, and the aux-tools README states plainly:
+  "The repository resolves @netcracker/* packages from GitHub Packages. Configure an npm
+  token with access to the organization before installing dependencies."
+registry_probes:
+- registry: npm (npmjs.com)
+  query: qubership
+  results: 0
+- registry: npm (npmjs.com)
+  query: scope:netcracker
+  results: 0
+- registry: Maven Central
+  query: qubership / g:org.qubership*
+  results: 0
+- registry: PyPI
+  query: qubership, qubership-pipelines, netcracker
+  results: 0
+- registry: pkg.go.dev
+  query: github.com/netcracker/qubership-core-lib-go-*
+  results: 404 (module not cached by the proxy; the repos are tagged and go-gettable directly)
+packages:
+- language: go
+  registry: github
+  name: github.com/netcracker/qubership-core-lib-go-maas-client/v3
+  url: https://github.com/Netcracker/qubership-core-lib-go-maas-client
+  install: go get github.com/netcracker/qubership-core-lib-go-maas-client/v3
+  latest_tag: v3.5.5
+  official: true
+  api: netcracker:qubership-maas-api
+  description: Go client library for the Qubership MaaS (Messaging as a Service) API.
+- language: go
+  registry: github
+  name: github.com/netcracker/qubership-core-lib-go-dbaas-base-client/v3
+  url: https://github.com/Netcracker/qubership-core-lib-go-dbaas-base-client
+  install: go get github.com/netcracker/qubership-core-lib-go-dbaas-base-client/v3
+  latest_tag: v3.5.5
+  official: true
+  api: netcracker:qubership-dbaas-aggregator-api
+  description: Base Go client for the Qubership DBaaS aggregator; the per-engine clients build on it.
+- language: go
+  registry: github
+  name: github.com/netcracker/qubership-core-lib-go-dbaas-postgres-client/v4
+  url: https://github.com/Netcracker/qubership-core-lib-go-dbaas-postgres-client
+  install: go get github.com/netcracker/qubership-core-lib-go-dbaas-postgres-client/v4
+  latest_tag: v4.4.5
+  official: true
+  api: netcracker:qubership-dbaas-aggregator-api
+  description: PostgreSQL-specific Go DBaaS client.
+- language: go
+  registry: github
+  name: github.com/netcracker/qubership-core-lib-go-dbaas-mongo-client
+  url: https://github.com/Netcracker/qubership-core-lib-go-dbaas-mongo-client
+  official: true
+  api: netcracker:qubership-dbaas-aggregator-api
+  description: MongoDB-specific Go DBaaS client. Siblings exist for Cassandra, ClickHouse, OpenSearch and ArangoDB.
+- language: go
+  registry: github
+  name: github.com/netcracker/qubership-core-lib-go-paas-mediation-client
+  url: https://github.com/Netcracker/qubership-core-lib-go-paas-mediation-client
+  official: true
+  description: Go client for PaaS-agnostic access to OpenShift/Kubernetes resources.
+- language: java
+  registry: github-packages
+  name: com.netcracker.cloud.maas.client
+  url: https://github.com/Netcracker/qubership-core-java-libs/tree/main/maas-client
+  official: true
+  api: netcracker:qubership-maas-api
+  auth_required: true
+  description: >-
+    Java/Spring/Quarkus MaaS client (declarative and imperative variants). Source now in the
+    qubership-core-java-libs monorepo; the archived qubership-maas-client repositories are
+    retained solely to publish Maven artifacts.
+- language: java
+  registry: github-packages
+  name: com.netcracker.cloud (dbaas-client)
+  url: https://github.com/Netcracker/qubership-core-java-libs
+  official: true
+  api: netcracker:qubership-dbaas-aggregator-api
+  auth_required: true
+  description: Java DBaaS client; source moved into the qubership-core-java-libs monorepo.
+- language: typescript
+  registry: github-packages
+  name: "@netcracker/qubership-apihub-api-processor"
+  version: 5.5.0
+  url: https://github.com/Netcracker/qubership-apihub-api-processor
+  install: npm install @netcracker/qubership-apihub-api-processor  # requires a GitHub Packages token
+  official: true
+  auth_required: true
+  description: The APIHUB processing stack — normalize, diff, changelog, export for OpenAPI/AsyncAPI/GraphQL.
+- language: typescript
+  registry: github-packages
+  name: "@netcracker/qubership-apihub-api-diff"
+  version: 3.4.0
+  url: https://github.com/Netcracker/qubership-apihub-api-diff
+  official: true
+  auth_required: true
+  description: Categorized API diff engine (breaking vs non-breaking classification).
+- language: typescript
+  registry: github-packages
+  name: "@netcracker/qubership-apihub-api-unifier"
+  version: 2.9.0
+  url: https://github.com/Netcracker/qubership-apihub-api-unifier
+  official: true
+  auth_required: true
+  description: Tools for JsonSchema/OpenAPI/GraphQL specs for unified processing (allOf merge, ref resolve, simplify).
+- language: typescript
+  registry: github-packages
+  name: "@netcracker/qubership-apihub-json-crawl"
+  version: 1.2.2
+  url: https://github.com/Netcracker/qubership-apihub-json-crawl
+  official: true
+  auth_required: true
+  description: Async and sync crawler for JSON objects.
+- language: typescript
+  registry: github-packages
+  name: "@netcracker/qubership-apihub-graphapi"
+  version: 1.0.11
+  url: https://github.com/Netcracker/qubership-apihub-graphapi
+  official: true
+  auth_required: true
+  description: The GraphAPI specification repository — APIHUB's normalized GraphQL model.
+- language: typescript
+  registry: github-packages
+  name: "@netcracker/qubership-apihub-api-visitor"
+  version: 1.0.20
+  url: https://github.com/Netcracker/qubership-apihub-api-visitor
+  official: true
+  auth_required: true
+  description: Takes OpenAPI documents apart.
+- language: typescript
+  registry: github-packages
+  name: "@netcracker/qubership-apihub-http-spec"
+  version: 5.5.11
+  url: https://github.com/Netcracker/qubership-apihub-http-spec
+  official: true
+  auth_required: true
+  description: HTTP spec model used by the APIHUB document viewers.
+- language: typescript
+  registry: github-packages
+  name: "@netcracker/qubership-apihub-class-view"
+  version: 1.0.5
+  url: https://github.com/Netcracker/qubership-apihub-class-view
+  official: true
+  auth_required: true
+  description: Class/model diagram view component.
+container_images:
+  registry: ghcr.io
+  public: true
+  source: https://github.com/Netcracker/qubership-apihub/blob/main/helm-templates/qubership-apihub/values.yaml
+  images:
+  - ghcr.io/netcracker/qubership-apihub-backend
+  - ghcr.io/netcracker/qubership-apihub-build-task-consumer
+  - ghcr.io/netcracker/qubership-apihub-ui

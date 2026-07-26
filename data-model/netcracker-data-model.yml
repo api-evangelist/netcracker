@@ -1,0 +1,127 @@
+generated: '2026-07-25'
+method: derived
+source: >-
+  openapi/netcracker-qubership-apihub-registry-openapi.yml,
+  openapi/netcracker-qubership-dbaas-openapi.json,
+  openapi/netcracker-qubership-maas-swagger.yml
+note: >-
+  Derived from path hierarchy and schema $ref links in the published specs. Identifiers are
+  human-readable strings (dot-delimited package ids like QS.QSS.PRG.APIHUB, version strings
+  like 2024.1, document slugs) rather than prefixed opaque ids — there is no id-prefix scheme.
+domains:
+- domain: APIHUB registry
+  api: netcracker:qubership-apihub-registry-api
+  entities:
+  - name: Workspace
+    description: Top-level container; a package of kind `workspace`. A user also has a private personal workspace (getSpace).
+    id: packageId
+  - name: Group
+    description: Package of kind `group`; nests other groups and packages.
+  - name: Package
+    description: >-
+      The unit of publication — a package (or dashboard) holding versioned API
+      specifications. Carries packageId, parentId, kind, name, alias, description,
+      serviceName, defaultRole, isFavorite.
+    id: packageId
+    operations: [getPackages, getPackagesId, postPackages, patchPackagesId, deletePackagesId]
+  - name: Version
+    description: A published version of a package; has a status (draft/release), a previousVersion chain and revisions.
+    id: version
+    operations: [getPackagesIdVersionsV3, getPackagesIdVersionsIdV4, patchPackagesIdVersionsIdV2, deletePackagesIdVersionsId]
+  - name: Revision
+    description: An immutable re-publication of the same version number.
+    operations: [getPackagesIdVersionsIdRevisionsV3]
+  - name: Document
+    description: >-
+      A source specification file inside a version, addressed by slug (documentId).
+      Types are OpenAPI, GraphQL, AsyncAPI, Markdown, JSON Schema and DDL.
+    id: slug
+    operations: [getPackagesIdVersionsIdDocuments, getPackagesIdVersionsIdDocumentsSlugV2, getPackagesIdVersionsIdFilesSlugRaw, updateDocumentShareability]
+  - name: Operation
+    description: An operation extracted from a document; carries operationId, apiType, apiKind, apiAudience, title and tags.
+    id: operationId
+    operations: [getPackagesIdVersionsIdApiTypeOperations, getPackagesIdVersionsIdApiTypeOperationsId]
+  - name: OperationGroup
+    description: A named subset of operations within a version, exportable as its own document.
+    id: groupName
+    operations: [PostPackageIdVersionApiTypeGroupsV3, getPackagesIdVersionsIdApiTypeGroupsGroupName, patchPackageIdVersionApiTypeGroupName, postOperationGroupPublish]
+  - name: Change
+    description: A classified difference (breaking vs non-breaking) between two versions, at version, operation or DDL-entity level.
+    operations: [getPackageIdVersionChangesSummary, getPackagesIdVersionsIdApiTypeChangesV4, getPackagesIdVersionsApiTypeOperationsIdChanges]
+  - name: Reference
+    description: A dashboard version's link to another package version (the refs graph that blocks deletion).
+    operations: [getPackagesIdVersionsIdReferencesv3]
+  - name: DdlEntity
+    description: A DDL contract entity catalogued alongside API operations.
+    operations: [getPackageVersionDdlEntities, getPackageVersionDdlEntity]
+  - name: McpEntity
+    description: An MCP discovery-contract entity (tool/resource/prompt) catalogued per MCP endpoint of a package version.
+    id: mcpEntityId
+    operations: [getPackageVersionMcpEntities, getPackageVersionMcpEntity]
+  - name: User
+    id: userId
+    operations: [getUsers, getUser, getExtendedUserV2]
+  - name: Role / Permission / Member
+    operations: [getRoles, getPermissions, getPackagesIdAvailableRoles, postPackagesIdMembers, patchPackagesIdMembersId]
+  - name: ApiKey
+    description: Package-scoped API key.
+    operations: [postPackagesIdApiKeysV4, getPackagesIdApiKeysV4, deletePackagesIdApiKeysId]
+  - name: PersonalAccessToken
+    description: User-issued token for scripts and CLI tools.
+    operations: [postPersonalAccessToken, getPersonalAccessToken, deletePersonalAccessToken]
+  - name: Chat / ChatMessage
+    description: Honey AI assistant conversation; messages carry a clientMessageId idempotency key and toolInvocations.
+    operations: [listAiChats, createAiChat, listAiChatMessages, sendAiChatMessage, sendAiChatMessageStream]
+  - name: EphemeralFile
+    description: Short-lived download addressed by fileId with a signed, expiring token.
+    operations: [downloadEphemeralFile]
+  - name: PublishJob / ExportJob
+    description: Async job handles (publishId, exportId) polled for status.
+    operations: [postPackagesIdPublish, getPackagesIdPublishIdStatus, postExport, getExportIdStatus]
+  relationships:
+  - {from: Workspace, to: Group, type: has_many, via: parentId}
+  - {from: Group, to: Package, type: has_many, via: parentId}
+  - {from: Package, to: Version, type: has_many, via: packageId}
+  - {from: Version, to: Revision, type: has_many, via: version}
+  - {from: Version, to: Version, type: has_one, via: previousVersion}
+  - {from: Version, to: Document, type: has_many, via: slug}
+  - {from: Document, to: Operation, type: has_many, via: documentId}
+  - {from: Version, to: OperationGroup, type: has_many, via: groupName}
+  - {from: OperationGroup, to: Operation, type: has_many, via: operationId}
+  - {from: Operation, to: Change, type: has_many, via: operationId}
+  - {from: Version, to: Reference, type: has_many, via: refId}
+  - {from: Version, to: DdlEntity, type: has_many, via: ddlEntityId}
+  - {from: Version, to: McpEntity, type: has_many, via: mcpEntityId}
+  - {from: Package, to: ApiKey, type: has_many, via: packageId}
+  - {from: Package, to: Member, type: has_many, via: userId}
+  - {from: User, to: PersonalAccessToken, type: has_many, via: userId}
+  - {from: User, to: Chat, type: has_many, via: userId}
+  - {from: Chat, to: ChatMessage, type: has_many, via: chatId}
+  - {from: ChatMessage, to: EphemeralFile, type: has_many, via: fileId}
+- domain: DBaaS aggregator
+  api: netcracker:qubership-dbaas-aggregator-api
+  entities:
+  - {name: Namespace, description: Cloud project namespace that owns logical databases.}
+  - {name: LogicalDatabase, description: A managed database record routed to a physical database through an adapter., id: classifier}
+  - {name: PhysicalDatabase, description: A registered backing database instance served by an adapter.}
+  - {name: DatabaseUser, description: Credentials issued for a logical database.}
+  - {name: BalancingRule, description: Rule that selects which physical database serves a request.}
+  - {name: Backup / Restore, description: Namespace-level backup and restoration jobs.}
+  relationships:
+  - {from: Namespace, to: LogicalDatabase, type: has_many, via: namespace}
+  - {from: LogicalDatabase, to: PhysicalDatabase, type: belongs_to, via: physicalDatabaseId}
+  - {from: LogicalDatabase, to: DatabaseUser, type: has_many, via: classifier}
+  - {from: PhysicalDatabase, to: BalancingRule, type: has_many, via: physicalDatabaseId}
+  - {from: Namespace, to: Backup, type: has_many, via: namespace}
+- domain: MaaS
+  api: netcracker:qubership-maas-api
+  entities:
+  - {name: Namespace, description: Microservice namespace requesting messaging resources.}
+  - {name: KafkaTopic, description: Provisioned Kafka topic (template/definition driven).}
+  - {name: RabbitMQVirtualHost, description: Provisioned RabbitMQ vhost with entities.}
+  - {name: Instance, description: Registered Kafka/RabbitMQ broker instance MaaS provisions into.}
+  relationships:
+  - {from: Namespace, to: KafkaTopic, type: has_many, via: namespace}
+  - {from: Namespace, to: RabbitMQVirtualHost, type: has_many, via: namespace}
+  - {from: KafkaTopic, to: Instance, type: belongs_to, via: instance}
+  - {from: RabbitMQVirtualHost, to: Instance, type: belongs_to, via: instance}

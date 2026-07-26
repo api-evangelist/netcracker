@@ -1,0 +1,184 @@
+generated: '2026-07-25'
+method: searched
+status: published
+source: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/qubership-apihub-service/service/MCPService.go
+note: >-
+  Netcracker ships TWO first-party MCP servers, both inside the open-source Qubership
+  platform. Neither is a vendor-hosted endpoint: APIHUB is self-hosted software, so the
+  MCP server runs at the operator's own APIHUB deployment; the api-diff server runs
+  locally over stdio. There is NO MCP server on netcracker.com and none for any
+  Netcracker commercial BSS/OSS product. Tool names, descriptions, input schemas,
+  resources and prompts below were read verbatim from the published source, not guessed —
+  a live tools/list was not possible because there is no public hosted instance.
+servers:
+- name: apihub-mcp
+  version: '0.1.0'
+  product: Qubership APIHUB
+  transport: streamable-http
+  url_pattern: https://{apihub-host}/api/v1/mcp/
+  hosted: false
+  self_hosted: true
+  auth: required
+  auth_note: >-
+    The route is registered as security.SecureMCP(mcpHandler); the same APIHUB
+    credentials govern it (bearer JWT, api-key header, personal access token, or the
+    apihub-access-token cookie). Tool results carry package-level authorization errors
+    ("Failed to check user privileges") that the server instructs the agent NOT to retry.
+  session_idle_ttl: 15m
+  implementation: github.com/mark3labs/mcp-go
+  source:
+    server: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/qubership-apihub-service/service/MCPService.go
+    controller: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/qubership-apihub-service/controller/MCPController.go
+    route: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/qubership-apihub-service/Service.go
+  instructions_summary: >-
+    "The apihub-mcp MCP server provides information about REST, GraphQL, and AsyncAPI
+    specifications." Specs are organized into packages; each package has versions; the
+    agent is told to search first, show a list of operations, and only fetch details on
+    explicit request.
+  tools:
+  - name: search_api_operations
+    status: current
+    description: >-
+      Search for API operations by text query across REST, GraphQL and AsyncAPI. Lexical
+      full-text search (not semantic/fuzzy/substring); supports -word exclusion and
+      "quoted phrases"; results carry operationId, packageId, packageName, version, title,
+      apiKind, apiType, apiAudience and documentId.
+    input_schema:
+      type: object
+      required: [apiType, query]
+      properties:
+        apiType: {type: string, enum: [rest, graphql, asyncapi]}
+        query: {type: string}
+        limit: {type: integer, minimum: 10, maximum: 100}
+        page: {type: integer, minimum: 0}
+        release: {type: string}
+        group: {type: string}
+  - name: get_api_operation_specification
+    status: current
+    description: >-
+      Get operation-level specification data extracted from an OpenAPI or AsyncAPI
+      specification. Use only when the user explicitly asks for operation detail.
+    input_schema:
+      type: object
+      required: [apiType, operationId, packageId, version]
+      properties:
+        apiType: {type: string, enum: [rest, asyncapi]}
+        operationId: {type: string}
+        packageId: {type: string}
+        version: {type: string}
+  - name: get_api_operation_diff
+    status: current
+    description: >-
+      Get the list of changes of a specific OpenAPI/AsyncAPI operation between a package
+      version and its previous version.
+    input_schema:
+      type: object
+      required: [apiType, operationId, packageId, version, previousVersion]
+      properties:
+        apiType: {type: string, enum: [rest, asyncapi]}
+        operationId: {type: string}
+        packageId: {type: string}
+        version: {type: string}
+        previousVersion: {type: string}
+  - name: get_document
+    status: current
+    description: >-
+      Get a source API specification by slug (REST, GraphQL, AsyncAPI). Response carries
+      documentType, format and documentData with the full source specification.
+    input_schema:
+      type: object
+      required: [apiType, packageId, version, slug]
+      properties:
+        apiType: {type: string, enum: [rest, graphql, asyncapi]}
+        packageId: {type: string}
+        version: {type: string}
+        slug: {type: string}
+  - name: search_rest_api_operations
+    status: deprecated
+    description: Deprecated compatibility alias for search_api_operations with apiType=rest.
+    input_schema:
+      type: object
+      required: [query]
+      properties:
+        query: {type: string}
+  - name: get_rest_api_operations_specification
+    status: deprecated
+    description: Deprecated compatibility alias for get_api_operation_specification (REST only).
+    input_schema:
+      type: object
+      required: [operationId, packageId, version]
+      properties:
+        operationId: {type: string}
+        packageId: {type: string}
+        version: {type: string}
+  - name: get_rest_api_operation_diff
+    status: deprecated
+    description: Deprecated compatibility alias for get_api_operation_diff (REST only).
+    input_schema:
+      type: object
+      required: [operationId, packageId, version, previousVersion]
+      properties:
+        operationId: {type: string}
+        packageId: {type: string}
+        version: {type: string}
+        previousVersion: {type: string}
+  resources:
+  - uri: mcp://api-packages-list
+    name: API Packages List
+    mime_type: application/json
+    description: >-
+      All API packages in the system with metadata and up to 100 release versions each
+      (sorted desc). Registered only when the AI MCP workspace is configured.
+  - uri_pattern: apihub://mcp/resources/{filename}
+    name: Bundled MCP resources
+    description: >-
+      Every file under resources/mcp/resources/ in the backend image is auto-registered as
+      a static MCP resource with a stable URI.
+  prompts:
+  - name: generate_ids_document
+    description: >-
+      Generate an Integration Design Specification (IDS) document from a free-text user
+      request; returns the canonical IDS markdown template plus authoring rules and expects
+      the model to walk the apihub MCP tools to fill in real API specs.
+    arguments:
+    - name: user_input
+      required: true
+- name: apihub-api-diff
+  version: '0.1.0'
+  product: Qubership APIHUB auxiliary tools
+  transport: stdio
+  hosted: false
+  local: true
+  protocol_version: '2024-11-05'
+  install: apihub-api-diff mcp
+  auth: none
+  source:
+    server: https://github.com/Netcracker/qubership-apihub-aux-tools/blob/main/apihub-api-diff/src/mcp/server.ts
+    readme: https://github.com/Netcracker/qubership-apihub-aux-tools/blob/main/apihub-api-diff/README.md
+  tools:
+  - name: apihub_api_diff
+    status: current
+    description: >-
+      Compare two API description files (OpenAPI/Swagger YAML or JSON, AsyncAPI, GraphQL
+      SDL) and return a categorized API changelog from the APIHUB api-processor (severity,
+      action, scope per change). For breaking-vs-non-breaking review, not line diffs.
+    input_schema:
+      type: object
+      additionalProperties: false
+      required: [previousPath, currentPath]
+      properties:
+        previousPath: {type: string}
+        currentPath: {type: string}
+        format: {type: string, enum: [json, md, html], default: md}
+        includeValues: {type: boolean}
+        title: {type: string}
+mcp_as_a_catalogued_artifact:
+  note: >-
+    Separately from running MCP servers, APIHUB CATALOGUES MCP contracts as a first-class
+    artifact type alongside OpenAPI/GraphQL/AsyncAPI/DDL — the registry API exposes
+    getPackageVersionMcpEntities, getPackageVersionMcpEntity and
+    getPackageVersionMcpEntitiesExport, and the global search accepts searchLevel=mcp.
+  operations:
+  - getPackageVersionMcpEntities
+  - getPackageVersionMcpEntity
+  - getPackageVersionMcpEntitiesExport
