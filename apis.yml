@@ -1,0 +1,164 @@
+aid: netcracker
+url: https://raw.githubusercontent.com/api-evangelist/netcracker/refs/heads/main/apis.yml
+name: Netcracker
+kind: company
+description: >-
+  Netcracker Technology is a Waltham, Massachusetts-based BSS/OSS and digital
+  business software vendor and a wholly owned subsidiary of NEC Corporation.
+  It sells cloud BSS, digital commerce and monetization, convergent charging,
+  service and network orchestration, and API management and integration
+  software to communications service providers worldwide — it is a supplier to
+  carriers rather than a carrier itself, sitting one layer behind the operator
+  in the telecom value chain and never touching a public developer directly.
+  Netcracker is a long-standing TM Forum participant, claims the TM Forum
+  Platinum Badge for Open API and "Ready for ODA" certification for its BSS/OSS
+  portfolio, and contributed conformance toolkits to the TM Forum Open API
+  program. Its API posture toward the outside world is honestly partner-gated:
+  netcracker.com publishes no developer portal (developer., developers., docs.,
+  api. subdomains do not resolve; /developer, /developers and /api all return
+  404), no product OpenAPI is downloadable, and every commercial API — the
+  TM Forum Open APIs its products implement — reaches integrators only through
+  a customer or partner engagement. The one genuinely public, self-serve API
+  surface Netcracker publishes is Qubership, its open-source cloud platform at
+  github.com/Netcracker and netcracker.github.io, which ships real, downloadable
+  OpenAPI contracts for its APIHUB API registry, integration, messaging and
+  database services. On CAMARA, Netcracker names the standard in product
+  marketing alongside TM Forum, MEF, ETSI, 3GPP and O-RAN and says CSPs can
+  monetize "plug and play developer APIs, such as those from CAMARA" — but no
+  CAMARA API is implemented, specified or callable anywhere in its public
+  surface. That is a positioning statement, not an implementation.
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+tags:
+- Telecommunications
+- United States
+- BSS
+- OSS
+- Network Vendor
+- API Management
+- TM Forum
+- Open API
+- CAMARA
+- Standards
+- Orchestration
+- Monetization
+- Open Source
+created: '2026-07-25'
+modified: '2026-07-25'
+specificationVersion: '0.19'
+apis:
+- aid: netcracker:qubership-apihub-registry-api
+  name: Qubership APIHUB Registry API
+  description: >-
+    The external, public-facing API contract for APIHUB — Netcracker's
+    open-source API registry and developer portal product. Covers package and
+    catalog operations, publication workflows, versions, export, search,
+    operations and contracts, documents, change comparison, operation groups,
+    integrations, roles and user profile actions. OpenAPI 3.0.3, version
+    2026.1, 111 documented paths. Server URL is a self-hosted template
+    (https://{apihub}.qubership.org) — qubership.org does not resolve publicly,
+    so this is a spec for a platform you deploy yourself, not a hosted SaaS.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - API Management
+  - API Registry
+  - Developer Portal
+  - Open Source
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-qubership-apihub-registry-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+- aid: netcracker:qubership-apihub-admin-api
+  name: Qubership APIHUB System Administrators API
+  description: >-
+    The external administration API contract for APIHUB, covering technical
+    administration operations — package transitions, system operations, role
+    management and administrator management. OpenAPI 3.0.3, version 2026.1,
+    18 documented paths. All endpoints require authenticated access and are
+    intended for trusted administrative users of a self-hosted APIHUB install.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - API Management
+  - Administration
+  - Open Source
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-qubership-apihub-admin-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+- aid: netcracker:qubership-maas-api
+  name: Qubership MaaS (Messaging as a Service) API
+  description: >-
+    The REST API for Qubership MaaS, Netcracker's open-source messaging-as-a-service
+    component that provisions and manages Kafka topics and RabbitMQ virtual hosts
+    for microservices running on the Qubership cloud platform. Swagger 2.0
+    definition with 35 documented paths, secured with HTTP Basic authentication.
+  humanURL: https://github.com/Netcracker/qubership-maas
+  tags:
+  - Messaging
+  - Kafka
+  - RabbitMQ
+  - Open Source
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-qubership-maas-swagger.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+- aid: netcracker:qubership-dbaas-aggregator-api
+  name: Qubership DBaaS Aggregator API
+  description: >-
+    The REST API for Qubership DBaaS, Netcracker's open-source Database as a
+    Service aggregator. It collects requests for managed databases and routes
+    them to the appropriate database adapter, tracking every database used in a
+    cloud project. OpenAPI 3.1.0, version 6.13.2, 73 documented paths covering
+    database operations, users, backup and restore, balancing rules, physical
+    database registration and migration. Bearer JWT authentication.
+  humanURL: https://github.com/Netcracker/qubership-dbaas
+  tags:
+  - DBaaS
+  - Database
+  - Cloud Platform
+  - Open Source
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-qubership-dbaas-openapi.json
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+common:
+- type: Website
+  url: https://www.netcracker.com/
+- type: Documentation
+  url: https://netcracker.github.io/
+- type: GitHubOrganization
+  url: https://github.com/Netcracker
+- type: LinkedIn
+  url: https://www.linkedin.com/company/netcracker-technology
+- type: Blog
+  url: https://www.netcracker.com/blog
+- type: PressReleases
+  url: https://www.netcracker.com/news/press-releases
+- type: ProductPage
+  url: https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
+- type: Portfolio
+  url: https://www.netcracker.com/portfolio
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

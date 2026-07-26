@@ -1,0 +1,368 @@
+aid: netcracker
+name: Netcracker
+review:
+  question: >-
+    Does Netcracker publish a real, public, self-serve developer portal and
+    downloadable API definitions — and what is its actual CAMARA posture?
+  answer: partial
+  date: '2026-07-25'
+  reviewer: API Evangelist
+  homeMarket: United States
+  tier: network-vendor-bss
+  gated: true
+findings:
+  summary: |
+    Netcracker Technology (Waltham, MA; a wholly owned NEC subsidiary) is a
+    BSS/OSS software vendor to communications service providers, not a carrier
+    and not a CPaaS. It sits behind the operator in the telecom value chain.
+
+    There is NO first-party developer portal on netcracker.com. Every
+    conventional probe failed: developer.netcracker.com, developers.netcracker.com,
+    docs.netcracker.com, api.netcracker.com, opengateway.netcracker.com and
+    portal.netcracker.com all fail to resolve (curl exit / HTTP 000), and
+    /developer, /developers and /api on www.netcracker.com all return 404.
+    /openapi.json, /swagger.json, /api-docs, /graphql,
+    /.well-known/openid-configuration and /.well-known/oauth-authorization-server
+    all return 404. The word "camara" appears zero times in the site sitemap.
+    The only API-related page on the corporate site is a product marketing page
+    for "Netcracker API Management and Integration" — a page that sells an API
+    platform to carriers while publishing no API of its own.
+
+    The commercial telecom API surface — the TM Forum Open APIs Netcracker's
+    BSS/OSS products implement — is entirely partner- and contract-gated. There
+    is no public reference, no sandbox, no signup, no downloadable product spec.
+
+    There IS, however, a real and genuinely open second surface: Qubership,
+    Netcracker's open-source cloud platform. github.com/Netcracker is a verified
+    GitHub organization ("Netcracker engineers' open source projects", 287 public
+    repositories, contact opensourcegroup@netcracker.com) and netcracker.github.io
+    is a live open-source landing site ("Netcracker Open Source — Qubership",
+    HTTP 200, no login wall) with product pages at /apihub/ and /qip/. Four real
+    OpenAPI/Swagger definitions were harvested verbatim from it, all of which
+    parse. They describe platform-engineering components (an API registry,
+    messaging, DBaaS) — not telecom network or BSS APIs.
+  developerPortal:
+    corporate:
+      url: https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
+      status: 200
+      verdict: marketing page
+      note: >-
+        Product page for the API Management and Integration product. Describes an
+        "API Exposure Platform ... a single frontend for CSPs, partners and
+        developers where stakeholders can discover, subscribe to and interact with
+        APIs" — but that platform is software Netcracker sells to carriers, not a
+        portal Netcracker operates for the public. No spec, no signup, no sandbox.
+    openSource:
+      url: https://netcracker.github.io/
+      status: 200
+      verdict: real, open, self-serve (open-source index — not a product API portal)
+      note: >-
+        "Netcracker Open Source — Qubership". Six domains listed; two live
+        (API Management & Developer Portal / APIHUB, and Integration Platform / QIP),
+        four "coming soon". Links out to filtered GitHub repository searches. No
+        account required. No hosted API, no SDK downloads, no self-serve API keys.
+  probes:
+  - url: https://www.netcracker.com/
+    status: 200
+  - url: https://developer.netcracker.com
+    status: 000
+    note: does not resolve
+  - url: https://developers.netcracker.com
+    status: 000
+    note: does not resolve
+  - url: https://docs.netcracker.com
+    status: 000
+    note: does not resolve
+  - url: https://api.netcracker.com
+    status: 000
+    note: does not resolve
+  - url: https://opengateway.netcracker.com
+    status: 000
+    note: does not resolve
+  - url: https://portal.netcracker.com
+    status: 000
+    note: does not resolve
+  - url: https://www.netcracker.com/developer
+    status: 404
+  - url: https://www.netcracker.com/developers
+    status: 404
+  - url: https://www.netcracker.com/api
+    status: 404
+  - url: https://www.netcracker.com/openapi.json
+    status: 404
+  - url: https://www.netcracker.com/swagger.json
+    status: 404
+  - url: https://www.netcracker.com/api-docs
+    status: 404
+  - url: https://www.netcracker.com/graphql
+    status: 404
+  - url: https://www.netcracker.com/.well-known/openid-configuration
+    status: 404
+  - url: https://www.netcracker.com/.well-known/oauth-authorization-server
+    status: 404
+  - url: https://netcracker.github.io/
+    status: 200
+  - url: https://netcracker.github.io/apihub/
+    status: 200
+  - url: https://netcracker.github.io/qip/
+    status: 200
+  - url: https://qubership.org
+    status: 000
+    note: >-
+      The server URL templated in the APIHUB OpenAPI (https://{apihub}.qubership.org)
+      does not resolve. APIHUB is self-hosted software, not a hosted service.
+  camara:
+    posture: >-
+      Named in product marketing as a standard the platform aligns with and can
+      monetize; no CAMARA API is implemented, specified, or callable anywhere in
+      Netcracker's public surface. A positioning statement, not an implementation.
+    apisFound: []
+    evidenceVerbatim:
+    - quote: >-
+        Our solutions are built on widely supported standards from TM Forum, MEF,
+        3GPP, O-RAN Alliance, CAMARA and others, ensuring compatibility across
+        diverse systems.
+      source: https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
+    - quote: >-
+        Netcracker's strong alignment with industry standardization organizations
+        such as TM Forum, MEF, ETSI, 3GPP, CAMARA and ORAN speeds up integration
+        and facilitates consistent and secure interactions across diverse ecosystems.
+      source: https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
+    - quote: >-
+        Leveraging plug and play developer APIs, such as those from CAMARA, further
+        enhances the ability to gain value from APIs by simplifying access to
+        valuable network assets.
+      source: https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
+    negativeEvidence:
+    - The string "camara" appears 0 times in https://www.netcracker.com/sitemap.xml.
+    - No CAMARA API name (Number Verification, SIM Swap, Device Location, Device Status, Quality on Demand, Carrier Billing, KYC Match, Scam Signal, Device Swap, Population Density) appears anywhere in Netcracker's public surface.
+    - GitHub search for "netcracker" across org:camaraproject returns 0 results — no issues, no PRs, no participation trail in the CAMARA repositories.
+    - The one Netcracker blog post on API standardization ("APIs in Action: Using Standardization to Move Beyond Connectivity", 2025-01-14) names MEF and TM Forum and does not mention CAMARA, GSMA Open Gateway, or Aduna at all.
+  openGateway:
+    member: false
+    note: >-
+      No evidence of GSMA Open Gateway participation was found. Netcracker is a
+      software vendor, not a mobile network operator, and GSMA Open Gateway is an
+      operator commitment layer. No opengateway subdomain, no Open Gateway page,
+      no press release found.
+  aduna:
+    channel: false
+    note: No mention of Aduna found anywhere on netcracker.com.
+  tmForum:
+    conformance: claimed
+    certifications:
+    - name: TM Forum Platinum Badge for Open API
+      source: https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
+      note: Stated on the product page. Specific TMF API numbers are not disclosed publicly.
+    - name: ODA Compliance at "Ready for ODA" Level 6
+      source: https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
+    - name: Ready for ODA status for the BSS/OSS portfolio
+      date: '2023-12-13'
+      source: https://www.netcracker.com/news/press-releases/netcracker-achieves-ready-for-oda-status-for-its-bss-oss-portfolio
+      quote: Netcracker is one of the first vendors to be certified as Ready for ODA by TM Forum.
+    - name: 2019 TM Forum Excellence Award for Open API adoption
+      date: '2019-05-15'
+      source: https://www.netcracker.com/news/press-releases/netcracker-wins-2019-tm-forum-excellence-award-for-open-api-adoption
+      note: >-
+        Recognized for "adopting the broadest range of TM Forum Open APIs" and for
+        "contributing multiple conformance toolkits to the Open API program".
+    tmfNumbersDisclosed: false
+    note: >-
+      This is the classic vendor pattern the sector seam predicts — real, certified
+      TM Forum Open API conformance held privately, with not one TMF spec, TMF number
+      or conformance certificate published where a developer could read it.
+  threeGPP:
+    nef: not found
+    scef: not found
+    note: >-
+      3GPP is named as an alignment standard on the API Management product page.
+      No NEF or SCEF surface, network-slicing API, or edge/MEC API is documented
+      publicly. Netcracker markets 5G orchestration and NaaS solutions, but exposes
+      no network-exposure API of its own.
+  authModel:
+    ciba: false
+    cibaNote: >-
+      CIBA (Client-Initiated Backchannel Authentication) does not appear anywhere.
+      Netcracker exposes no CAMARA-style network authorization surface, so the
+      OIDC/CIBA pattern CAMARA specifies is simply absent.
+    schemesObserved:
+    - spec: Qubership APIHUB Registry / Admin API
+      schemes:
+      - HTTP Bearer (JWT)
+      - apiKey cookie (apihub-access-token)
+      - apiKey header (api-key)
+      - HTTP Basic
+      - Personal Access Token (apiKey)
+    - spec: Qubership MaaS
+      schemes:
+      - HTTP Basic
+    - spec: Qubership DBaaS Aggregator
+      schemes:
+      - HTTP Bearer (JWT)
+    note: >-
+      Every observed scheme belongs to the self-hosted open-source platform. There
+      is no Netcracker-operated authorization server; no OAuth or OIDC discovery
+      document is served on netcracker.com.
+  specsHarvested:
+    count: 4
+    provenance:
+    - file: openapi/netcracker-qubership-apihub-registry-openapi.yml
+      sourceURL: https://raw.githubusercontent.com/Netcracker/qubership-apihub-backend/develop/docs/api/APIHUB_API.yaml
+      httpStatus: 200
+      fetched: '2026-07-25'
+      format: OpenAPI 3.0.3
+      title: APIHUB Registry – External API
+      version: '2026.1'
+      paths: 111
+      bytes: 536644
+      verbatim: true
+    - file: openapi/netcracker-qubership-apihub-admin-openapi.yml
+      sourceURL: https://raw.githubusercontent.com/Netcracker/qubership-apihub-backend/develop/docs/api/Admin%20API.yaml
+      httpStatus: 200
+      fetched: '2026-07-25'
+      format: OpenAPI 3.0.3
+      title: APIHUB system administrators API – External
+      version: '2026.1'
+      paths: 18
+      bytes: 49822
+      verbatim: true
+    - file: openapi/netcracker-qubership-maas-swagger.yml
+      sourceURL: https://raw.githubusercontent.com/Netcracker/qubership-maas/main/maas/maas-service/docs/swagger.yaml
+      httpStatus: 200
+      fetched: '2026-07-25'
+      format: Swagger 2.0
+      title: Maas Service API
+      paths: 35
+      bytes: 57082
+      verbatim: true
+    - file: openapi/netcracker-qubership-dbaas-openapi.json
+      sourceURL: https://raw.githubusercontent.com/Netcracker/qubership-dbaas/main/docs/OpenAPI.json
+      httpStatus: 200
+      fetched: '2026-07-25'
+      format: OpenAPI 3.1.0
+      title: DBaaS Aggregator API
+      version: 6.13.2
+      paths: 73
+      bytes: 288973
+      verbatim: true
+    note: >-
+      All four describe the Qubership open-source platform. NONE describe a
+      Netcracker telecom product API. Zero BSS/OSS, TM Forum, network or CAMARA
+      specs are downloadable from any Netcracker property.
+  webhooksAndEvents:
+    asyncapi: not published
+    note: >-
+      No AsyncAPI document and no public event catalog were found. The Qubership
+      Integration Platform source contains an AsyncAPI trigger element and AsyncAPI
+      model classes (it can consume AsyncAPI), and the API Management product page
+      claims support for "REST, SOAP, gRPC, GraphQL, AsyncAPI, RESTCONF, NETCONF/YANG
+      and full TOSCA formats" — but Netcracker publishes no AsyncAPI of its own.
+  graphql:
+    published: false
+    note: https://www.netcracker.com/graphql returns 404. No public GraphQL endpoint or SDL.
+  grpc:
+    protoPublished: false
+    note: gRPC is listed as a supported format in the API Management product; no .proto files are published.
+  sdks:
+    firstParty: none found
+    note: >-
+      No first-party SDK packages were found. An npm registry search for "qubership"
+      returns 0 packages. Distribution is source and container images from
+      github.com/Netcracker, not published client libraries.
+  postman:
+    publicWorkspace: false
+    note: >-
+      https://www.postman.com/netcracker returns HTTP 200 with the generic Postman
+      title — no evidence of a real public Netcracker workspace. A Postman collection
+      for data migration exists inside qubership-apihub-backend, but it is a repo
+      artifact, not a published workspace.
+  productFamily:
+    note: >-
+      Faithful to Netcracker's own segmentation on netcracker.com/portfolio/products.
+    products:
+    - Omnichannel Engagement
+    - Digital Commerce & Monetization
+    - Service & Network Automation
+    - Agentic AI Solution
+    - AI & Data Analytics
+    - API Management & Integration
+    - Cloud Platform
+    solutions:
+    - Netcracker Intelligent Customer Experience
+    - Cloud BSS
+    - Convergent Charging System
+    - Digital Satellite Solution
+    - Broadband Experience Solutions for Cable MSOs
+    - Intelligent Operations Automation (core / E2E service / network domain / Open RAN orchestration)
+  identity:
+    legalName: Netcracker Technology Corporation
+    headquarters: University Office Park III, 95 Sawyer Road, Waltham, MA 02453, USA
+    parent: NEC Corporation
+    githubOrg: https://github.com/Netcracker
+    githubOrgVerified: true
+    githubPublicRepos: 287
+    openSourceContact: opensourcegroup@netcracker.com
+    twitter: NetcrackerTech
+transports:
+- protocol: REST
+  scheme: https
+  documented: true
+  note: >-
+    Documented only for the Qubership open-source platform components. No REST base
+    URL is published for any Netcracker commercial telecom product.
+- protocol: GraphQL
+  documented: false
+  note: Listed as a supported format in the API Management product; no first-party endpoint published.
+- protocol: gRPC
+  documented: false
+  note: Listed as a supported format; no .proto published.
+- protocol: AsyncAPI
+  documented: false
+  note: Consumed by the Integration Platform; none published by Netcracker.
+- protocol: WebSocket
+  documented: false
+sources:
+- url: https://www.netcracker.com/
+  type: Website
+  status: 200
+  note: Corporate site. HQ and NEC ownership confirmed here.
+- url: https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
+  type: Documentation
+  status: 200
+  note: Primary source for the CAMARA, TM Forum, MEF, ETSI, 3GPP and O-RAN claims quoted above.
+- url: https://www.netcracker.com/news/press-releases/netcracker-achieves-ready-for-oda-status-for-its-bss-oss-portfolio
+  type: PressRelease
+  status: 200
+  note: 2023-12-13. Ready for ODA certification.
+- url: https://www.netcracker.com/news/press-releases/netcracker-wins-2019-tm-forum-excellence-award-for-open-api-adoption
+  type: PressRelease
+  status: 200
+  note: 2019-05-15. TM Forum Open API adoption award; conformance toolkit contributions.
+- url: https://www.netcracker.com/blog/apis-in-action-using-standardization-to-move-beyond-connectivity
+  type: Blog
+  status: 200
+  note: 2025-01-14. Names MEF and TM Forum; no CAMARA, Open Gateway or Aduna mention.
+- url: https://netcracker.github.io/
+  type: Documentation
+  status: 200
+  note: Netcracker Open Source — Qubership landing site.
+- url: https://github.com/Netcracker
+  type: GitHubOrganization
+  status: 200
+  note: Verified org, 287 public repos, all four harvested specs originate here.
+- url: https://www.netcracker.com/sitemap.xml
+  type: Sitemap
+  status: 200
+  note: Used for negative evidence — 0 occurrences of "camara".
+actions:
+  apisYmlCreated: true
+  openapiHarvested: 4
+  openapiDirectory: openapi/
+  reason: >-
+    Netcracker is a split case and both halves are recorded honestly. Its telecom
+    business — the BSS/OSS and orchestration software it actually sells, and the
+    TM Forum Open APIs it is certified against — is entirely partner-gated with no
+    public developer portal and no downloadable specs. Its open-source Qubership
+    platform is genuinely public and ships four real, parsing OpenAPI/Swagger
+    contracts, which were harvested verbatim. CAMARA is named in marketing and
+    implemented nowhere; that distinction is the finding, not a gap in the research.
