@@ -159,6 +159,19 @@ apis:
   - type: SDKs
     url: packages/netcracker-packages.yml
 common:
+- type: IssueTracker
+  url: https://github.com/Netcracker/qubership-apihub-backend/issues
+- type: Releases
+  url: https://github.com/Netcracker/qubership-apihub-backend/releases
+- type: SecurityPolicy
+  url: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/SECURITY.md
+- type: CodeOfConduct
+  url: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/CODE-OF-CONDUCT.md
+- type: ContributionGuide
+  url: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/CONTRIBUTING.md
+- type: License
+  name: Apache-2.0
+  url: https://github.com/Netcracker/qubership-apihub-backend/blob/develop/LICENSE
 - type: AgenticAccess
   url: agentic-access/netcracker-agentic-access.yml
 - type: DomainSecurity
