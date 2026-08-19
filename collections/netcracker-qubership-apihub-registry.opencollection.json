@@ -1,0 +1,4716 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "APIHUB Registry – External API",
+    "version": "2026.1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Custom",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get system info.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/system/info"
+          },
+          "docs": "Get system info."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Auth",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "System configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/system/configuration"
+          },
+          "docs": "Global parameters of system configuration."
+        },
+        {
+          "info": {
+            "name": "System configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/system/configuration"
+          },
+          "docs": "Global parameters of system configuration."
+        },
+        {
+          "info": {
+            "name": "User logout",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v1/logout",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Logs out the authenticated user and invalidates all active sessions."
+        },
+        {
+          "info": {
+            "name": "SAML authentication (legacy)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/login/sso/saml",
+            "params": [
+              {
+                "name": "redirectUri",
+                "value": "",
+                "type": "query",
+                "description": "URI, where user must be redirected in case of successful APIHUB authentication."
+              }
+            ]
+          },
+          "docs": "Starts the SAML authentication process in APIHUB (legacy endpoint).\n\nThis is a deprecated endpoint. Use `/api/v1/login/sso/{idpId}` instead.\n\nIn case of successful authentication, the request will be redirected to the **redirectUri** and\nthe response will contain cookie with access token for future API calls.\nAll subsequent APIHUB calls must use this token in a **CookieAuth** or **BearerAuth** authentication.\n"
+        },
+        {
+          "info": {
+            "name": "SAML authentication",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/auth/saml",
+            "params": [
+              {
+                "name": "redirectUri",
+                "value": "",
+                "type": "query",
+                "description": "URI, where user must be redirected in case of successful APIHUB authentication."
+              }
+            ]
+          },
+          "docs": "Starts the SAML authentication process in APIHUB.\n\nIn case of successful authentication, the request will be redirected to the **redirectUri** and\nthe response will contain cookie with access token for future API calls.\nAll subsequent APIHUB calls must use this token in a **BearerAuth** authentication.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Export",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Async export of version, document or operations group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v1/export",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Start export of package version, one document or operations group. Use ```GET /api/v1/export/{exportId}/status``` to get status of export and exported file itself.\\\nExport of document is currently available for documents with type openapi-3-1, openapi-3-0, or openapi-2-0 and is intended to retrieve content with some transformations. For other document types, use GET /api/v2/packages/{packageId}/versions/{version}/files/{slug} to obtain the original document content.\\\nExport of operations group i"
+        },
+        {
+          "info": {
+            "name": "Get status of async export",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/export/:exportId/status",
+            "params": [
+              {
+                "name": "exportId",
+                "value": "",
+                "type": "path",
+                "description": "Export process id."
+              }
+            ]
+          },
+          "docs": "Get status of async export operation (POST /api/v1/export). If file for export is ready, then it will be returned. The resulting file is stored temporarily; once deleted, it needs to be re-calculated.\n"
+        },
+        {
+          "info": {
+            "name": "Export sources of package version",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/sources",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version. The mask <version>@<revision> may be used to get resouces of the specific revision. If the @revision is not provided, the latest version's revision will be used."
+              }
+            ]
+          },
+          "docs": "Export sources of package version as a zip archive.\n"
+        },
+        {
+          "info": {
+            "name": "Export operations group as OpenAPI documents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/:apiType/export/groups/:groupName/buildType/:buildType",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "buildType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the build process for OpeanAPI specification tranformation. Available options are:\n- **reducedSourceSpecifications** - proccess that finds source specifications for all operations from operation group and removes from these specifications operations other than those that are included into operation group.\n- **mergedSpecification** - process the merges all operations from an operation group into one specification.\n"
+              },
+              {
+                "name": "groupName",
+                "value": "",
+                "type": "path",
+                "description": "Name of the operation group"
+              },
+              {
+                "name": "format",
+                "value": "",
+                "type": "query",
+                "description": "Format of the exported file.\\\nIf buidType = reducedSourceSpecifications, then format can be yaml, json or html.\\\nIf buidType = mergedspecification, then format can be yaml or json; html is not supported for this buildType.\n"
+              }
+            ]
+          },
+          "docs": "Export all operations from an operations group (with apiType = REST API) as OpenAPI specification(s).\n"
+        },
+        {
+          "info": {
+            "name": "Export offline API documentation by selected file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/files/:slug/doc",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "slug",
+                "value": "",
+                "type": "path",
+                "description": "File unique string identifier"
+              },
+              {
+                "name": "docType",
+                "value": "",
+                "type": "query",
+                "description": "Type of the exported documentation."
+              }
+            ]
+          },
+          "docs": "Export of offline API documentation by selected file as a zip archive.\nType of the documentation file is provided as input parameters:\n- interactive - html document\n- raw - yaml/json document.\n"
+        },
+        {
+          "info": {
+            "name": "Export sources of package version with build config",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/sourceData",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              }
+            ]
+          },
+          "docs": "Export sources of package version as a zip archive and build configuration that was used for this version.\n"
+        },
+        {
+          "info": {
+            "name": "Export offline API documentation by selected versions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/doc",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "docType",
+                "value": "",
+                "type": "query",
+                "description": "Type of the exported documentation."
+              }
+            ]
+          },
+          "docs": "Export of offline API documentation by selected version (all files) as a zip archive.\nType of the documentation file is provided as input parameters:\n* interactive - html document.\n"
+        },
+        {
+          "info": {
+            "name": "Generate shareability report",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/export/shareability-report",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              }
+            ]
+          },
+          "docs": "Generate a shareability status xlsx report for all documents in a group, including all sub-groups and packages.\nRows are sorted by package name, document name, slug. Requires read permission on the group.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Packages",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get activity history",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v4/activity",
+            "params": [
+              {
+                "name": "onlyFavorite",
+                "value": "",
+                "type": "query",
+                "description": "* If true, then only events from packages that are favorites for the current user shall be returned (including all child groups/packages/dashboards for favorite groups/workspaces)\n* If false, events for all packages shall be returned.\n"
+              },
+              {
+                "name": "onlyShared",
+                "value": "",
+                "type": "query",
+                "description": "filter only shared packages"
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package kind.\nThe list of values is acceptable. In this case, the following pattern will be used: ```?kind=group,package,dashboard```.\n"
+              },
+              {
+                "name": "types",
+                "value": "",
+                "type": "query",
+                "description": "Filter for events by group types:\n* package_members - grant_role, update_role, delete_role.\n* package_security - generate_api_key, revoke_api_key.\n* new_version - publish_new_version.\n* package_version - patch_version_meta, delete_version, publish_new_revision, delete_revision.\n* package_management - create_package, delete_package, patch_package_meta.\n* operations_group - create_manual_group, delete_manual_group, update_operations_group_parameters\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by userName/packageName"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "Get activity history. Return the last N events in descending date order.\n"
+        },
+        {
+          "info": {
+            "name": "Get packages list",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages",
+            "params": [
+              {
+                "name": "parentId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by the parent package Id."
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query",
+                "description": "Filter the packages by kind.\n\nThe list of values is acceptable. In this case, the following pattern will be used: ```?kind=group,package,dashboard```.\n\nIf not transmitted, the default value will be used.\n"
+              },
+              {
+                "name": "showAllDescendants",
+                "value": "",
+                "type": "query",
+                "description": "Show all the descendants to the parent workspace or group.\n\n* If ```true```, return the list of all child groups/packages/dashboards to the parentId (take into account all other filter parameters).\n* If the parentId is not transmitted???\n* If the parent is transmitted, but kind not - and parentId = package???\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "filter by name/alias/label."
+              },
+              {
+                "name": "onlyFavorite",
+                "value": "",
+                "type": "query",
+                "description": "filter only favorite packages"
+              },
+              {
+                "name": "onlyShared",
+                "value": "",
+                "type": "query",
+                "description": "filter only shared packages"
+              },
+              {
+                "name": "lastReleaseVersionDetails",
+                "value": "",
+                "type": "query",
+                "description": "Show/hide the detailed info about the last release version and it's changes, comparing with the previous one.\n"
+              },
+              {
+                "name": "serviceName",
+                "value": "",
+                "type": "query",
+                "description": "Service name that package belongs to. Should be equal to service deployment name in kubernetes."
+              },
+              {
+                "name": "showParents",
+                "value": "",
+                "type": "query",
+                "description": "Show/hide the list of parent packages."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "Retrieve the packages list."
+        },
+        {
+          "info": {
+            "name": "Create a new package",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/packages",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new package in APIHUB registry."
+        },
+        {
+          "info": {
+            "name": "Get package by Id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "showParents",
+                "value": "",
+                "type": "query",
+                "description": "Show/hide the list of parent packages."
+              }
+            ]
+          },
+          "docs": "Common information about the selected package without files and references."
+        },
+        {
+          "info": {
+            "name": "Change the package's parameters",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Change the package's parameters.\n* If the parameter is not transmitted in request - its value stays unchanged.\n* The empty parameter value in request sets the empty value in database.\n"
+        },
+        {
+          "info": {
+            "name": "Delete package",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ]
+          },
+          "docs": "Delete the package and all included published versions."
+        },
+        {
+          "info": {
+            "name": "Get package configuration for documents export settings.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/exportConfig",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ]
+          },
+          "docs": "Returns information about the configured document export settings for the current package."
+        },
+        {
+          "info": {
+            "name": "Change parameter of package export config.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/exportConfig",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Change parameter of package export config:\n  - If the parameter is not transmitted in request - its value stays unchanged.\n  - The empty parameter value in request sets the empty value in database.\n\"create_and_update_package\" permission is necessary to update package export config.\n"
+        },
+        {
+          "info": {
+            "name": "Get activity history for the package",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v4/packages/:packageId/activity",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique string identifier (full alias)."
+              },
+              {
+                "name": "types",
+                "value": "",
+                "type": "query",
+                "description": "Filter for events by group types:\n* package_members - grant_role, update_role, delete_role.\n* package_security - generate_api_key, revoke_api_key.\n* new_version - publish_new_version.\n* package_version - patch_version_meta, delete_version, publish_new_revision, delete_revision.\n* package_management - create_package, delete_package, patch_package_meta.\n* operations_group - create_manual_group, delete_manual_group,\nupdate_operations_group_parameters\n"
+              },
+              {
+                "name": "includeRefs",
+                "value": "",
+                "type": "query",
+                "description": "If true, then events for specified package and all its referenced packages (on any level of hierarchy) shall be returned"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by userName/packageName"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "Get activity history for specific package. Return the last N events in descending date order.\n"
+        },
+        {
+          "info": {
+            "name": "Favor package",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/favor",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ]
+          },
+          "docs": "Add the package to favorite list for the user. The user is taken from the token info."
+        },
+        {
+          "info": {
+            "name": "Disfavor package",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/disfavor",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ]
+          },
+          "docs": "Remove the package from favorite list for the user. The user is taken from the token info."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Admin",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Package API Keys list retrieve",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v4/packages/:packageId/apiKeys",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ]
+          },
+          "docs": "Get a package API Keys list.\\\nIf packageId = '\\*', then system tokens shall be returned. Only system administrator can specify packageId = '\\*'.\n"
+        },
+        {
+          "info": {
+            "name": "Create a package API Key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v4/packages/:packageId/apiKeys",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a package API Key.\nThe Api Key for package with kind:group is acceptable for all child groups and packages.\\\nIf packageId = '\\*', then system tokens shall be created. Only system administrator can specify packageId = '\\*'.\n"
+        },
+        {
+          "info": {
+            "name": "Delete package API Key",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/apiKeys/:id",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Package API key Id"
+              }
+            ]
+          },
+          "docs": "Delete package API Key.\\\nIf packageId = '\\*', then system token with specified id shall be deleted. Only system administrator can specify packageId = '\\*'.\n"
+        },
+        {
+          "info": {
+            "name": "Get Prometheus metrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/metrics"
+          },
+          "docs": "Returns Prometheus metrics in text format.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "User profile",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Personal access token list retrieve",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/personalAccessToken"
+          },
+          "docs": "Retrieve all personal access token that have been generated for the current user.\\ User cannot have more than 100 tokens. The limitation is applicable to active and expired tokens which are not deleted.\n"
+        },
+        {
+          "info": {
+            "name": "Create a personal access token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v1/personalAccessToken",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Generates a new personal access token for the current user.\\\nUser cannot have more than 100 tokens. The limitation is applicable to active and expired tokens which are not deleted.\n"
+        },
+        {
+          "info": {
+            "name": "Delete personal access token",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{apihub}.qubership.org/api/v1/personalAccessToken/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Personal access token Id"
+              }
+            ]
+          },
+          "docs": "Delete personal access token. Deleted token cannot be used to authenticate to APIHUB.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Publish",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Publish package version via upload",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/publish",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "clientBuild",
+                "value": "",
+                "type": "query",
+                "description": "Client-side package build will be used. Should be used only for browser-based build process."
+              },
+              {
+                "name": "resolveRefs",
+                "value": "",
+                "type": "query",
+                "description": "With resolveRefs=true all references will be resolved into a flat list. With resolveRefs=false it's expected that all references are already resolved."
+              },
+              {
+                "name": "resolveConflicts",
+                "value": "",
+                "type": "query",
+                "description": "In case when resolved refs list contains multiple versions of the same package:\n- if resolveConflicts=false - status 400 (Bad request). Conflicts should be resolved manually.\n- if resolveConflicts=true - conflicts will be resolved automatically, some refs will be marked as excluded"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "sources",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "config",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "builderId",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Publish package version via upload. Possible options:\n* **Client-side building** - client application marks, that the validation and build of the final specification will be outside the APIHUB backend.\nThe final specifications will be stored using the POST /packages/{packageId}/publish/{publishId}/status API.\nThe 202 response and the publish process Id will be returned in success.\nIn case of the client session close, the build will be continued on the server-sde.\n* **Server-side building** - cli"
+        },
+        {
+          "info": {
+            "name": "Get publish process status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/publish/:publishId/status",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "publishId",
+                "value": "",
+                "type": "path",
+                "description": "Publish Id"
+              }
+            ]
+          },
+          "docs": "Get publish process status."
+        },
+        {
+          "info": {
+            "name": "Start dashboard version publication from CSV file",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/publish/withOperationsGroup",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "csvFile",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "servicesWorkspaceId",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "version",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "previousVersion",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "previousVersionPackageId",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "status",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "versionLabels",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Start dashboard version publication from CSV file (value of 'packageId'\npath parameter must be an Id of dashboard).\\\n\nIn this process the system reads information from the input CSV file\nwhich contains list of services and their versions. Based on this info,\nthe system searches for package release versions and publish dashboard\nversion with references to the found package versions.\\\n\nAlso, CSV file contains info about REST API operations\n(method, path) of listed services, the system searches for"
+        },
+        {
+          "info": {
+            "name": "Get dashboard version publication from CSV file status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/publish/:publishId/withOperationsGroup/status",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "publishId",
+                "value": "",
+                "type": "path",
+                "description": "Publish Id"
+              }
+            ]
+          },
+          "docs": "Get dashboard version publication from CSV file status.\n"
+        },
+        {
+          "info": {
+            "name": "Get CSV report of dashboard version publication from CSV file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/publish/:publishId/withOperationsGroup/status/report",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "publishId",
+                "value": "",
+                "type": "path",
+                "description": "Publish Id"
+              }
+            ]
+          },
+          "docs": "CSV file with initial input information which is added with status and\nerror messages for each row.\n"
+        },
+        {
+          "info": {
+            "name": "Start dashboard version publication from CSV file",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/publish/withOperationsGroup/:apiType",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API. Only REST and GraphQL are supported for CSV publish."
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "csvFile",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "servicesWorkspaceId",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "version",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "previousVersion",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "previousVersionPackageId",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "status",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "versionLabels",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Start dashboard version publication from CSV file (value of 'packageId'\npath parameter must be an Id of dashboard).\n\nIn this process the system reads information from the input CSV file\nwhich contains list of services and their versions. Based on this info,\nthe system searches for package release versions (in the specified workspace) and publishes\na dashboard version with references to the found package versions.\n\nAlso, the CSV file contains info about operations\nof listed services, the system s"
+        },
+        {
+          "info": {
+            "name": "Copy package version to another package",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/copy",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Publish package version in target package using sources of source package (server-side building only).\\\nThe final specifications will be stored using the POST /packages/{packageId}/publish/{publishId}/status. 202 response and the publish process Id will be returned in success.\n"
+        },
+        {
+          "info": {
+            "name": "Get a list of available publish statuses for the package",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/publish/availableStatuses",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ]
+          },
+          "docs": "Get a list of available publish statuses for the package.\nList depends on the current user access rights.\n"
+        },
+        {
+          "info": {
+            "name": "Get list of available package publish statuses for the user.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/users/:userId/availablePackagePromoteStatuses",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "Unique user login (username) used to authenticate the user."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "By collection of packages, **get** the available statuses for publish into for the particular user.\n\nStatuses list depends on the current user access rights for the particular package.\n\nThe response is a **mapped list** of statuses to the packageIds.\n"
+        },
+        {
+          "info": {
+            "name": "Get builds statuses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/publish/statuses",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "publishIds",
+                "value": "",
+                "type": "query",
+                "description": "List of publish IDs to get statuses for"
+              }
+            ]
+          },
+          "docs": "Get statuses for multiple publish operations.\nNote: In Service.go this endpoint is implemented as POST, but CSV specifies GET.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Versions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get package versions list",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by version name|labels."
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "Filter versions by status (start with match)"
+              },
+              {
+                "name": "checkRevisions",
+                "value": "",
+                "type": "query",
+                "description": "Flag, if to search in the previous versions revisions.\n* if several revisions were found, return only the maximum found value.\n* if false - return the last published revision.\n"
+              },
+              {
+                "name": "versionLabel",
+                "value": "",
+                "type": "query",
+                "description": "Filter the package versions by label, exact match.\n* if the checkRevisions: false - search in the last published revision.\n* if the checkRevisions: true - search in all revisions (backward order).\n"
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Sort versions by version name or creation date"
+              },
+              {
+                "name": "sortOrder",
+                "value": "",
+                "type": "query",
+                "description": "Sorting order"
+              }
+            ]
+          },
+          "docs": "Get the published package's versions list."
+        },
+        {
+          "info": {
+            "name": "Update package version",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update package version.\n* If the parameter is not transmitted in request - its value stays unchanged.\n* The empty parameter value in request sets the empty value in database.\n* The array of labels will be fully replaced as-it-send, no JSON-Patch approach for arrays is applicable.\n"
+        },
+        {
+          "info": {
+            "name": "Delete package version",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              }
+            ]
+          },
+          "docs": "Delete the package's version.\nIf the version was placed as a \"defaultReleaseVersion\" on a package, it will be cleared on this package (without the previous version restore).\n"
+        },
+        {
+          "info": {
+            "name": "Get package version content",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version.\nThe mask <version>@<revision> may be used for search in a specific revision.\n"
+              },
+              {
+                "name": "includeSummary",
+                "value": "",
+                "type": "query",
+                "description": "Show/hide the summary info about changes and operations."
+              },
+              {
+                "name": "includeOperations",
+                "value": "",
+                "type": "query",
+                "description": "Show/hide the version's operations list."
+              },
+              {
+                "name": "includeGroups",
+                "value": "",
+                "type": "query",
+                "description": "Flag to define whether to return list of groups of current version or not."
+              },
+              {
+                "name": "sortBy",
+                "value": "",
+                "type": "query",
+                "description": "Sort versions by version name or creation date"
+              },
+              {
+                "name": "sortOrder",
+                "value": "",
+                "type": "query",
+                "description": "Sorting order"
+              }
+            ]
+          },
+          "docs": "Get the published package's version content. Returns all content objects and folders."
+        },
+        {
+          "info": {
+            "name": "Get package version config",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/config",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version. The mask <version>@<revision> may be used to get resouces of the specific revision. If the @revision is not provided, the latest version's revision will be used."
+              }
+            ]
+          },
+          "docs": "Get content of package version config\n"
+        },
+        {
+          "info": {
+            "name": "Async document transformation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/:apiType/build/groups/:groupName/buildType/:buildType",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "buildType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the build process for OpeanAPI specification tranformation. Available options are:\n- **reducedSourceSpecifications** - proccess that finds source specifications for all operations from operation group and removes from these specifications operations other than those that are included into operation group.\n- **mergedSpecification** - process the merges all operations from an operation group into one specification.\n"
+              },
+              {
+                "name": "groupName",
+                "value": "",
+                "type": "path",
+                "description": "Name of the operation group"
+              },
+              {
+                "name": "clientBuild",
+                "value": "",
+                "type": "query",
+                "description": "Client-side package build will be used."
+              },
+              {
+                "name": "builderId",
+                "value": "",
+                "type": "query",
+                "description": "Builder identifier. **Required** if clientBuild=true."
+              },
+              {
+                "name": "reCalculate",
+                "value": "",
+                "type": "query",
+                "description": "Flag for the force document re-calculation.\nMay be used after the previous API call with **error** status.\n"
+              },
+              {
+                "name": "format",
+                "value": "",
+                "type": "query",
+                "description": "Format of the exported file.\\\nIf buidType = reducedSourceSpecifications, then format can be yaml, json or html.\\\nIf buidType = mergedspecification, then format can be yaml or json; html is not supported for this buildType.\n"
+              }
+            ]
+          },
+          "docs": "Async task for document transformation. Document transformation is required for exporting operations group.\n* **200 Documents transformation completed successfully** if documents were already transformed.\n\n* **202 Accepted** will be returned after starting process for documents transformation.\n"
+        },
+        {
+          "info": {
+            "name": "Get file data (published)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/files/:slug/raw",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "slug",
+                "value": "",
+                "type": "path",
+                "description": "File unique string identifier"
+              }
+            ]
+          },
+          "docs": "Get the published content object in a RAW format"
+        },
+        {
+          "info": {
+            "name": "Share a published file",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/sharedFiles",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create public link for file that can be used to retrieve the file without security restrictions. The link could be used to embed file content."
+        },
+        {
+          "info": {
+            "name": "Get shared file data",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/sharedFiles/:sharedFileId",
+            "params": [
+              {
+                "name": "sharedFileId",
+                "value": "ebbcce45",
+                "type": "path",
+                "description": "Shared file id"
+              }
+            ]
+          },
+          "docs": "Get shared file data by public shared link"
+        },
+        {
+          "info": {
+            "name": "Get deprecated operations summary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/deprecated/summary",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              }
+            ]
+          },
+          "docs": "Get summary of deprecated operations in the version\n"
+        },
+        {
+          "info": {
+            "name": "Get list of deprecated operations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/deprecated",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "apiAudience",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by apiAudience.\n* internal - APIs are available for integration within product application.\n* external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.\n* unknown - If any value other than internal or external is used, the API is considered as unknown.\n"
+              },
+              {
+                "name": "asyncapiChannel",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by AsyncAPI channel identifier (comma-separated).\nApplicable only when apiType = asyncapi; ignored for other API types.\n"
+              },
+              {
+                "name": "asyncapiProtocol",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by communication protocol.\nApplicable only when apiType = asyncapi; ignored for other API types.\nThe value is the protocol string from the channel's server (e.g. kafka, amqp).\nUse \"Unknown\" for operations where the protocol could not be resolved.\n"
+              },
+              {
+                "name": "includeDeprecatedItems",
+                "value": "",
+                "type": "query",
+                "description": "Include deprecated items inside operation."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of the operationId to filter."
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version.\nThe mask <version>@<revision> may be used for search in a specific revision.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package, shall be used in case of dashboard."
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter operation by operation title/path/method.\nFor AsyncAPI: searches by message title(or messageId), channel title(or channelId) or operation action.\n"
+              },
+              {
+                "name": "apiKind",
+                "value": "",
+                "type": "query",
+                "description": "Filter by API kind"
+              },
+              {
+                "name": "documentSlug",
+                "value": "",
+                "type": "query",
+                "description": "Document unique string identifier"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "A full match is required.\\\nMultiple tags separated by comma can be specified.\n"
+              },
+              {
+                "name": "emptyTag",
+                "value": "",
+                "type": "query",
+                "description": "Flag, filtering the operations without tags at all.\nIn response will be returned the list of operations, on what the tag is not filled in.\nThis attribute has a higher priority than the **tag**. In case, then **emptyTag: true**, it will override the **tag** filter.\n"
+              },
+              {
+                "name": "group",
+                "value": "",
+                "type": "query",
+                "description": "Name of the group for filtering.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "emptyGroup",
+                "value": "",
+                "type": "query",
+                "description": "Flag for filtering operations without a group.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "List of deprecated operations in the current version\n"
+        },
+        {
+          "info": {
+            "name": "Create manual operation group",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/:apiType/groups",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "groupName",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "description",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "template",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Create manual operation group.\\\nManual groups can be created for both packages and dashboards. One group can contain operations of one API type only.\n"
+        },
+        {
+          "info": {
+            "name": "Get list of operations for operation group",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/groups/:groupName",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "groupName",
+                "value": "",
+                "type": "path",
+                "description": "Version Group"
+              },
+              {
+                "name": "apiAudience",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by apiAudience.\n* internal - APIs are available for integration within product application.\n* external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.\n* unknown - If any value other than internal or external is used, the API is considered as unknown.\n"
+              },
+              {
+                "name": "asyncapiChannel",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by AsyncAPI channel identifier (comma-separated).\nApplicable only when apiType = asyncapi; ignored for other API types.\n"
+              },
+              {
+                "name": "asyncapiProtocol",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by communication protocol.\nApplicable only when apiType = asyncapi; ignored for other API types.\nThe value is the protocol string from the channel's server (e.g. kafka, amqp).\nUse \"Unknown\" for operations where the protocol could not be resolved.\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by title/path/method.\nFor AsyncAPI: searches by message title(or messageId), channel title(or channelId) or operation action.\n"
+              },
+              {
+                "name": "documentSlug",
+                "value": "",
+                "type": "query",
+                "description": "Filter by document"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Name of the tag for filtering/grouping.\nA full match is required. To get the list of available tags use GET /tags API.\n"
+              },
+              {
+                "name": "emptyTag",
+                "value": "",
+                "type": "query",
+                "description": "Flag, filtering the operations without tags at all.\n\nIn response will be returned the list of operations, on what the tag is not filled in.\n\nThis attribute has a higher priority than the **tag**. In case, then **emptyTag: true**, it will override the **tag** filter.\n"
+              },
+              {
+                "name": "onlyAddable",
+                "value": "",
+                "type": "query",
+                "description": "Flag for filtering operations that are not included in this group\n\ntrue - will return all operations from version except operations that are already included in this group\n\nfalse - will return all operations that are included in this group\n"
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query",
+                "description": "Operation kind.\n* bwc - API with backward compatibility support (a.k.a. public).\n* no-bwc - API without backward compatibility support (a.k.a. internal).\n* experimental - APIs for feature testing. Usage is not recommended.\n"
+              },
+              {
+                "name": "deprecated",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by 'deprecated' status."
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package, shall be used in case of dashboard."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "Get list of operations from operation group. The result list depends on the API type.\n"
+        },
+        {
+          "info": {
+            "name": "Delete operation group",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/groups/:groupName",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "groupName",
+                "value": "",
+                "type": "path",
+                "description": "Version Group"
+              }
+            ]
+          },
+          "docs": "Delete version group.\n"
+        },
+        {
+          "info": {
+            "name": "Update parameters of operation group",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/:apiType/groups/:groupName",
+            "params": [
+              {
+                "name": "groupName",
+                "value": "",
+                "type": "path",
+                "description": "Old groupName"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "groupName",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "description",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "template",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "operations",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Update parameters of operations group.\n"
+        },
+        {
+          "info": {
+            "name": "Get export template of operation group",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/:apiType/groups/:groupName/template",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "groupName",
+                "value": "",
+                "type": "path",
+                "description": "Version Group"
+              }
+            ]
+          },
+          "docs": "Export OpenAPI specification template from an operation group (manual or rest path prefix).\nThis feature is supported only for apiType = rest.\n"
+        },
+        {
+          "info": {
+            "name": "Calculate groups by restGroupingPrefix",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/calculateGroups",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "groupingPrefix",
+                "value": "",
+                "type": "query",
+                "description": "Regular expression used as criteria for grouping operations."
+              }
+            ]
+          },
+          "docs": "Calculate groups by transmitted restGroupingPrefix.\nThis is in-flight calculation, i.e. calculated groups will not be saved.\n"
+        },
+        {
+          "info": {
+            "name": "Recalculate package version groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/recalculateGroups",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ]
+          },
+          "docs": "Recalculate package groups by specified restGroupingPrefix on the package\n"
+        },
+        {
+          "info": {
+            "name": "Get the version revisions list",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/revisions",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by label|user|meta."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "Get the list of version revisions.\n"
+        },
+        {
+          "info": {
+            "name": "Get version changes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/changes",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Version identifier"
+              }
+            ]
+          },
+          "docs": "Get validation changes for a package version.\n"
+        },
+        {
+          "info": {
+            "name": "Get version problems",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/problems",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Version identifier"
+              }
+            ]
+          },
+          "docs": "Get validation problems for a package version.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Changes",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get changes summary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/changes/summary",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              }
+            ]
+          },
+          "docs": "Get summary of changes between two packages versions.\n"
+        },
+        {
+          "info": {
+            "name": "Get list of changed operations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v4/packages/:packageId/versions/:version/:apiType/changes",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "apiAudience",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by apiAudience.\n* internal - APIs are available for integration within product application.\n* external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.\n* unknown - If any value other than internal or external is used, the API is considered as unknown.\n"
+              },
+              {
+                "name": "asyncapiChannel",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by AsyncAPI channel identifier (comma-separated).\nApplicable only when apiType = asyncapi; ignored for other API types.\n"
+              },
+              {
+                "name": "asyncapiProtocol",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by communication protocol.\nApplicable only when apiType = asyncapi; ignored for other API types.\nThe value is the protocol string from the channel's server (e.g. kafka, amqp).\nUse \"Unknown\" for operations where the protocol could not be resolved.\n"
+              },
+              {
+                "name": "severity",
+                "value": "",
+                "type": "query",
+                "description": "Filter API changes by severity."
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version.\nThe mask <version>@<revision> may be used for search in a specific revision.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package and previous ref package."
+              },
+              {
+                "name": "apiKind",
+                "value": "",
+                "type": "query",
+                "description": "Filter by api kind"
+              },
+              {
+                "name": "documentSlug",
+                "value": "",
+                "type": "query",
+                "description": "Document unique string identifier"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "A full match is required.\\\nMultiple tags separated by comma can be specified.\n"
+              },
+              {
+                "name": "emptyTag",
+                "value": "",
+                "type": "query",
+                "description": "Flag, filtering the operations without tags at all.\nIn response will be returned the list of operations, on what the tag is not filled in.\nThis attribute has a higher priority than the **tag**. In case, then **emptyTag: true**, it will override the **tag** filter.\n"
+              },
+              {
+                "name": "group",
+                "value": "",
+                "type": "query",
+                "description": "Name of the group for filtering.\\\nThe filter is applied only to the groups of current version. Groups from previous version will be ignored.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "emptyGroup",
+                "value": "",
+                "type": "query",
+                "description": "Flag for filtering operations without a group.\\\nThe filter is applied only to the groups of current version. Groups from previous version will be ignored.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by operation's title/path/method.\nFor AsyncAPI: searches by message title(or messageId), channel title(or channelId) or operation action.\n"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "Get changes between two compared package versions with details by operations.\\\nThe result list depends on the API type.\n"
+        },
+        {
+          "info": {
+            "name": "Export API changes to xlsx file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/:apiType/export/changes",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "apiAudience",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by apiAudience.\n* internal - APIs are available for integration within product application.\n* external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.\n* unknown - If any value other than internal or external is used, the API is considered as unknown.\n"
+              },
+              {
+                "name": "asyncapiChannel",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by AsyncAPI channel identifier (comma-separated).\nApplicable only when apiType = asyncapi; ignored for other API types.\n"
+              },
+              {
+                "name": "asyncapiProtocol",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by communication protocol.\nApplicable only when apiType = asyncapi; ignored for other API types.\nThe value is the protocol string from the channel's server (e.g. kafka, amqp).\nUse \"Unknown\" for operations where the protocol could not be resolved.\n"
+              },
+              {
+                "name": "severity",
+                "value": "",
+                "type": "query",
+                "description": "Filter API changes by severity."
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package and previous ref package."
+              },
+              {
+                "name": "apiKind",
+                "value": "",
+                "type": "query",
+                "description": "Filter by api kind"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "A full match is required.\\\nMultiple tags separated by comma can be specified.\n"
+              },
+              {
+                "name": "emptyTag",
+                "value": "",
+                "type": "query",
+                "description": "Flag, filtering the operations without tags at all.\nIn response will be returned the list of operations, on what the tag is not filled in.\nThis attribute has a higher priority than the **tag**. In case, then **emptyTag: true**, it will override the **tag** filter.\n"
+              },
+              {
+                "name": "group",
+                "value": "",
+                "type": "query",
+                "description": "Name of the group for filtering.\\\nThe filter is applied only to the groups of current version. Groups from previous version will be ignored.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "emptyGroup",
+                "value": "",
+                "type": "query",
+                "description": "Flag for filtering operations without a group.\\\nThe filter is applied only to the groups of current version. Groups from previous version will be ignored.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by operation's title/path/method.\nFor AsyncAPI: searches by message title(or messageId), channel title(or channelId) or operation action.\n"
+              }
+            ]
+          },
+          "docs": "Export API changes to xlsx file"
+        },
+        {
+          "info": {
+            "name": "Export API changes to xlsx file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/changes/export",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "format",
+                "value": "",
+                "type": "query",
+                "description": "File format for export"
+              }
+            ]
+          },
+          "docs": "Export API changes to xlsx file"
+        },
+        {
+          "info": {
+            "name": "Version changelog async calculation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/compare",
+            "params": [
+              {
+                "name": "clientBuild",
+                "value": "",
+                "type": "query",
+                "description": "Client-side package build will be used."
+              },
+              {
+                "name": "builderId",
+                "value": "",
+                "type": "query",
+                "description": "Builder identifier. **Required** if clientBuild=true."
+              },
+              {
+                "name": "reCalculate",
+                "value": "",
+                "type": "query",
+                "description": "Flag for the force changelog re-calculation.\nMay be used after the previous API call with **error** status.\n"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "packageId",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "version",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "previousVersionPackageId",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "previousVersion",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Calculate changes between any two packages/versions/revisions for any type of API.\n\n* **200 Comparison calculated successfully** if there is such comparison.\n\n* **202 Accepted** will be returned after starting of the async changelog calculation.\n"
+        },
+        {
+          "info": {
+            "name": "Single operation change log",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/operations/:operationId/changes",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path",
+                "description": "Operation unique identifier (slug). Not the same as operationId tag from the OpenAPI file."
+              },
+              {
+                "name": "severity",
+                "value": "",
+                "type": "query",
+                "description": "Filter API changes by severity."
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionOperationId",
+                "value": "",
+                "type": "query",
+                "description": "Operation unique identifier from previous version (not the same as operationId tag from the OpenAPI file).\\ Empty, if requested operation is added in the current version; otherwise, must be specified."
+              }
+            ]
+          },
+          "docs": "Get changes of one operation between current and previous published package version.\nThe result depends on the API type.\n"
+        },
+        {
+          "info": {
+            "name": "Single operation changes summary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/operations/:operationId/changes/summary",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path",
+                "description": "Operation unique identifier (slug). Not the same as operationId tag from the OpenAPI file."
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package and previous ref package."
+              }
+            ]
+          },
+          "docs": "Get summary of changes for one operation between current and previous published package version.\nThe result depends on the API type.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Internal Documents",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get version internal document content",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/version-internal-documents/:hash",
+            "params": [
+              {
+                "name": "hash",
+                "value": "",
+                "type": "path",
+                "description": "Document hash"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get version internal document content"
+        },
+        {
+          "info": {
+            "name": "Get comparison internal document content",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/comparison-internal-documents/:hash",
+            "params": [
+              {
+                "name": "hash",
+                "value": "",
+                "type": "path",
+                "description": "Document hash"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get comparison internal document content"
+        },
+        {
+          "info": {
+            "name": "Get version internal documents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/version-internal-documents",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get list of version internal documents for the version. Version internal documents are only supported for packages of kind `package`\n"
+        },
+        {
+          "info": {
+            "name": "Get version comparison internal documents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/comparison-internal-documents",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package and previous ref package."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get list of internal documents for the version comparison. Internal documents are only supported for packages of kind `package`\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Roles",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get list of permissions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/permissions"
+          },
+          "docs": "List of all permissions."
+        },
+        {
+          "info": {
+            "name": "Get list of existing roles",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/roles"
+          },
+          "docs": "List of all roles and their permissions."
+        },
+        {
+          "info": {
+            "name": "Get list of available roles for package",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/availableRoles",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "query",
+                "description": "Unique user login (username) used to authenticate the user."
+              }
+            ]
+          },
+          "docs": "List of available roles to change for package and current user (by access token).\n"
+        },
+        {
+          "info": {
+            "name": "Get the package's members list",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/members",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ]
+          },
+          "docs": "List of all users and their roles, assigned to the particular package"
+        },
+        {
+          "info": {
+            "name": "Add members to the package",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/members",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add new user (one user or multiple users) with a role to the package.\nA member may be added to the package if the assigned role is greater than the existing one.\n"
+        },
+        {
+          "info": {
+            "name": "Package member update",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/members/:userId",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "Login of the user"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Change the member parameters on the package\n"
+        },
+        {
+          "info": {
+            "name": "Package member delete",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/members/:userId",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "Login of the user"
+              }
+            ]
+          },
+          "docs": "Delete (unassign) the member from the package. Response variants logic:\n* 200 - if the user has direct role assigned to the current package AND assignment to the parent package, will be returned his inherited role.\n* 204 - if the user has only direct role assigned to the current package, this assignment will be deleted.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Extended User Information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/user",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves detailed information about the authenticated user."
+        },
+        {
+          "info": {
+            "name": "Get Extended User Information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/user",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves detailed information about the authenticated user."
+        },
+        {
+          "info": {
+            "name": "Get users list",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/users",
+            "params": [
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by userId (login)/name/email address."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "List of all users with detailed info"
+        },
+        {
+          "info": {
+            "name": "Get user by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/users/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "Unique user login (username) used to authenticate the user."
+              }
+            ]
+          },
+          "docs": "User's detailed info"
+        },
+        {
+          "info": {
+            "name": "Get user's private workspace",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/space",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get personal private workspace of the current user."
+        },
+        {
+          "info": {
+            "name": "Create own personal private package",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/space",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Any user is able to create one personal private workspace (*no permissions required*)\nPackageId for this workspace could be set via user creation endpoint (only for new users) or generated automatically when user first logs in to apihub\n"
+        },
+        {
+          "info": {
+            "name": "Create personal private package for the user",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/users/:userId/space",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "Unique user login (username) used to authenticate the user."
+              }
+            ]
+          },
+          "docs": "Any user is able to create one personal private workspace (*no permissions required*)\n\nPackageId for this workspace could be set via user creation endpoint (only for new users) or generated automatically when user first logs in to apihub\n"
+        },
+        {
+          "info": {
+            "name": "Get the user avatar",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/users/:userId/profile/avatar",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "Unique user login (username) used to authenticate the user."
+              }
+            ]
+          },
+          "docs": "Get the user avatar.\nAPI returns the data of photo file in a png format.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Operations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get list of operations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/operations",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiAudience",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by apiAudience.\n* internal - APIs are available for integration within product application.\n* external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.\n* unknown - If any value other than internal or external is used, the API is considered as unknown.\n"
+              },
+              {
+                "name": "asyncapiChannel",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by AsyncAPI channel identifier (comma-separated).\nApplicable only when apiType = asyncapi; ignored for other API types.\n"
+              },
+              {
+                "name": "asyncapiProtocol",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by communication protocol.\nApplicable only when apiType = asyncapi; ignored for other API types.\nThe value is the protocol string from the channel's server (e.g. kafka, amqp).\nUse \"Unknown\" for operations where the protocol could not be resolved.\n"
+              },
+              {
+                "name": "skipRefs",
+                "value": "",
+                "type": "query",
+                "description": "If false and package has references, then package references (including references to the deleted package versions) shall be resolved.\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by title/path/method. Custom tag format in search is key: value. Search works as a complete match.\nFor AsyncAPI: searches by message title(or messageId), channel title(or channelId) or operation action.\n"
+              },
+              {
+                "name": "documentSlug",
+                "value": "",
+                "type": "query",
+                "description": "Filter by document"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Name of the tag for filtering/grouping.\nA full match is required. To get the list of available tags use GET /tags API.\n"
+              },
+              {
+                "name": "emptyTag",
+                "value": "",
+                "type": "query",
+                "description": "Flag, filtering the operations without tags at all.\n\nIn response will be returned the list of operations, on what the tag is not filled in.\n\nThis attribute has a higher priority than the **tag**. In case, then **emptyTag: true**, it will override the **tag** filter.\n"
+              },
+              {
+                "name": "group",
+                "value": "",
+                "type": "query",
+                "description": "Name of the group for filtering.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "emptyGroup",
+                "value": "",
+                "type": "query",
+                "description": "Flag for filtering operations without a group.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query",
+                "description": "Operation kind.\n* bwc - API with backward compatibility support (a.k.a. public).\n* no-bwc - API without backward compatibility support (a.k.a. internal).\n* experimental - APIs for feature testing. Usage is not recommended.\n"
+              },
+              {
+                "name": "deprecated",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by 'deprecated' status."
+              },
+              {
+                "name": "includeData",
+                "value": "",
+                "type": "query",
+                "description": "Include the operation's content data."
+              },
+              {
+                "name": "ids",
+                "value": "",
+                "type": "query",
+                "description": "List of the operationId to filter."
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package, shall be used in case of dashboard."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "Full list of operations without grouping by parent specification document.\nThe result list depends on the API type.\n"
+        },
+        {
+          "info": {
+            "name": "Deprecated items of single operation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/operations/:operationId/deprecatedItems",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path",
+                "description": "Operation unique identifier (slug). Not the same as operationId tag from the OpenAPI file."
+              }
+            ]
+          },
+          "docs": "Get list of all deprecated items inside of the single operation.\\\nDeprecated item is entity that is deprecated inside of API operation. For example for REST API it can be parameter or schema, for GraphQL API - field or enum value.\n"
+        },
+        {
+          "info": {
+            "name": "List of operations with the same model",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/operations/:operationId/models/:modelName/usages",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path",
+                "description": "Operation unique identifier (slug). Not the same as operationId tag from the OpenAPI file."
+              },
+              {
+                "name": "modelName",
+                "value": "",
+                "type": "path",
+                "description": "Unique model identifier for operation"
+              }
+            ]
+          },
+          "docs": "Get list of operations that have the same model\n"
+        },
+        {
+          "info": {
+            "name": "Export operations to xlsx file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/export/operations",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiAudience",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by apiAudience.\n* internal - APIs are available for integration within product application.\n* external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.\n* unknown - If any value other than internal or external is used, the API is considered as unknown.\n"
+              },
+              {
+                "name": "asyncapiChannel",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by AsyncAPI channel identifier (comma-separated).\nApplicable only when apiType = asyncapi; ignored for other API types.\n"
+              },
+              {
+                "name": "asyncapiProtocol",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by communication protocol.\nApplicable only when apiType = asyncapi; ignored for other API types.\nThe value is the protocol string from the channel's server (e.g. kafka, amqp).\nUse \"Unknown\" for operations where the protocol could not be resolved.\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by title/path/method.\nFor AsyncAPI: searches by message title(or messageId), channel title(or channelId) or operation action.\n"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "Name of the tag for filtering/grouping.\nA full match is required. To get the list of available tags use GET /tags API.\n"
+              },
+              {
+                "name": "emptyTag",
+                "value": "",
+                "type": "query",
+                "description": "Flag, filtering the operations without tags at all.\nIn response will be returned the list of operations, on what the tag is not filled in.\nThis attribute has a higher priority than the **tag**. In case, then **emptyTag: true**, it will override the **tag** filter.\n"
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query",
+                "description": "Operation kind.\n* bwc - API with backward compatibility support (a.k.a. public).\n* no-bwc - API without backward compatibility support (a.k.a. internal).\n* experimental - APIs for feature testing. Usage is not recommended.\n"
+              },
+              {
+                "name": "group",
+                "value": "",
+                "type": "query",
+                "description": "Name of the group for filtering.\\\nThe filter is applied only to the groups of current version. Groups from previous version will be ignored.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "emptyGroup",
+                "value": "",
+                "type": "query",
+                "description": "Flag for filtering operations without a group.\\\nThe filter is applied only to the groups of current version. Groups from previous version will be ignored.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package, shall be used in case of dashboard."
+              }
+            ]
+          },
+          "docs": "Export operations of specific API type.\n"
+        },
+        {
+          "info": {
+            "name": "Export deprecated operations to xlsx file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/export/operations/deprecated",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiAudience",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by apiAudience.\n* internal - APIs are available for integration within product application.\n* external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.\n* unknown - If any value other than internal or external is used, the API is considered as unknown.\n"
+              },
+              {
+                "name": "asyncapiChannel",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by AsyncAPI channel identifier (comma-separated).\nApplicable only when apiType = asyncapi; ignored for other API types.\n"
+              },
+              {
+                "name": "asyncapiProtocol",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by communication protocol.\nApplicable only when apiType = asyncapi; ignored for other API types.\nThe value is the protocol string from the channel's server (e.g. kafka, amqp).\nUse \"Unknown\" for operations where the protocol could not be resolved.\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by title/path/method.\nFor AsyncAPI: searches by message title(or messageId), channel title(or channelId) or operation action.\n"
+              },
+              {
+                "name": "tag",
+                "value": "",
+                "type": "query",
+                "description": "A full match is required.\\\nMultiple tags separated by comma can be specified.\n"
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query",
+                "description": "Operation kind.\n* bwc - API with backward compatibility support (a.k.a. public).\n* no-bwc - API without backward compatibility support (a.k.a. internal).\n* experimental - APIs for feature testing. Usage is not recommended.\n"
+              },
+              {
+                "name": "emptyTag",
+                "value": "",
+                "type": "query",
+                "description": "Flag, filtering the operations without tags at all.\nIn response will be returned the list of operations, on what the tag is not filled in.\nThis attribute has a higher priority than the **tag**. In case, then **emptyTag: true**, it will override the **tag** filter.\n"
+              },
+              {
+                "name": "group",
+                "value": "",
+                "type": "query",
+                "description": "Name of the group for filtering.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "emptyGroup",
+                "value": "",
+                "type": "query",
+                "description": "Flag for filtering operations without a group.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package, shall be used in case of dashboard."
+              }
+            ]
+          },
+          "docs": "Export operations of specific API type.\n"
+        },
+        {
+          "info": {
+            "name": "Get operation details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/operations/:operationId",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "operationId",
+                "value": "",
+                "type": "path",
+                "description": "Operation unique identifier (slug). Not the same as operationId tag from the OpenAPI file."
+              },
+              {
+                "name": "includeData",
+                "value": "",
+                "type": "query",
+                "description": "Include the operation's content data."
+              }
+            ]
+          },
+          "docs": "Operation's parameters and data.\nThe result depends on the API type.\n"
+        },
+        {
+          "info": {
+            "name": "Get list of operations tags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/:apiType/tags",
+            "params": [
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiAudience",
+                "value": "",
+                "type": "query",
+                "description": "Filter operations by apiAudience.\n* internal - APIs are available for integration within product application.\n* external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.\n* unknown - If any value other than internal or external is used, the API is considered as unknown.\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by tag.\nPartial name is applicable.\n"
+              },
+              {
+                "name": "skipRefs",
+                "value": "",
+                "type": "query",
+                "description": "If false and package has references, then package references (including references to the deleted package versions) shall be resolved.\n"
+              },
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query",
+                "description": "Operation kind.\n* bwc - API with backward compatibility support (a.k.a. public).\n* no-bwc - API without backward compatibility support (a.k.a. internal).\n* experimental - APIs for feature testing. Usage is not recommended.\n"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              },
+              {
+                "name": "group",
+                "value": "",
+                "type": "query",
+                "description": "Name of the group for filtering.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              },
+              {
+                "name": "emptyGroup",
+                "value": "",
+                "type": "query",
+                "description": "Flag for filtering operations without a group.\\\nEither \"group\" or \"emptyGroup\" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.\n"
+              }
+            ]
+          },
+          "docs": "Get list of operations tags in one published version.\nThe result list depends on the API type.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Contracts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get DDL entities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/ddl/entities",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by DDL entity name (case-insensitive substring match)."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to skip."
+              }
+            ]
+          },
+          "docs": "Get DDL contract entities for a package version. Only `table` entities are supported now.\n"
+        },
+        {
+          "info": {
+            "name": "Get DDL entity details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/ddl/entities/:ddlEntityId",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "ddlEntityId",
+                "value": "",
+                "type": "path",
+                "description": "DDL entity logical identifier. Clients must percent-encode unsafe characters."
+              }
+            ]
+          },
+          "docs": "Get DDL contract entity details, including the raw SQL payload. Only `table` entities are supported now."
+        },
+        {
+          "info": {
+            "name": "Get DDL entity changes",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/ddl/entities/:ddlEntityId/changes",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "ddlEntityId",
+                "value": "",
+                "type": "path",
+                "description": "DDL entity logical identifier. Clients must percent-encode unsafe characters."
+              },
+              {
+                "name": "severity",
+                "value": "",
+                "type": "query",
+                "description": "Filter API changes by severity."
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionDdlEntityId",
+                "value": "",
+                "type": "query",
+                "description": "DDL entity identifier from previous version.\\ Empty, if requested entity is added in the current version; otherwise, must be specified."
+              }
+            ]
+          },
+          "docs": "Get changes of one DDL entity between current and previous published package versions. Only `table` entities are supported now."
+        },
+        {
+          "info": {
+            "name": "Get list of changed DDL entities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/ddl/changes",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "severity",
+                "value": "",
+                "type": "query",
+                "description": "Filter API changes by severity."
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package and previous ref package."
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by DDL entity name (case-insensitive substring match)."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "Get DDL contract changes between two compared package versions with details by entities.\nOnly `table` entities are supported now.\n"
+        },
+        {
+          "info": {
+            "name": "Single DDL entity changes summary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/ddl/entities/:ddlEntityId/changes/summary",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "ddlEntityId",
+                "value": "",
+                "type": "path",
+                "description": "DDL entity logical identifier. Clients must percent-encode unsafe characters."
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package and previous ref package."
+              }
+            ]
+          },
+          "docs": "Get summary of changes for one DDL entity between current and previous published package version.\nOnly `table` entities are supported now.\n"
+        },
+        {
+          "info": {
+            "name": "Export DDL entities to xlsx file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/ddl/export/entities",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package, shall be used in case of dashboard."
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by DDL entity name (case-insensitive substring match)."
+              }
+            ]
+          },
+          "docs": "Export DDL contract entities of a package version. Only `table` entities are supported now."
+        },
+        {
+          "info": {
+            "name": "Export DDL changes to xlsx file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/ddl/export/changes",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "severity",
+                "value": "",
+                "type": "query",
+                "description": "Filter API changes by severity."
+              },
+              {
+                "name": "previousVersion",
+                "value": "",
+                "type": "query",
+                "description": "Package previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "previousVersionPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Package unique identifier for previous version.\nIf both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.\n"
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package and previous ref package."
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by DDL entity name (case-insensitive substring match)."
+              }
+            ]
+          },
+          "docs": "Export DDL contract changes between two compared package versions. Only `table` entities are supported now."
+        },
+        {
+          "info": {
+            "name": "Get MCP contract entities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/mcp/:entity",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "entity",
+                "value": "",
+                "type": "path",
+                "description": "MCP entity collection type."
+              },
+              {
+                "name": "mcpEndpoint",
+                "value": "",
+                "type": "query",
+                "description": "Filter entities belonging to a specific MCP endpoint (relative path, e.g. `/mcp`)."
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by MCP entity title and description (case-insensitive substring match)."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of records to skip."
+              }
+            ]
+          },
+          "docs": "Get MCP discovery contract entities for a package version."
+        },
+        {
+          "info": {
+            "name": "Get MCP contract entity details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/mcp/:entity/:mcpEntityId",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "entity",
+                "value": "",
+                "type": "path",
+                "description": "MCP entity collection type."
+              },
+              {
+                "name": "mcpEntityId",
+                "value": "",
+                "type": "path",
+                "description": "MCP logical entity identifier (`mcpEntityId` from the list response). Clients must percent-encode unsafe characters."
+              }
+            ]
+          },
+          "docs": "Get MCP discovery contract entity details."
+        },
+        {
+          "info": {
+            "name": "Export MCP contract entities to xlsx file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/packages/:packageId/versions/:version/mcp/export/:entity",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "entity",
+                "value": "",
+                "type": "path",
+                "description": "MCP entity collection type."
+              },
+              {
+                "name": "refPackageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter by package id of ref package, shall be used in case of dashboard."
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by MCP entity title and description (case-insensitive substring match)."
+              }
+            ]
+          },
+          "docs": "Export MCP discovery contract entities of a package version."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Documents",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get version documents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/documents",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "query",
+                "description": "Filter documents by type of the API.\nMutually exclusive with `contractType`: specify at most one of `apiType` / `contractType` (if both are specified then 400 will be returned).\n"
+              },
+              {
+                "name": "contractType",
+                "value": "",
+                "type": "query",
+                "description": "Filter documents by contract type.\nMutually exclusive with `apiType`: specify at most one of `apiType` / `contractType` (if both are specified then 400 will be returned).\n"
+              },
+              {
+                "name": "skipRefs",
+                "value": "",
+                "type": "query",
+                "description": "If false and package has references, then package references (including references to the deleted package versions) shall be resolved.\n"
+              },
+              {
+                "name": "textFilter",
+                "value": "",
+                "type": "query",
+                "description": "Filter by document title."
+              }
+            ]
+          },
+          "docs": "Get list of documents in a version. The result depend on the package.kind:\n* For package.kind: package - return the list of version documents.\n* For package.kind: dashboard - return the list of all referenced dashboards and their referenced packages in recursion.\n  The returned list will contain only leaves - referenced packages of the lowest level with their published documents.\n"
+        },
+        {
+          "info": {
+            "name": "Get document details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/documents/:slug",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "slug",
+                "value": "",
+                "type": "path",
+                "description": "File unique string identifier"
+              }
+            ]
+          },
+          "docs": "Get the published content object's details by ID."
+        },
+        {
+          "info": {
+            "name": "Update document shareability",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{apihub}.qubership.org/api/v2/packages/:packageId/versions/:version/documents/:slug/shareability",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "slug",
+                "value": "",
+                "type": "path",
+                "description": "File unique string identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update the shareability property of a published document. Only available to package owners and admins."
+        },
+        {
+          "info": {
+            "name": "Bulk update document shareability",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v1/shareability/bulk-update"
+          },
+          "docs": "Upload a shareability report xlsx file to bulk-update shareability statuses for all documents with changed values.\n`document_shareability_management` is required for all packages listed in the report.\n"
+        },
+        {
+          "info": {
+            "name": "Get documents of operations from operation group.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/:apiType/groups/:groupName/documents",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "groupName",
+                "value": "",
+                "type": "path",
+                "description": "Name of the operation group"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ]
+          },
+          "docs": "Get list of package version documents of operations from operation group.\n"
+        },
+        {
+          "info": {
+            "name": "Get version references",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/references",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              }
+            ]
+          },
+          "docs": "Get flat list of all version references\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Operation groups",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Start operation group publication",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/:apiType/groups/:groupName/publish",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "groupName",
+                "value": "",
+                "type": "path",
+                "description": "Name of the operation group"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Start operation group publish process.\\\nIn this process all operations from operation group will be published to the selected package version.\n"
+        },
+        {
+          "info": {
+            "name": "Get operation group publication status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v3/packages/:packageId/versions/:version/:apiType/groups/:groupName/publish/:publishId/status",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "path",
+                "description": "Package unique identifier (full alias)"
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "path",
+                "description": "Package version"
+              },
+              {
+                "name": "apiType",
+                "value": "",
+                "type": "path",
+                "description": "Type of the API."
+              },
+              {
+                "name": "groupName",
+                "value": "",
+                "type": "path",
+                "description": "Name of the operation group"
+              },
+              {
+                "name": "publishId",
+                "value": "",
+                "type": "path",
+                "description": "Publish Id"
+              }
+            ]
+          },
+          "docs": "Get operation group publish status.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Search",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Global search",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v3/search/:searchLevel",
+            "params": [
+              {
+                "name": "searchLevel",
+                "value": "",
+                "type": "path",
+                "description": "Level of object for search.\n"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Global search by text or custom parameters"
+        },
+        {
+          "info": {
+            "name": "Global search v4",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v4/search/:searchLevel",
+            "params": [
+              {
+                "name": "searchLevel",
+                "value": "",
+                "type": "path",
+                "description": "Level of object for search.\n"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Requested number of resources to be provided in response."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Global search by text or custom parameters"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "TryIt",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Proxy endpoint for try it in case of non-cloud environments.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/playground/proxy",
+            "headers": [
+              {
+                "name": "X-Apihub-Proxy-Url",
+                "value": "http://127.0.0.1:8080/api/v2/escaped/te%20xt/text/text123?escaped=te%20xt"
+              },
+              {
+                "name": "X-Apihub-Authorization",
+                "value": ""
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Allows to send any request to any address."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "AI Chat",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List chats of the current user.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/ai-chat/chats",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of chats to return. Server may cap this value."
+              },
+              {
+                "name": "before",
+                "value": "",
+                "type": "query",
+                "description": "Keyset cursor. Return only chats with `lastMessageAt` strictly less than this value. Format: RFC 3339 timestamp.\nWhen omitted, the server returns the newest `limit` chats (i.e. the first page).\nPinned chats are always returned before non-pinned chats regardless of the cursor.\n"
+              },
+              {
+                "name": "search",
+                "value": "",
+                "type": "query",
+                "description": "Optional case-insensitive substring match on chat `title`."
+              }
+            ]
+          },
+          "docs": "Returns chat metadata (without messages) for the authenticated user, sorted first by `pinned` desc, then by `lastMessageAt` desc.\nChats of other users are never returned.\n\nPagination is keyset-based rather than page-based because a user's chat list is a live view: pinning/unpinning and incoming messages constantly reorder entries, so a second offset-based request would produce duplicates or gaps. A timestamp cursor (`before`) is stable under these changes.\n\nUsage: the first request omits `before"
+        },
+        {
+          "info": {
+            "name": "Create a new chat.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v1/ai-chat/chats",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Creates an empty chat owned by the authenticated user.\nThe title is optional and will be filled automatically (from the first user message) if omitted; it can be changed later via PATCH.\n"
+        },
+        {
+          "info": {
+            "name": "Get chat metadata.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/ai-chat/chats/:chatId",
+            "params": [
+              {
+                "name": "chatId",
+                "value": "",
+                "type": "path",
+                "description": "AI chat identifier."
+              }
+            ]
+          },
+          "docs": "Returns the metadata of a chat owned by the current user.\nThe response does not contain messages — use `GET /api/v1/ai-chat/chats/{chatId}/messages` to retrieve them.\n"
+        },
+        {
+          "info": {
+            "name": "Update chat (rename / pin / unpin).",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{apihub}.qubership.org/api/v1/ai-chat/chats/:chatId",
+            "params": [
+              {
+                "name": "chatId",
+                "value": "",
+                "type": "path",
+                "description": "AI chat identifier."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Partially updates a chat. Only the fields present in the request body are updated.\nPinning rules:\n  * a user may pin at most **3** chats (the limit is hard-coded identically on the client and on the server); pinning beyond the limit returns `400`;\n  * pinned chats are exempt from TTL-based cleanup.\n"
+        },
+        {
+          "info": {
+            "name": "Delete a chat.",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{apihub}.qubership.org/api/v1/ai-chat/chats/:chatId",
+            "params": [
+              {
+                "name": "chatId",
+                "value": "",
+                "type": "path",
+                "description": "AI chat identifier."
+              }
+            ]
+          },
+          "docs": "Permanently deletes a chat together with all its messages. Any generated files referenced by its messages remain available on disk until their file-level TTL expires.\n"
+        },
+        {
+          "info": {
+            "name": "List chat messages.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/ai-chat/chats/:chatId/messages",
+            "params": [
+              {
+                "name": "chatId",
+                "value": "",
+                "type": "path",
+                "description": "AI chat identifier."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of messages to return."
+              },
+              {
+                "name": "before",
+                "value": "",
+                "type": "query",
+                "description": "Keyset cursor. Return only messages created strictly before this timestamp (RFC 3339).\nWhen omitted, the server returns the newest `limit` messages (i.e. the first page).\n"
+              }
+            ]
+          },
+          "docs": "Returns messages of the given chat in reverse-chronological order (newest first). Use keyset pagination via `before` to fetch older pages.\n\nKeyset pagination is used (rather than `page`) because messages are appended live: a naive offset would miss or duplicate items whenever a new message arrives between two page fetches. The first request omits `before` and receives the newest `limit` messages; subsequent requests pass `before` = `createdAt` of the last (oldest) message from the previous page."
+        },
+        {
+          "info": {
+            "name": "Send a message (non-streaming).",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v1/ai-chat/chats/:chatId/messages",
+            "params": [
+              {
+                "name": "chatId",
+                "value": "",
+                "type": "path",
+                "description": "AI chat identifier."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Appends a user message to the chat and waits synchronously for the assistant response.\nIntended for integration scripts or clients that do not want to handle SSE. Interactive UIs should use the streaming variant (`/messages/stream`) instead.\nThe request body must carry **only the new user message** — never the full history. The server reconstructs the conversation context from its own storage (including any compaction summary) and sends the resulting message list to the LLM on each turn.\n"
+        },
+        {
+          "info": {
+            "name": "Send a message with streaming response (SSE).",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v1/ai-chat/chats/:chatId/messages/stream",
+            "params": [
+              {
+                "name": "chatId",
+                "value": "",
+                "type": "path",
+                "description": "AI chat identifier."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Appends a user message to the chat and streams the assistant response as Server-Sent Events.\n\nRequest semantics:\n  * the body carries **only the new user message** plus (optionally) a client-generated `clientMessageId` for idempotency — never the full conversation history;\n  * the server reconstructs context from its own storage (including any compaction summary) and sends the resulting message list to the LLM on each turn — the client never transmits prior turns;\n  * on the very first message i"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Ephemeral Files",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Download an ephemeral file.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/ephemeral-files/:fileId",
+            "params": [
+              {
+                "name": "fileId",
+                "value": "",
+                "type": "path",
+                "description": "Opaque identifier of an ephemeral file."
+              },
+              {
+                "name": "token",
+                "value": "",
+                "type": "query",
+                "description": "Short-lived signed access token scoped to this file. Opaque to the client — issued by the server as part of the download URL and simply echoed back."
+              }
+            ]
+          },
+          "docs": "Downloads a short-lived file stored by the backend. Producers (such as the AI chat assistant) embed a signed download URL into their response; other subsystems can reuse the same mechanism for exports, reports, and similar artefacts.\nThe endpoint is served without session authentication; instead, access is authorized via a short-lived signed token passed in the `token` query parameter. The token lifetime is a server-side setting and is not published to the client.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

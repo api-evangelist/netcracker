@@ -1,0 +1,2217 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "DBaaS Aggregator API",
+    "version": "6.13.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "API version controller",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Api Version Info",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api-version"
+          },
+          "docs": "Api Version Info"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Backup & Restore",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Initiate database backup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/backups/v1/backup",
+            "params": [
+              {
+                "name": "dryRun",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Starts an asynchronous backup operation for the specified databases. Returns immediately with a backup name that can be used to track progress."
+        },
+        {
+          "info": {
+            "name": "Get backup details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/backups/v1/backup/:backupName",
+            "params": [
+              {
+                "name": "backupName",
+                "value": "",
+                "type": "path",
+                "description": "Unique name of the backup"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve details about a specific backup operation"
+        },
+        {
+          "info": {
+            "name": "Delete backup",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/backups/v1/backup/:backupName",
+            "params": [
+              {
+                "name": "backupName",
+                "value": "",
+                "type": "path",
+                "description": "Unique name of the backup"
+              },
+              {
+                "name": "force",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete the backup operation"
+        },
+        {
+          "info": {
+            "name": "Get backup metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/backups/v1/backup/:backupName/metadata",
+            "params": [
+              {
+                "name": "backupName",
+                "value": "",
+                "type": "path",
+                "description": "Unique name of the backup"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve metadata about a completed backup"
+        },
+        {
+          "info": {
+            "name": "Restore from backup",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/backups/v1/backup/:backupName/restore",
+            "params": [
+              {
+                "name": "backupName",
+                "value": "",
+                "type": "path",
+                "description": "Unique name of the backup"
+              },
+              {
+                "name": "dryRun",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Initiate a database restore operation from an existing backup.This operation is asynchronous and returns immediately with a restore name that can be used to track progress.Operation is not idempotent"
+        },
+        {
+          "info": {
+            "name": "Get backup status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/backups/v1/backup/:backupName/status",
+            "params": [
+              {
+                "name": "backupName",
+                "value": "",
+                "type": "path",
+                "description": "Unique name of the backup"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve the current status of a backup operation"
+        },
+        {
+          "info": {
+            "name": "Upload backup metadata",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/backups/v1/operation/uploadMetadata",
+            "headers": [
+              {
+                "name": "Digest",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Upload backup metadata"
+        },
+        {
+          "info": {
+            "name": "Get restore details",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/backups/v1/restore/:restoreName",
+            "params": [
+              {
+                "name": "restoreName",
+                "value": "",
+                "type": "path",
+                "description": "Unique name of the restore operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve details about a specific restore operation"
+        },
+        {
+          "info": {
+            "name": "Delete restore",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/backups/v1/restore/:restoreName",
+            "params": [
+              {
+                "name": "restoreName",
+                "value": "",
+                "type": "path",
+                "description": "Unique name of the restore operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete a restore operation"
+        },
+        {
+          "info": {
+            "name": "Retry restore",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/backups/v1/restore/:restoreName/retry",
+            "params": [
+              {
+                "name": "restoreName",
+                "value": "",
+                "type": "path",
+                "description": "Unique name of the restore operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retry a failed restore operation"
+        },
+        {
+          "info": {
+            "name": "Get restore status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/backups/v1/restore/:restoreName/status",
+            "params": [
+              {
+                "name": "restoreName",
+                "value": "",
+                "type": "path",
+                "description": "Unique name of the restore operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve the current status of a restore operation"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Blue Green Controller V 1",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Commit Blue-Green Domain",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/commit",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Group namespaces into one Blue-Green domain"
+        },
+        {
+          "info": {
+            "name": "Delete Blue-Green domain",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/destroy-domain",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Destroy a registered Blue-Green domain"
+        },
+        {
+          "info": {
+            "name": "Get all Blue-Green domains",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/get-domains",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get all registered Blue-Green domains"
+        },
+        {
+          "info": {
+            "name": "Get specific Blue-Green domain",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/get-domains/:namespace",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get specific registered Blue-Green domain by namespace"
+        },
+        {
+          "info": {
+            "name": "Init Blue-Green Domain",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/init-domain",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Group namespaces into one Blue-Green domain"
+        },
+        {
+          "info": {
+            "name": "List all Blue-Green domains",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/list-domains",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List of registered Blue-Green domains"
+        },
+        {
+          "info": {
+            "name": "Get list of orphan databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/orphans",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List of databases with orphan state related to requested namespaces"
+        },
+        {
+          "info": {
+            "name": "Cleanup orphan databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/orphans",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Housekeeping operation which drops all databases with ORPHAN state.WARNING! If delete=true this operation will drop databases even when DBaaS is in PROD mode"
+        },
+        {
+          "info": {
+            "name": "Promote",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/promote",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Promote"
+        },
+        {
+          "info": {
+            "name": "rollback",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/rollback",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "rollback"
+        },
+        {
+          "info": {
+            "name": "Warmup namespace",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/warmup",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "The API prepares databases in namespace to work in versioning mode. If database is versioned then will be create full copy.If database is static will be create only new classifier"
+        },
+        {
+          "info": {
+            "name": "Operation status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/:trackingId/status",
+            "params": [
+              {
+                "name": "trackingId",
+                "value": "",
+                "type": "path",
+                "description": "Id to track operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get operation status by trackingId"
+        },
+        {
+          "info": {
+            "name": "Terminate operation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/bluegreen/v1/operation/:trackingId/terminate",
+            "params": [
+              {
+                "name": "trackingId",
+                "value": "",
+                "type": "path",
+                "description": "Id to track operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Terminate operation by trackingId"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Composite Controller",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get all composite structures",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/composite/v1/structures",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve all composite structures that are registered in DBaaS."
+        },
+        {
+          "info": {
+            "name": "Save or update composite",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/composite/v1/structures",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new composite structure or update an existing one."
+        },
+        {
+          "info": {
+            "name": "Get composite structure by composite id",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/composite/v1/structures/:compositeId",
+            "params": [
+              {
+                "name": "compositeId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve a composite structure by its Id. Composite id by design is baseline or baseline origin if namespace in blue-green"
+        },
+        {
+          "info": {
+            "name": "Delete composite by composite id",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/composite/v1/structures/:compositeId/delete",
+            "params": [
+              {
+                "name": "compositeId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete a composite structure by its ID."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Declarative Controller",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Declarative Settings",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/dbaas/declarative/namespaces/:namespace/service/:serviceName",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "serviceName",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Declarative Settings"
+        },
+        {
+          "info": {
+            "name": "Operation status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/dbaas/declarative/status/:trackingId",
+            "params": [
+              {
+                "name": "trackingId",
+                "value": "",
+                "type": "path",
+                "description": "Id to track operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get operation status by trackingId"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Config Controller V 1",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Apply config",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/declarations/v1/apply",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Apply declarative config"
+        },
+        {
+          "info": {
+            "name": "Operation status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/declarations/v1/operation/:trackingId/extendedTroubleshootingInfo",
+            "params": [
+              {
+                "name": "trackingId",
+                "value": "",
+                "type": "path",
+                "description": "Id to track operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get operation status by trackingId"
+        },
+        {
+          "info": {
+            "name": "Operation status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/declarations/v1/operation/:trackingId/status",
+            "params": [
+              {
+                "name": "trackingId",
+                "value": "",
+                "type": "path",
+                "description": "Id to track operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get operation status by trackingId"
+        },
+        {
+          "info": {
+            "name": "Terminate operation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/declarations/v1/operation/:trackingId/terminate",
+            "params": [
+              {
+                "name": "trackingId",
+                "value": "",
+                "type": "path",
+                "description": "Id to track operation"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Terminate operation by trackingId"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Backups administration",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. Get restoration info",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/backups/:backupId/restorations/:restorationId",
+            "params": [
+              {
+                "name": "backupId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of backup process"
+              },
+              {
+                "name": "restorationId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of restore process"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns restoration info"
+        },
+        {
+          "info": {
+            "name": "V3. Restore database",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/backups/:backupId/:parameter",
+            "params": [
+              {
+                "name": "backupId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of backup process"
+              },
+              {
+                "name": "targetNamespace",
+                "value": "",
+                "type": "query",
+                "description": "This parameter specifies namespace for restoring to another project. This parameter is needed to use if backup and restore projects are different."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Restores backup for a specific backup ID"
+        },
+        {
+          "info": {
+            "name": "V3. Get all backups of namespace",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/backups",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lists all backups prepared for specified namespace"
+        },
+        {
+          "info": {
+            "name": "V3. Backup namespace",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/backups/collect",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace of the database needs to be saved"
+              },
+              {
+                "name": "allowEviction",
+                "value": "",
+                "type": "query",
+                "description": "Allows to disable eviction on adapters for current backup"
+              },
+              {
+                "name": "ignoreNotBackupableDatabases",
+                "value": "",
+                "type": "query",
+                "description": "The parameter enables(by default)/disables validating of DBaaS adapters on the supported backup procedure"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Start backup collection process for specified namespace"
+        },
+        {
+          "info": {
+            "name": "V3. Get backup info",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/backups/:backupId",
+            "params": [
+              {
+                "name": "backupId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of backup"
+              },
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where backup was made"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns backup info"
+        },
+        {
+          "info": {
+            "name": "V3. Add new backup info",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/backups/:backupId",
+            "params": [
+              {
+                "name": "backupId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of backup process"
+              },
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace of databases in backup time"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Adds new backup info to specified backup id"
+        },
+        {
+          "info": {
+            "name": "V3. Delete backup",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/backups/:backupId",
+            "params": [
+              {
+                "name": "backupId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of backup needs to be deleted "
+              },
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace of the database backup"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Start delete backup process for specified namespace"
+        },
+        {
+          "info": {
+            "name": "V3. Get restoration info",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/backups/:backupId/restorations/:restorationId",
+            "params": [
+              {
+                "name": "backupId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of backup process"
+              },
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where backup was made"
+              },
+              {
+                "name": "restorationId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of restore process"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns restoration info"
+        },
+        {
+          "info": {
+            "name": "V3. Validate backup",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/backups/:backupId/validate",
+            "params": [
+              {
+                "name": "backupId",
+                "value": "",
+                "type": "path",
+                "description": "Identifier of backup"
+              },
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where backup was made"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Validates backup of the specified namespace"
+        },
+        {
+          "info": {
+            "name": "V3. Restore namespace",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/backups/:backupId/:parameter",
+            "params": [
+              {
+                "name": "backupId",
+                "value": "",
+                "type": "path",
+                "description": "Backup identifier"
+              },
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "This parameter specifies namespace where backup was made"
+              },
+              {
+                "name": "targetNamespace",
+                "value": "",
+                "type": "query",
+                "description": "This parameter specifies namespace for restoring to another project. This parameter is needed if backup and restore projects are different."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Restores database within the initial namespace which was used during backup or to another namespace"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Balancing Rules Administration V3",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. Get permanent namespace balancing rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/balancing/rules/permanent",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "query",
+                "description": "Namespace for which the rules will be searched"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get list of applied permanent balancing rules."
+        },
+        {
+          "info": {
+            "name": "V3. Add permanent namespace balancing rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/balancing/rules/permanent",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Allows adding new permanent namespace balancing rule. Balancing rules are intended to define in which physical database new logical database should be created. This API allows add such rule for a namespace: it means that all logical databases for microservices in this namespace will be placed in specific physical database according to rule. Such rule is permanent and it won't be deleted during physical database deletion. \n + *WARNING! Rules can be overridden. Rule's integrity and validity is the"
+        },
+        {
+          "info": {
+            "name": "V3. Delete permanent namespace balancing rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v3/dbaas/balancing/rules/permanent",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete all permanent balancing rules on namespace. "
+        },
+        {
+          "info": {
+            "name": "V3. On namespace physDb balancing rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/physical_databases/balancing/rules/:ruleName",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where the rule will be placed, each rule must have a namespace. Rules works only on logical databases created in the same namespace where they have been created."
+              },
+              {
+                "name": "ruleName",
+                "value": "",
+                "type": "path",
+                "description": "Name of the rule used as an identifier"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "There are no changes in comparison with version 1. Auto balancing rules allows configure behavior of DBaaS when a physical database of some specific type is choosen for new logical database. This rule currently works for new databases only, no migration of logical databases between physical databases is supported yet."
+        },
+        {
+          "info": {
+            "name": "V3. Delete on namespace physDb balancing rule",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/physical_databases/balancing/rules/:ruleName",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where the rule is placed"
+              },
+              {
+                "name": "ruleName",
+                "value": "",
+                "type": "path",
+                "description": "Name of the rule used as an identifier"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes a namespace balancing rule by name. The rule is deleted only if it belongs to the requested namespace."
+        },
+        {
+          "info": {
+            "name": "Debug for microservices' balancing rules.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/physical_databases/rules/debug",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where the rule is expected to be placed, each rule must have a namespace. Rules works only on logical databases created in the same namespace where they have been created."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This API receives JSON-configs with rules and list of microservices to check and returns in response a mapping what physical database is going to be assigned to each microservice from the request based on the balancing rules from the request and the existing rules in DBaaS. Response will also contain a list of labels for the assigned physical database to help analyze which rule was applied."
+        },
+        {
+          "info": {
+            "name": "V3. Get on microservice physical database balancing rules.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/physical_databases/rules/onMicroservices",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where the rule is placed, each rule has a namespace.\nRules works only on logical databases created in the same namespace where they have been created."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Allows getting physical database balancing rules for microservices."
+        },
+        {
+          "info": {
+            "name": "V3. On microservice physDb balancing rule.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/physical_databases/rules/onMicroservices",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where the rule will be placed, each rule must have a namespace. Rules works only on logical databases created in the same namespace where they have been created."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Allows adding balancing rules for microservices.  Balancing rules are intended to define in which physical database new logical database should be created. This API allows adding such rules for each microservice, or for group of microservices separately. \n *WARNING! Rules can be overridden. Rule's integrity and validity is the responsibility of project(applies) side.* \n It means that rule doesn't merge and there can be only one version of rule. If you change configuration of previous rule and se"
+        },
+        {
+          "info": {
+            "name": "Validation for microservices' balancing rules.",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/physical_databases/rules/onMicroservices/validation",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where the rule is expected to be placed, each rule must have a namespace. Rules works only on logical databases created in the same namespace where they have been created."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This API receives JSON-configs with rules for microservices and returns in response mapping label to physical db (whether all mentioned lables exist), indicates errors if any. Response also contains information about default physical databases for each db type."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Aggregated Database Administration No Namespace Controller V 3",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. List databases changed since a cursor",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/databases/changed",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of databases to return (1..1000)."
+              },
+              {
+                "name": "sinceId",
+                "value": "",
+                "type": "query",
+                "description": "Registry id component of the keyset cursor (tie-breaker for rows sharing sinceTs). Defaults to the zero UUID when omitted."
+              },
+              {
+                "name": "sinceTs",
+                "value": "",
+                "type": "query",
+                "description": "Return databases changed strictly after this ISO-8601 timestamp (keyset cursor, paired with sinceId). Omit on the first call to receive only the current high-water mark."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns databases whose credentials changed (password rotation or restore) strictly after the given cursor, ordered by change time, plus the current high-water mark. Consumed by the dbaas-operator rotation poller. Cluster-scoped: requires the CLUSTER_OPERATOR role."
+        },
+        {
+          "info": {
+            "name": "V3. Get database by name",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/databases/find-by-name/:dbname",
+            "params": [
+              {
+                "name": "dbname",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "withDecryptedPassword",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns list of databases for the specific logical database name"
+        },
+        {
+          "info": {
+            "name": "Get list of marked for drop databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/databases/marked-for-drop",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List of databases with marked for drop state related to requested namespaces (orphan databases are also included)"
+        },
+        {
+          "info": {
+            "name": "Cleanup marked for drop databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v3/dbaas/databases/marked-for-drop",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Housekeeping operation which drops all databases with marked for drop state (orphan databases are also included)"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Global Database Operation Controller v3",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. Update Physical Host in Connection Properties",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/databases/update-host",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This API updates the physical database host in the connection properties of logical databases. In the request body, you can specify whether to create a copy of the registry record (default behavior) or to make changes in place. If changes are made in place, the original database record will be updated."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Controller for debug operations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. Debug Get Logical Databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/debug/internal/databases",
+            "params": [
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "This parameter specifies custom RESTful Service Query Language (RSQL) query to apply filtering."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves Logical Database instances in near-tabular form.\nOperation supports filters in 'filter' query parameter in style of RESTful Service Query Language (RSQL)."
+        },
+        {
+          "info": {
+            "name": "V3. Get Dump",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/debug/internal/dump",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves a dump of DBaaS database information, including logical databases, physical databases, declarative configurations, Blue-Green domains and balancing rules.\nBy default, response body is returned as compressed zip file with json file inside.\nHowever, it is possible to get response body in JSON format instead of file."
+        },
+        {
+          "info": {
+            "name": "V3. Get ghost databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/debug/internal/ghost",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns list of ghost databases (databases that exist in adapter, but not registered in DBaaS)"
+        },
+        {
+          "info": {
+            "name": "V3. Get overall status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/debug/internal/info",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get DBaaS overall status"
+        },
+        {
+          "info": {
+            "name": "V3. Get lost databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/debug/internal/lost",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns list of lost databases (databases that are registered in DBaaS but do not exist in the adapter)"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Migration controller",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. Register databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/migration/databases",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This API allows you to register the database in DBaaS. The registered database would not be created, and it is assumed that it already exists in the cluster The purpose for this API is to register databases which weren not created through DBaaS. If registered database already exist in DBaaS then it will not be added."
+        },
+        {
+          "info": {
+            "name": "V3. Register databases with user creation",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/migration/databases/with-user-creation",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This API allows you to register the database in DBaaS with user creation. It can be useful when username and password is unknown and you want you database to dbaas registry. Previous users will not be unbind, so in point of security you should unbind user them by yourself.The registered database would not be created, and it is assumed that it already exists in the cluster The purpose for this API is to register databases which were not created through DBaaS. If registered database already exist "
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Database operation controller v3",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. Link databases for the requested microservices to target namespace",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/namespaces/:namespace/databases/link",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Project namespace in which the databases are used"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create additional classifiers for required databases in the target namespace, if there is no such classifiers."
+        },
+        {
+          "info": {
+            "name": "V3. Recreate database with existing classifier. Prohibited for Blue-Green",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/namespaces/:namespace/databases/recreate",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "namespace where microservices live that associated with these databases"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Recreate existing database with same classifier in the same physicalDb or in another. The API can be useful if you want to migrate associated with microservice logical db to another physical database. So, DBaaS creates a new empty database. After it, you will get a new connection and can perform a migration.Pay attention, each request will produce a new database even if the database was previously recreated. So, if your response contains unsuccessful databases you must leave only these databases"
+        },
+        {
+          "info": {
+            "name": "V3. Update existing database classifier",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/namespaces/:namespace/databases/update-classifier/:type",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Project namespace in which the databases are used"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "Type of physical database where database was created, e.g. mongodb, postgresql"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "The API allows to update existing database classifier"
+        },
+        {
+          "info": {
+            "name": "V3. Update existing database connection properties",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/namespaces/:namespace/databases/update-connection/:type",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Project namespace in which the databases are used"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "Type of physical database where database was created, e.g. mongodb, postgresql"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "The API allows to update existing database connection properties"
+        },
+        {
+          "info": {
+            "name": "V3. Change user password",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/namespaces/:namespace/password-changes",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Project namespace in which the databases are used"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "The API changes password of a user that is related to the specified database. A password will be changed to a random value.If classifier is not passed then all passwords of databases in the namespace and type will be changed."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Microservice controller v3",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. Get actual access grants for microservice databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/namespaces/:namespace/services/:serviceName/access-grants",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Project namespace in which the databases are used"
+              },
+              {
+                "name": "serviceName",
+                "value": "",
+                "type": "path",
+                "description": "Microservice name"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "The API allows to get actual access grants of microservice databases."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Database users controller v3",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. Get or create user",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/users",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "The API allows to get or create specific user for database."
+        },
+        {
+          "info": {
+            "name": "V3. Delete user",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v3/dbaas/users",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "The API allows to delete specific user for database."
+        },
+        {
+          "info": {
+            "name": "V3. Restore users",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/users/restore",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "The API allows to restore users for database. If role field is passed, then only users with this role will be processed."
+        },
+        {
+          "info": {
+            "name": "V3. Rotate user password.",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/users/rotate-password",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "The API allows to rotate password for specific user."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Controller Database administration",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. Creates new database V3",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/databases",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace where database will be placed"
+              },
+              {
+                "name": "async",
+                "value": "",
+                "type": "query",
+                "description": "Determines if database should be created asynchronously"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates new database and returns it with connection information, or returns the already created database if it exists. This version differs from version v1 in that there is the additional require field \"dbOwner\", which should contain name of database owner. It can be for exammple microserviceName value."
+        },
+        {
+          "info": {
+            "name": "V3. Get database by classifier",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/databases/get-by-classifier/:type",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The type of base in which the database was created. For example PostgreSQL  or MongoDB"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns connection to an already created database using classifier to search"
+        },
+        {
+          "info": {
+            "name": "V3. List of all databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/databases/list",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Project namespace in which the databases is used"
+              },
+              {
+                "name": "withResources",
+                "value": "",
+                "type": "query",
+                "description": "Parameter for adding database resources to response"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the list of all databases."
+        },
+        {
+          "info": {
+            "name": "V3. External database registration",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/databases/registration/externally_manageable",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace with which new database will be connected"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "This API supports registration in DBaaS for any external logical database."
+        },
+        {
+          "info": {
+            "name": "V3. Deprecated. Get list of ghosts and lost databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/databases/statuses",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Namespace for which to get the database statuses"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Databases may get lost if they were marked to delete but were not actually deleted. An existing database stays as a ghost if it was not registered in DBaaS."
+        },
+        {
+          "info": {
+            "name": " V3.Delete database by classifier",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v3/dbaas/:namespace/databases/:type",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "Project namespace in which the base is used"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "The physical type of logical database. For example mongodb or postgresql"
+              },
+              {
+                "name": "force",
+                "value": "",
+                "type": "query",
+                "description": "If true, errors from the physical adapter during drop are ignored"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes database by id in the specific namespace. If the optional 'force' parameter is set to true, errors from the physical adapter during drop are ignored and the database is removed from DBaaS regardless. Warning: using force=true may result in the logical database leaking in the physical database."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Physical databases registration controller",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "V3. List registered physical databases",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/dbaas/:type/physical_databases",
+            "params": [
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "Type of database, for example: MongoDB, PostgreSQL, elasticsearch, etc. or all - to list all registered physical databases"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the list of registered physical databases by database type"
+        },
+        {
+          "info": {
+            "name": "V3. Register new physical database",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/:type/physical_databases/:phydbid",
+            "params": [
+              {
+                "name": "phydbid",
+                "value": "",
+                "type": "path",
+                "description": "Physical database identifier. The value belongs to the specific database cluster"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "Type of database. Example: MongoDB, PostgreSQL, elasticsearch, etc."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates new physical database and returns path to it with physical database identifier."
+        },
+        {
+          "info": {
+            "name": "V3. Delete physical database",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v3/dbaas/:type/physical_databases/:phydbid",
+            "params": [
+              {
+                "name": "phydbid",
+                "value": "",
+                "type": "path",
+                "description": "Physical database identifier. The value belongs to the specific database cluster"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "Type of database, for example: MongoDB, PostgreSQL, elasticsearch, etc."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Deletes physical database by database type and physical database id"
+        },
+        {
+          "info": {
+            "name": "V3. Change default physical database",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v3/dbaas/:type/physical_databases/:phydbid/global",
+            "params": [
+              {
+                "name": "phydbid",
+                "value": "",
+                "type": "path",
+                "description": "Physical database identifier. The value belongs to the specific database cluster"
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "path",
+                "description": "Type of database. Example: MongoDB, PostgreSQL, elasticsearch, etc."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Moves the 'global' flag to the specified existing physical database"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

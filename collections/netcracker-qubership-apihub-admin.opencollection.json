@@ -1,0 +1,440 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "APIHUB system administrators API – External",
+    "version": "2026.1"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Transition",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Move package",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/admin/transition/move",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Change a package ID (rename or move to another parent package). This is an asynchronous operation: the response returns an operation ID, and clients must query /api/v2/admin/transition/move/{id} to track status and completion."
+        },
+        {
+          "info": {
+            "name": "Get move status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/admin/transition/move/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the move operation returned by the move request (string identifier)."
+              }
+            ]
+          },
+          "docs": "Retrieve the status of an asynchronous move operation by operation ID, including progress, timestamps, and resulting package identifiers.\n"
+        },
+        {
+          "info": {
+            "name": "List completed transition activities",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/admin/transition/activity",
+            "params": [
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Transition activities offset"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximun items in response"
+              }
+            ]
+          },
+          "docs": "List completed transition activities. Supports offset/limit pagination for recent completed operations.\n"
+        },
+        {
+          "info": {
+            "name": "List transitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/admin/transition"
+          },
+          "docs": "Retrieve the full mapping of historical package ID transitions (oldPackageId to newPackageId).\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Roles",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create a new role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/roles",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new role with the set of available permissions for this role.\n\nThe role may be assigned to the user for the specific package.\n\nThe \"read content of public packages\" permissions is applied for all roles by default (except the private packages with default role = **none**).\n"
+        },
+        {
+          "info": {
+            "name": "Update role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://{apihub}.qubership.org/api/v2/roles/:roleId",
+            "params": [
+              {
+                "name": "roleId",
+                "value": "",
+                "type": "path",
+                "description": "Unique role identifier (slug). Lowercase letters, digits, and hyphens are expected; value is immutable for an existing role."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update role parameters.\n\nIf a parameter is not provided in the request, its value remains unchanged.\n\nRead-only roles cannot be updated.\n"
+        },
+        {
+          "info": {
+            "name": "Delete role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{apihub}.qubership.org/api/v2/roles/:roleId",
+            "params": [
+              {
+                "name": "roleId",
+                "value": "",
+                "type": "path",
+                "description": "Unique role identifier (slug). Lowercase letters, digits, and hyphens are expected; value is immutable for an existing role."
+              }
+            ]
+          },
+          "docs": "Permanently delete a role and its permission assignment.\n\nWhen a role is deleted, users that had this role are removed from package membership lists where it was assigned.\n\nRoles with **readOnly:true** cannot be deleted.\n"
+        },
+        {
+          "info": {
+            "name": "Update the roles order",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/roles/changeOrder",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Replace the global role display/order configuration with the submitted ordered list.\n\nThe request must contain each existing role exactly once; missing or duplicate role IDs cause a 400 error. The change is applied atomically.\n"
+        },
+        {
+          "info": {
+            "name": "Get list of system administrators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/admins"
+          },
+          "docs": "Retrieve all users currently configured as system administrators."
+        },
+        {
+          "info": {
+            "name": "Add a system administrator",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/v2/admins",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add an existing user as a system administrator.\n"
+        },
+        {
+          "info": {
+            "name": "Delete system administrator",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://{apihub}.qubership.org/api/v2/admins/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "User login (username), for example user1221."
+              }
+            ]
+          },
+          "docs": "Delete a user from the system administrators group."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Admin",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List builds",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/builds",
+            "params": [
+              {
+                "name": "packageId",
+                "value": "",
+                "type": "query",
+                "description": "Filter builds by package ID."
+              },
+              {
+                "name": "version",
+                "value": "",
+                "type": "query",
+                "description": "Filter builds by package version."
+              },
+              {
+                "name": "buildIds",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of build IDs. When combined with other filters, all filters are applied."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of items to skip."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items to return."
+              }
+            ]
+          },
+          "docs": "Return a page of builds with persisted build configuration. If no filter is provided, the latest builds are returned first.\n"
+        },
+        {
+          "info": {
+            "name": "Get build",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v1/builds/:buildId",
+            "params": [
+              {
+                "name": "buildId",
+                "value": "",
+                "type": "path",
+                "description": "Build identifier string returned by build operations."
+              }
+            ]
+          },
+          "docs": "Return build data and persisted build configuration by build ID.\n"
+        },
+        {
+          "info": {
+            "name": "Get build result archive",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/admin/builds/:buildId/result",
+            "params": [
+              {
+                "name": "buildId",
+                "value": "",
+                "type": "path",
+                "description": "Build identifier string returned by build operations (internal build ID)."
+              }
+            ]
+          },
+          "docs": "Download the build result archive for a completed build. The response body is a binary stream (application/octet-stream) containing build artifacts.\n"
+        },
+        {
+          "info": {
+            "name": "Get build sources archive",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/v2/admin/builds/:buildId/sources",
+            "params": [
+              {
+                "name": "buildId",
+                "value": "",
+                "type": "path",
+                "description": "Build identifier string returned by build operations (internal build ID)."
+              }
+            ]
+          },
+          "docs": "Download build sources archive by build ID. The archive includes an apihub_build_config.json file with the build configuration.\n"
+        },
+        {
+          "info": {
+            "name": "Start operations migration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/internal/migrate/operations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Start an asynchronous operations migration job. Use the returned migration ID to check status, reports, and diagnostics endpoints.\n"
+        },
+        {
+          "info": {
+            "name": "Get migration status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/internal/migrate/operations/:migrationId",
+            "params": [
+              {
+                "name": "migrationId",
+                "value": "",
+                "type": "path",
+                "description": "Migration job identifier returned by the start migration operation."
+              }
+            ]
+          },
+          "docs": "Retrieve migration status and report data for a migration job identified by migrationId.\n"
+        },
+        {
+          "info": {
+            "name": "Get suspicious builds",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/internal/migrate/operations/:migrationId/suspiciousBuilds",
+            "params": [
+              {
+                "name": "migrationId",
+                "value": "",
+                "type": "path",
+                "description": "Migration job identifier returned by the start migration operation."
+              },
+              {
+                "name": "changedField",
+                "value": "",
+                "type": "query",
+                "description": "Optional filter by changed field name; returns only suspicious records where this field changed."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of items returned per page."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Page number for paginated results (1-based)."
+              }
+            ]
+          },
+          "docs": "Retrieve suspicious build records detected during the specified migration. Use query parameters to filter and paginate the result set.\n"
+        },
+        {
+          "info": {
+            "name": "Get migration performance report",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://{apihub}.qubership.org/api/internal/migrate/operations/:migrationId/perf",
+            "params": [
+              {
+                "name": "migrationId",
+                "value": "",
+                "type": "path",
+                "description": "Migration job identifier returned by the start migration operation."
+              },
+              {
+                "name": "includeHourPackageData",
+                "value": "",
+                "type": "query",
+                "description": "If true, include per-hour package-level performance breakdowns (larger payload)."
+              },
+              {
+                "name": "stageFilter",
+                "value": "",
+                "type": "query",
+                "description": "Optional stage name filter to return metrics only for matching migration stages."
+              }
+            ]
+          },
+          "docs": "Retrieve performance metrics for the specified migration, including stage-level timings and counters.\n"
+        },
+        {
+          "info": {
+            "name": "Cancel running migrations",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://{apihub}.qubership.org/api/internal/migrate/operations/cancel"
+          },
+          "docs": "Cancel currently running migration jobs. This operation is idempotent and safely returns success when no migration is running.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,667 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Maas Service API"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "V1",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create Composite Registration",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/composite/v1/structure"
+          },
+          "docs": "Register new Composite"
+        },
+        {
+          "info": {
+            "name": "Get Composite Registration By ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/composite/v1/structure/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Registration ID"
+              }
+            ]
+          },
+          "docs": "Get Composite Registration By Baseline ID"
+        },
+        {
+          "info": {
+            "name": "Destroy Composite Registrations",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/composite/v1/structure/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Registration ID"
+              }
+            ]
+          },
+          "docs": "Destroy Composite Registrations"
+        },
+        {
+          "info": {
+            "name": "Get All Composite Registrations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/composite/v1/structures"
+          },
+          "docs": "Get All Composite Registrations"
+        },
+        {
+          "info": {
+            "name": "Create Account",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/auth/account/client"
+          },
+          "docs": "Create new account"
+        },
+        {
+          "info": {
+            "name": "Delete Client Account using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/auth/account/client"
+          },
+          "docs": "Delete Client Account"
+        },
+        {
+          "info": {
+            "name": "Save Manager Account using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/auth/account/manager"
+          },
+          "docs": "Save Manager Account"
+        },
+        {
+          "info": {
+            "name": "Get All Accounts using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/auth/accounts"
+          },
+          "docs": "Get All Accounts"
+        },
+        {
+          "info": {
+            "name": "Get Bg Status By Namespace using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/bg-status"
+          },
+          "docs": "Get Bg Status By Namespace"
+        },
+        {
+          "info": {
+            "name": "Apply Bg Status using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/bg-status",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Apply Bg Status"
+        },
+        {
+          "info": {
+            "name": "Apply Config using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/config",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Apply Config"
+        },
+        {
+          "info": {
+            "name": "Register New Kafka Instance using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/kafka/instance"
+          },
+          "docs": "Register New Kafka Instance"
+        },
+        {
+          "info": {
+            "name": "Update New Kafka Instance using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v1/kafka/instance"
+          },
+          "docs": "Update New Kafka Instance"
+        },
+        {
+          "info": {
+            "name": "Unregister Kafka Instance using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/kafka/instance"
+          },
+          "docs": "Unregister Kafka Instance"
+        },
+        {
+          "info": {
+            "name": "Set Default Kafka Instance using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v1/kafka/instance/default"
+          },
+          "docs": "Set Default Kafka Instance"
+        },
+        {
+          "info": {
+            "name": "Get All Kafka Instances using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/kafka/instances"
+          },
+          "docs": "Get All Kafka Instances"
+        },
+        {
+          "info": {
+            "name": "Get Or Create Topic using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/kafka/topic",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Get Or Create Topic"
+        },
+        {
+          "info": {
+            "name": "Delete Topic using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/kafka/topic",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Delete Topic"
+        },
+        {
+          "info": {
+            "name": "Get Topic By Classifier using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/kafka/topic/get-by-classifier",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Get Topic By Classifier"
+        },
+        {
+          "info": {
+            "name": "Search Topics using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/kafka/topic/search",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Search Topics"
+        },
+        {
+          "info": {
+            "name": "Delete Namespace using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/namespace"
+          },
+          "docs": "Delete Namespace"
+        },
+        {
+          "info": {
+            "name": "Register New Rabbit Instance using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/rabbit/instance"
+          },
+          "docs": "Register New Rabbit Instance"
+        },
+        {
+          "info": {
+            "name": "Update Rabbit Instance using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v1/rabbit/instance"
+          },
+          "docs": "Update Rabbit Instance"
+        },
+        {
+          "info": {
+            "name": "Unregister Rabbit Instance using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/rabbit/instance"
+          },
+          "docs": "Unregister Rabbit Instance"
+        },
+        {
+          "info": {
+            "name": "Set Default Rabbit Instance using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v1/rabbit/instance/default"
+          },
+          "docs": "Set Default Rabbit Instance"
+        },
+        {
+          "info": {
+            "name": "Get All Rabbit Instances using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/rabbit/instances"
+          },
+          "docs": "Get All Rabbit Instances"
+        },
+        {
+          "info": {
+            "name": "Get Or Create VHost using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/rabbit/vhost",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Get Or Create VHost"
+        },
+        {
+          "info": {
+            "name": "Delete VHost using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/rabbit/vhost",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Delete VHost"
+        },
+        {
+          "info": {
+            "name": "Get VHost And Config By Classifier using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/rabbit/vhost/get-by-classifier",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Set Default Rabbit Instance"
+        },
+        {
+          "info": {
+            "name": "Sync Tenants using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/synchronize-tenants",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Sync Tenants"
+        },
+        {
+          "info": {
+            "name": "Get Tenants By Namespace using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/tenants",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Get Tenants By Namespace"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "V2",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Update Password using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v2/auth/account/manager/:name/password",
+            "params": [
+              {
+                "name": "name",
+                "value": "",
+                "type": "path",
+                "description": "new-password"
+              }
+            ]
+          },
+          "docs": "Update Password"
+        },
+        {
+          "info": {
+            "name": "Apply Config V2 using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v2/config"
+          },
+          "docs": "Apply Config V2"
+        },
+        {
+          "info": {
+            "name": "Get Report",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v2/kafka/discrepancy-report/:namespace",
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "namespace"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query",
+                "description": "status"
+              }
+            ]
+          },
+          "docs": "Get Report"
+        },
+        {
+          "info": {
+            "name": "Sync Topic To Kafka using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v2/kafka/recover-topic"
+          },
+          "docs": "Sync Topic To Kafka"
+        },
+        {
+          "info": {
+            "name": "Sync All Topics To Kafka using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v2/kafka/recovery/:namespace"
+          },
+          "docs": "Sync All Topics To Kafka"
+        },
+        {
+          "info": {
+            "name": "Get Or Create Topic using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v2/kafka/topic",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "onTopicExists",
+                "value": "",
+                "type": "query",
+                "description": "onTopicExists"
+              }
+            ]
+          },
+          "docs": "Get Or Create Topic"
+        },
+        {
+          "info": {
+            "name": "Get Topic By Classifier using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v2/kafka/topic/get-by-classifier",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Get Topic By Classifier"
+        },
+        {
+          "info": {
+            "name": "Search Topics using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v2/kafka/topic/search"
+          },
+          "docs": "Search Topics"
+        },
+        {
+          "info": {
+            "name": "Watch Topics Create using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v2/kafka/topic/watch-create",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "timeout",
+                "value": "",
+                "type": "query",
+                "description": "timeout"
+              }
+            ]
+          },
+          "docs": "Watch Topics Create"
+        },
+        {
+          "info": {
+            "name": "Get Monitoring Entities using Manager Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v2/monitoring/entity-distribution"
+          },
+          "docs": "Get Monitoring Entities"
+        },
+        {
+          "info": {
+            "name": "Get Monitoring Entity Requests",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v2/monitoring/entity-request-audit"
+          },
+          "docs": "Get Monitoring Entity Requests"
+        },
+        {
+          "info": {
+            "name": "Recover Namespace using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v2/rabbit/recovery/:namespace",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "namespace",
+                "value": "",
+                "type": "path",
+                "description": "namespace"
+              }
+            ]
+          },
+          "docs": "Recover Namespace"
+        },
+        {
+          "info": {
+            "name": "Validate Rabbit Configs using Agent Role",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v2/rabbit/validations",
+            "headers": [
+              {
+                "name": "X-Origin-Namespace",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Validate Rabbit Configs"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
