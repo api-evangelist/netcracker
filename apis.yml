@@ -36,6 +36,20 @@ tags:
 - Network Vendor
 - API Management
 - TM Forum
+- OpenAPI
+- CAMARA
+- Standards
+- Orchestration
+- Monetization
+- Open-Source
+tags_raw:
+- Telecommunications
+- United States
+- BSS
+- OSS
+- Network Vendor
+- API Management
+- TM Forum
 - Open API
 - CAMARA
 - Standards
@@ -60,6 +74,11 @@ apis:
   humanURL: https://netcracker.github.io/apihub/
   baseURL: https://{apihub}.qubership.org
   tags:
+  - API Management
+  - API Registry
+  - Developer Portal
+  - Open-Source
+  tags_raw:
   - API Management
   - API Registry
   - Developer Portal
@@ -92,6 +111,10 @@ apis:
   tags:
   - API Management
   - Administration
+  - Open-Source
+  tags_raw:
+  - API Management
+  - Administration
   - Open Source
   properties:
   - type: OpenAPI
@@ -113,6 +136,11 @@ apis:
     definition with 35 documented paths, secured with HTTP Basic authentication.
   humanURL: https://github.com/Netcracker/qubership-maas
   tags:
+  - Messaging
+  - Kafka
+  - RabbitMQ
+  - Open-Source
+  tags_raw:
   - Messaging
   - Kafka
   - RabbitMQ
@@ -141,6 +169,11 @@ apis:
     database registration and migration. Bearer JWT authentication.
   humanURL: https://github.com/Netcracker/qubership-dbaas
   tags:
+  - Database-as-a-Service
+  - Database
+  - Cloud Platform
+  - Open-Source
+  tags_raw:
   - DBaaS
   - Database
   - Cloud Platform
