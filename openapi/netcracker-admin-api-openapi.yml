@@ -1,0 +1,2782 @@
+openapi: 3.2.0
+info:
+  title: Netcracker Admin API
+  version: '2026.1'
+  contact:
+    name: Netcracker Opensource Group
+    email: opensourcegroup@netcracker.com
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  x-api-kind: BWC
+  description: 'Operations tagged Admin across 2 of this provider''s published API definitions: netcracker-qubership-apihub-admin-openapi.yml, netcracker-qubership-apihub-registry-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://{apihub}.qubership.org
+  description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+  variables:
+    apihub:
+      description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+      enum:
+      - apihub
+      - dev.apihub
+      - staging.apihub
+      default: apihub
+security:
+- BearerAuth: []
+- CookieAuth: []
+- api-key: []
+- PersonalAccessToken: []
+tags:
+- name: Admin
+  description: APIs for technical administration.
+paths:
+  /api/v1/builds:
+    get:
+      tags:
+      - Admin
+      summary: List builds
+      description: 'Return a page of builds with persisted build configuration. If no filter is provided, the latest builds are returned first.
+
+        '
+      operationId: listBuilds
+      parameters:
+      - name: packageId
+        in: query
+        required: false
+        description: Filter builds by package ID.
+        schema:
+          type: string
+      - name: version
+        in: query
+        required: false
+        description: Filter builds by package version.
+        schema:
+          type: string
+      - name: buildIds
+        in: query
+        required: false
+        description: Comma-separated list of build IDs. When combined with other filters, all filters are applied.
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        description: Number of items to skip.
+        schema:
+          type: integer
+          format: int32
+          minimum: 0
+          default: 0
+      - name: limit
+        in: query
+        required: false
+        description: Maximum number of items to return.
+        schema:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          default: 100
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendedBuilds'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v1/builds/{buildId}:
+    get:
+      tags:
+      - Admin
+      summary: Get build
+      description: 'Return build data and persisted build configuration by build ID.
+
+        '
+      operationId: getBuild
+      parameters:
+      - name: buildId
+        in: path
+        required: true
+        description: Build identifier string returned by build operations.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendedBuild'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Build not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/admin/builds/{buildId}/result:
+    get:
+      tags:
+      - Admin
+      summary: Get build result archive
+      description: 'Download the build result archive for a completed build. The response body is a binary stream (application/octet-stream) containing build artifacts.
+
+        '
+      operationId: getBuildResult
+      parameters:
+      - name: buildId
+        in: path
+        required: true
+        description: Build identifier string returned by build operations (internal build ID).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Build result not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/admin/builds/{buildId}/sources:
+    get:
+      tags:
+      - Admin
+      summary: Get build sources archive
+      description: 'Download build sources archive by build ID. The archive includes an apihub_build_config.json file with the build configuration.
+
+        '
+      operationId: getBuildSources
+      parameters:
+      - name: buildId
+        in: path
+        required: true
+        description: Build identifier string returned by build operations (internal build ID).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Build sources not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/internal/migrate/operations:
+    post:
+      tags:
+      - Admin
+      summary: Start operations migration
+      description: 'Start an asynchronous operations migration job. Use the returned migration ID to check status, reports, and diagnostics endpoints.
+
+        '
+      operationId: startOpsMigration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                packageIds:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional list of package IDs to migrate. If omitted, migration scope is determined by server-side defaults.
+                versions:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional list of versions to migrate (for example, 1.0.0 or 1.0.0@2). If omitted, all eligible versions are processed.
+                rebuildChangelogOnly:
+                  type: boolean
+                  description: If true, only changelog data is rebuilt; no full operations migration is performed.
+                  default: false
+                skipValidation:
+                  type: boolean
+                  description: If true, pre-migration validation checks are skipped. Use with caution because invalid data may propagate to reports.
+                  default: false
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Migration ID
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - migration already running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/internal/migrate/operations/{migrationId}:
+    get:
+      tags:
+      - Admin
+      summary: Get migration status
+      description: 'Retrieve migration status and report data for a migration job identified by migrationId.
+
+        '
+      operationId: getMigrationReport
+      parameters:
+      - name: migrationId
+        in: path
+        required: true
+        description: Migration job identifier returned by the start migration operation.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Migration report
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/internal/migrate/operations/{migrationId}/suspiciousBuilds:
+    get:
+      tags:
+      - Admin
+      summary: Get suspicious builds
+      description: 'Retrieve suspicious build records detected during the specified migration. Use query parameters to filter and paginate the result set.
+
+        '
+      operationId: getSuspiciousBuilds
+      parameters:
+      - name: migrationId
+        in: path
+        required: true
+        description: Migration job identifier returned by the start migration operation.
+        schema:
+          type: string
+      - name: changedField
+        in: query
+        required: false
+        description: Optional filter by changed field name; returns only suspicious records where this field changed.
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        description: Maximum number of items returned per page.
+        schema:
+          type: integer
+      - name: page
+        in: query
+        required: false
+        description: Page number for paginated results (1-based).
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/internal/migrate/operations/{migrationId}/perf:
+    get:
+      tags:
+      - Admin
+      summary: Get migration performance report
+      description: 'Retrieve performance metrics for the specified migration, including stage-level timings and counters.
+
+        '
+      operationId: getMigrationPerfReport
+      parameters:
+      - name: migrationId
+        in: path
+        required: true
+        description: Migration job identifier returned by the start migration operation.
+        schema:
+          type: string
+      - name: includeHourPackageData
+        in: query
+        required: false
+        description: If true, include per-hour package-level performance breakdowns (larger payload).
+        schema:
+          type: boolean
+      - name: stageFilter
+        in: query
+        required: false
+        description: Optional stage name filter to return metrics only for matching migration stages.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Performance report
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/internal/migrate/operations/cancel:
+    post:
+      tags:
+      - Admin
+      summary: Cancel running migrations
+      description: 'Cancel currently running migration jobs. This operation is idempotent and safely returns success when no migration is running.
+
+        '
+      operationId: cancelRunningMigrations
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/packages:
+    post:
+      tags:
+      - Admin
+      summary: Create a new package
+      description: Create a new package in APIHUB registry.
+      operationId: postPackages
+      requestBody:
+        description: Package for creation
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackageCreate'
+            examples: {}
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Package'
+                - type: object
+                  properties:
+                    parents:
+                      description: List of all parent packages
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PackageList'
+              examples: {}
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/packages/{packageId}:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    patch:
+      tags:
+      - Admin
+      summary: Change the package's parameters
+      description: 'Change the package''s parameters.
+
+        * If the parameter is not transmitted in request - its value stays unchanged.
+
+        * The empty parameter value in request sets the empty value in database.
+
+        '
+      operationId: patchPackagesId
+      requestBody:
+        description: Package update parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PackageUpdate'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Package'
+                - type: object
+                  properties:
+                    parents:
+                      description: List of all parent packages
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PackageList'
+                    defaultReleaseVersion:
+                      description: 'Default release version for the package.
+
+                        Only `release` version may be placed as default. Return the error otherwise.
+
+                        '
+                      type: string
+                      example: '2023.1'
+              examples: {}
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    delete:
+      tags:
+      - Admin
+      summary: Delete package
+      description: Delete the package and all included published versions.
+      operationId: deletePackagesId
+      responses:
+        '204':
+          description: No content
+          content: {}
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageReferencedByDashboard:
+                  $ref: '#/components/examples/PackageReferencedByDashboard'
+                GroupOrWorkspaceReferencedByDashboard:
+                  $ref: '#/components/examples/GroupOrWorkspaceReferencedByDashboard'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v4/packages/{packageId}/apiKeys:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    post:
+      tags:
+      - Admin
+      summary: Create a package API Key
+      description: 'Create a package API Key.
+
+        The Api Key for package with kind:group is acceptable for all child groups and packages.\
+
+        If packageId = ''\*'', then system tokens shall be created. Only system administrator can specify packageId = ''\*''.
+
+        '
+      operationId: postPackagesIdApiKeysV4
+      requestBody:
+        description: Create API key parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: API key name. Name must be unique.
+                roles:
+                  description: List of roles for api key. Limited by user's available roles, i.e. only available roles could be set. List of available roles could be retrieved via "/packages/{packageId}/availableRoles" endpoint.
+                  type: array
+                  items:
+                    type: string
+                createdFor:
+                  type: string
+                  description: id of the user for whom the API key shall be created.
+                  example: user1221
+              required:
+              - name
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/PackageApiKey'
+                - type: object
+                  properties:
+                    apiKey:
+                      description: 'Generated ApiKey. It shows only once. Need to copy to your credentials storage.
+
+                        '
+                      type: string
+              examples: {}
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    get:
+      tags:
+      - Admin
+      summary: Package API Keys list retrieve
+      description: 'Get a package API Keys list.\
+
+        If packageId = ''\*'', then system tokens shall be returned. Only system administrator can specify packageId = ''\*''.
+
+        '
+      operationId: getPackagesIdApiKeysV4
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiKeys:
+                    description: List of apikeys for package.
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PackageApiKey'
+              examples: {}
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/packages/{packageId}/apiKeys/{id}:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    - name: id
+      description: Package API key Id
+      in: path
+      required: true
+      schema:
+        type: string
+    delete:
+      tags:
+      - Admin
+      summary: Delete package API Key
+      description: 'Delete package API Key.\
+
+        If packageId = ''\*'', then system token with specified id shall be deleted. Only system administrator can specify packageId = ''\*''.
+
+        '
+      operationId: deletePackagesIdApiKeysId
+      responses:
+        '204':
+          description: No content
+          content: {}
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/packages/{packageId}/publish:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    post:
+      tags:
+      - Admin
+      summary: Publish package version via upload
+      description: 'Publish package version via upload. Possible options:
+
+        * **Client-side building** - client application marks, that the validation and build of the final specification will be outside the APIHUB backend.
+
+        The final specifications will be stored using the POST /packages/{packageId}/publish/{publishId}/status API.
+
+        The 202 response and the publish process Id will be returned in success.
+
+        In case of the client session close, the build will be continued on the server-sde.
+
+        * **Server-side building** - client application send all raw files-sources and starts the validation and build of the final specification in APIHUB backend.
+
+        The 202 response and the publish process Id will be returned in success.
+
+        * **No building** - only references publication. Files array in config and sources are empty. In this case the build process won''t be started.
+
+        The 204 response will be returned in success.
+
+        '
+      operationId: postPackagesIdPublish
+      parameters:
+      - name: clientBuild
+        in: query
+        description: Client-side package build will be used. Should be used only for browser-based build process.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: resolveRefs
+        in: query
+        required: false
+        description: With resolveRefs=true all references will be resolved into a flat list. With resolveRefs=false it's expected that all references are already resolved.
+        schema:
+          type: boolean
+          default: true
+      - name: resolveConflicts
+        in: query
+        required: false
+        description: 'In case when resolved refs list contains multiple versions of the same package:
+
+          - if resolveConflicts=false - status 400 (Bad request). Conflicts should be resolved manually.
+
+          - if resolveConflicts=true - conflicts will be resolved automatically, some refs will be marked as excluded'
+        schema:
+          type: boolean
+          default: true
+      requestBody:
+        description: Publish params
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - config
+              properties:
+                sources:
+                  type: string
+                  description: 'Files for publish in one zip archive.
+
+                    **Required**, if the files array is filled in the config.
+
+                    '
+                  format: binary
+                config:
+                  $ref: '#/components/schemas/BuildConfig_2'
+                builderId:
+                  type: string
+                  description: Builder identifier. **Required** only if clientBuild=true. Used to bind the build to specific executor.
+      responses:
+        '202':
+          description: Publish process started
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: object
+                  title: serverBuild
+                  properties:
+                    publishId:
+                      type: string
+                      description: Publish process Id
+                      format: uuid
+                      example: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
+                - type: object
+                  title: clientBuild
+                  description: Returns final build config when clientBuild=true
+                  properties:
+                    publishId:
+                      type: string
+                      description: Publish process Id
+                      format: uuid
+                      example: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
+                    config:
+                      $ref: '#/components/schemas/BuildConfig_2'
+        '204':
+          description: No content
+          content: {}
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+                PreviousVersionNotRelease:
+                  $ref: '#/components/examples/PreviousVersionNotRelease'
+                VersionReferencedAsPreviousByRelease:
+                  $ref: '#/components/examples/VersionReferencedAsPreviousByRelease'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '403':
+          description: Forbidden. Editor or admin rights for the package are required to publish version.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/packages/{packageId}/publish/{publishId}/status:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    - name: publishId
+      description: Publish Id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
+    get:
+      tags:
+      - Admin
+      summary: Get publish process status
+      description: Get publish process status.
+      operationId: getPackagesIdPublishIdStatus
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    description: Publish process status.
+                    type: string
+                    enum:
+                    - running
+                    - error
+                    - complete
+                    - none
+                  message:
+                    description: The message for **error** status.
+                    type: string
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/packages/{packageId}/versions/{version}:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    patch:
+      tags:
+      - Admin
+      summary: Update package version
+      description: 'Update package version.
+
+        * If the parameter is not transmitted in request - its value stays unchanged.
+
+        * The empty parameter value in request sets the empty value in database.
+
+        * The array of labels will be fully replaced as-it-send, no JSON-Patch approach for arrays is applicable.
+
+        '
+      operationId: patchPackagesIdVersionsIdV2
+      parameters:
+      - $ref: '#/components/parameters/version'
+      requestBody:
+        description: Version update params
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  $ref: '#/components/schemas/VersionStatusEnum'
+                versionLabels:
+                  description: List of version labels.
+                  type: array
+                  items:
+                    type: string
+                  example:
+                  - app.kubernetes.io/part-of:CloudQSS-CPQBE
+                  - app.kubernetes.io/version:release-candidate-20230410.152115-2782
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageVersionContent'
+              examples: {}
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+                VersionStatusChangePreviousVersionNotRelease:
+                  $ref: '#/components/examples/VersionStatusChangePreviousVersionNotRelease'
+                VersionReferencedAsPreviousByRelease:
+                  $ref: '#/components/examples/VersionReferencedAsPreviousByRelease'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    delete:
+      tags:
+      - Admin
+      summary: Delete package version
+      description: 'Delete the package''s version.
+
+        If the version was placed as a "defaultReleaseVersion" on a package, it will be cleared on this package (without the previous version restore).
+
+        '
+      operationId: deletePackagesIdVersionsId
+      parameters:
+      - $ref: '#/components/parameters/version'
+      responses:
+        '204':
+          description: No content
+          content: {}
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                VersionReferencedByDashboard:
+                  $ref: '#/components/examples/VersionReferencedByDashboard'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/packages/{packageId}/versions/{version}/copy:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    - $ref: '#/components/parameters/version'
+    post:
+      tags:
+      - Admin
+      summary: Copy package version to another package
+      description: 'Publish package version in target package using sources of source package (server-side building only).\
+
+        The final specifications will be stored using the POST /packages/{packageId}/publish/{publishId}/status. 202 response and the publish process Id will be returned in success.
+
+        '
+      operationId: getPackageIdVersionIdCopy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - targetPackageId
+              - targetVersion
+              - targetStatus
+              properties:
+                targetPackageId:
+                  description: Target package unique identifier (full alias).
+                  type: string
+                  example: QS.CQSS.CPQ.TMF
+                targetVersion:
+                  description: Version name for publication in target package.
+                  type: string
+                  example: '2022.3'
+                targetPreviousVersion:
+                  description: Name of the previous published version in target package.
+                  type: string
+                  example: '2022.2'
+                targetPreviousVersionPackageId:
+                  description: Package id of the previous version. The parameter may be empty if the value is equal to the targetPackageId.
+                  type: string
+                  example: QS.CloudQSS.CPQ.Q-TMF
+                targetStatus:
+                  $ref: '#/components/schemas/VersionStatusEnum'
+                targetVersionLabels:
+                  description: List of version labels in target package.
+                  type: array
+                  items:
+                    type: string
+                  example:
+                  - part-of:CloudQSS-CPQBE
+      responses:
+        '202':
+          description: Publish process started
+          content:
+            application/json:
+              schema:
+                type: object
+                title: serverBuild
+                properties:
+                  publishId:
+                    type: string
+                    description: Publish process Id
+                    format: uuid
+                    example: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '403':
+          description: Forbidden. No permission to publish version in current status in target package.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v2/users/{userId}/profile/avatar:
+    get:
+      x-nc-api-audience: noBWC
+      tags:
+      - Admin
+      summary: Get the user avatar
+      description: 'Get the user avatar.
+
+        API returns the data of photo file in a png format.
+
+        '
+      operationId: getUsersIdProfileAvatar
+      security:
+      - {}
+      parameters:
+      - name: userId
+        description: Unique user login (username) used to authenticate the user.
+        in: path
+        required: true
+        schema:
+          type: string
+          example: user1221
+      responses:
+        '200':
+          description: Success
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /metrics:
+    get:
+      tags:
+      - Admin
+      summary: Get Prometheus metrics
+      description: 'Returns Prometheus metrics in text format.
+
+        '
+      operationId: getMetrics
+      security: []
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Prometheus metrics in text format
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+components:
+  schemas:
+    BuildConfigRef:
+      type: object
+      properties:
+        refId:
+          type: string
+        version:
+          type: string
+        parentRefId:
+          type: string
+        parentVersion:
+          type: string
+        excluded:
+          type: boolean
+    BuildConfigMetadata:
+      type: object
+      properties:
+        branchName:
+          type: string
+        repositoryUrl:
+          type: string
+        cloudName:
+          type: string
+        cloudUrl:
+          type: string
+        namespace:
+          type: string
+        versionLabels:
+          type: array
+          items:
+            type: string
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+    ExtendedBuilds:
+      type: object
+      properties:
+        builds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExtendedBuild'
+      required:
+      - builds
+    BuildConfig:
+      type: object
+      description: Build configuration persisted in build_src.config.
+      additionalProperties: true
+      properties:
+        packageId:
+          type: string
+        version:
+          type: string
+        buildType:
+          type: string
+          enum:
+          - changelog
+          - build
+          - reducedSourceSpecifications
+          - mergedSpecification
+          - exportVersion
+          - exportRestDocument
+          - exportRestOperationsGroup
+          - exportGraphqlOperationsGroup
+          - exportAsyncapiOperationsGroup
+        previousVersion:
+          type: string
+        previousVersionPackageId:
+          type: string
+        status:
+          type: string
+        refs:
+          type: array
+          items:
+            $ref: '#/components/schemas/BuildConfigRef'
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/BuildConfigFile'
+        publishId:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/BuildConfigMetadata'
+        createdBy:
+          type: string
+        noChangeLog:
+          type: boolean
+        publishedAt:
+          type: string
+          format: date-time
+        migrationBuild:
+          type: boolean
+        migrationId:
+          type: string
+        comparisonRevision:
+          type: integer
+          format: int32
+        comparisonPrevRevision:
+          type: integer
+          format: int32
+        unresolvedRefs:
+          type: boolean
+        resolveRefs:
+          type: boolean
+        resolveConflicts:
+          type: boolean
+        serviceName:
+          type: string
+        apiType:
+          type: string
+        groupName:
+          type: string
+        format:
+          type: string
+        externalMetadata:
+          type: object
+          additionalProperties: true
+        validationRulesSeverity:
+          $ref: '#/components/schemas/ValidationRulesSeverity'
+        allowedOasExtensions:
+          type: array
+          items:
+            type: string
+        documentId:
+          type: string
+        operationsSpecTransformation:
+          type: string
+        allowedShareabilityStatuses:
+          type: array
+          items:
+            type: string
+    BuildConfigFile:
+      type: object
+      properties:
+        fileId:
+          type: string
+        slug:
+          type: string
+        index:
+          type: integer
+          format: int32
+        publish:
+          type:
+          - boolean
+          - 'null'
+        labels:
+          type: array
+          items:
+            type: string
+        blobId:
+          type: string
+        xApiKind:
+          type: string
+    ValidationRulesSeverity:
+      type: object
+      properties:
+        brokenRefs:
+          type: string
+    ExtendedBuild:
+      type: object
+      properties:
+        buildId:
+          type: string
+          description: Build identifier.
+        status:
+          type: string
+          description: Build execution status.
+          enum:
+          - none
+          - running
+          - complete
+          - error
+        details:
+          type: string
+          description: Build status details or error text.
+        clientBuild:
+          type: boolean
+          description: Indicates whether the build was created as a client build.
+        packageId:
+          type: string
+          description: Package ID associated with the build.
+        version:
+          type: string
+          description: Package version associated with the build.
+        createdAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the build was created.
+        lastActive:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the build was last updated.
+        createdBy:
+          type: string
+          description: User who created the build.
+        startedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the build started.
+        restartCount:
+          type: integer
+          format: int32
+          description: Number of builder restarts for this build.
+        builderId:
+          type: string
+          description: Builder ID that processed or is processing the build.
+        priority:
+          type: integer
+          format: int32
+          description: Build queue priority.
+        metadata:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          description: Build metadata stored in the build table.
+        config:
+          $ref: '#/components/schemas/BuildConfig'
+        dependencies:
+          type: array
+          items:
+            type: string
+          description: Build IDs that this build depends on and must wait to complete before it can run.
+      required:
+      - buildId
+      - status
+      - clientBuild
+      - packageId
+      - version
+      - restartCount
+      - priority
+      - config
+    PackageApiKey:
+      type: object
+      description: ApiKey details for the package
+      title: PackageApiKey
+      required:
+      - id
+      - name
+      - createdBy
+      - createdAt
+      - roles
+      properties:
+        id:
+          description: ApiKey unique identifier
+          type: string
+        packageId:
+          description: Internal unique package ID (full alias)
+          type: string
+        name:
+          description: ApiKey name
+          type: string
+        createdBy:
+          $ref: '#/components/schemas/User'
+        createdFor:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          description: Date and time of ApiKey creation
+          type: string
+          format: datetime
+        roles:
+          description: List of role identifiers assigned to the entity.
+          type: array
+          items:
+            type: string
+    ApiKey:
+      title: ApiKey
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          description: ApiKey unique identifier
+          type: string
+        name:
+          description: ApiKey name
+          type: string
+    Package:
+      description: Simple package object, without content and dependencies
+      type: object
+      title: Package
+      required:
+      - packageId
+      - alias
+      - kind
+      - name
+      - isFavorite
+      - defaultRole
+      properties:
+        packageId:
+          description: Package unique string identifier (full alias)
+          type: string
+        alias:
+          type: string
+          description: Package short alias (abbreviation)
+          maxLength: 10
+          pattern: ^[a-zA-Z0-9-_]
+        parentId:
+          description: Parent package ID
+          type: string
+        kind:
+          description: Package kind
+          type: string
+          enum:
+          - workspace
+          - group
+          - package
+          - dashboard
+        name:
+          description: Name of the package
+          type: string
+        description:
+          description: Common description of the package
+          type: string
+        isFavorite:
+          description: Sign of the favorite package for the caller user
+          type: boolean
+          default: false
+        serviceName:
+          description: Service name that package belongs to. Should be equal to service deployment name in kubernetes.
+          type: string
+        permissions:
+          type: array
+          description: List of user permissions applicable to the package.
+          items:
+            $ref: '#/components/schemas/Permission'
+          example:
+          - read
+          - create_and_update_package
+          - delete_package
+        defaultRole:
+          description: Default role of the package.
+          type: string
+        releaseVersionPattern:
+          description: Release version mask. Value shall be inherited from parent group with the ability to override it.
+          type: string
+        excludeFromSearch:
+          description: 'If true, the package (including child packages) will be ignored by global search.
+
+            Changing the value of the parent package will change the value of all child packages.
+
+            A child package cannot have a negative value if the parent package has a positive value. The default value for a newly created package is equal to the value from the parent package.
+
+            '
+          type: boolean
+        restGroupingPrefix:
+          description: 'Regular expression used as criteria for grouping operations.
+
+            Groups for the package version are calculated during publication of this version.
+
+            '
+          type: string
+          example: /api/v1/{group}/
+    VersionStatusEnum:
+      description: Package version status
+      type: string
+      enum:
+      - draft
+      - release
+      - archived
+    PackageList:
+      description: Base package object for parents list.
+      type: object
+      title: PackageList
+      properties:
+        packageId:
+          description: Package unique string identifier (full alias)
+          type: string
+        alias:
+          type: string
+          description: Package short alias (abbreviation)
+          maxLength: 10
+          pattern: ^[a-zA-Z0-9-_]
+        parentId:
+          description: Parent package ID
+          type: string
+        kind:
+          description: Package kind
+          type: string
+          enum:
+          - workspace
+          - group
+          - package
+          - dashboard
+        name:
+          description: Name of the package
+          type: string
+    BuildConfig_2:
+      type: object
+      description: 'Configuration of the source files.
+
+        Content can not be empty, files or refs are **required**.
+
+        '
+      required:
+      - version
+      - status
+      properties:
+        version:
+          description: Version name for publication.
+          type: string
+          example: '2022.3'
+        previousVersion:
+          description: 'Name of the previous published version.
+
+            The mask <version>@<revision> is required for ''changelog'' buildType.
+
+            '
+          type: string
+          example: '2022.2'
+          default: ''
+        previousVersionPackageId:
+          description: 'Required in case of snapshot when publishing version should be compared to different package.
+
+            Do not set anything if the package sould be compared to itself. Value equals to packageId is forbidden.
+
+            '
+          type: string
+          example: QS.CloudOSS.PL.MC
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        validationRulesSeverity:
+          type: object
+          description: Configuration for validation rules severity levels
+          readOnly: true
+          properties:
+            brokenRefs:
+              type: string
+              enum:
+              - error
+              - warning
+              default: warning
+              description: Severity level for broken references validation
+        groupName:
+          description: 'Operation group name. groupName is required if buildType = documentGroup.
+
+            '
+          type: string
+          example: v1
+        apiType:
+          $ref: '#/components/schemas/ApiType'
+        buildType:
+          description: 'Type of the build process. Available options are:
+
+
+            **build** - Standard build process to publish new version.
+
+            Consist of contract and operations build and validation, calculation of the changelog, creation of the final version of the published contracts.
+
+
+            **changelog** - Only the changelog calculation, no API contracts version will be created.
+
+            The ```files``` and ```refs``` objects are not required in this case.
+
+
+            **prefix-groups-changelog** - Changelog calculation for prefixed operation groups.
+
+
+            **documentGroup** - Deprecated. Process to transform documents so that they will contain operations only from specific operations group.
+
+
+            **exportGraphqlOperationsGroup** - Export GraphQL operations group.
+
+
+            **exportAsyncapiOperationsGroup** - Export AsyncAPI operations group.
+
+            '
+          type: string
+          enum:
+          - build
+          - changelog
+          - prefix-groups-changelog
+          - documentGroup
+          - exportGraphqlOperationsGroup
+          - exportAsyncapiOperationsGroup
+          default: build
+        metadata:
+          description: Common publish metadata.
+          type: object
+          properties:
+            commitId:
+              description: Last Git commit ID of the version.
+              type: string
+              example: a5d45af7
+            repositoryUrl:
+              description: Url of the Git repository.
+              type: string
+              format: URI
+              example: https://<git_group_link>/apihub-registry
+            versionLabels:
+              description: List of version labels. Label is a string.
+              type: array
+              items:
+                type: string
+              example:
+              - part-of:CloudQSS-CPQBE
+            cloudName:
+              description: Name of the cloud for publication from Agent.
+              type: string
+              example: k8s-apps2
+            cloudUrl:
+              description: Full address of the cloud from Agent.
+              type: string
+              format: URI
+              example: https://k8s-apps2.k8s.sdntest.qubership.org
+            namespace:
+              description: Namespace of Agent's publication.
+              type: string
+              example: cloudQSS-release2
+        externalMetadata:
+          description: External build metadata
+          type: object
+          properties:
+            operations:
+              type: array
+              items:
+                type: object
+                properties:
+                  apiType:
+                    type: string
+                    enum:
+                    - rest
+                  method:
+                    type: string
+                    description: HTTP method
+                  path:
+                    type: string
+                    description: HTTP path
+                  externalMetadata:
+                    description: External operation metadata
+                    type: object
+        files:
+          description: 'Detailed data about files in sources archive.
+
+            Required if no Refs are provided.
+
+            '
+          type: array
+          items:
+            type: object
+            required:
+            - fileId
+            properties:
+              fileId:
+                type: string
+                description: File name.
+                example: qitmf-v5.11.json
+              publish:
+                description: 'Flag, publish the source file or not.
+
+                  Required for case with external refs when specification is separated into multiple files.
+
+                  After dereference in scope of build process the source files(parts) are no longer required. So it''s possible to skip publish of such files.
+
+                  '
+                type: boolean
+                default: true
+              labels:
+                description: List of file labels. Label is a string.
+                type: array
+                items:
+                  type: string
+                example:
+                - TMF
+              blobId:
+                description: Git blob ID of the file.
+                type: string
+                example: a5d45af7
+              xApiKind:
+                description: Custom x-api-kind parameter for the file. Specify if this API is backward compatible.
+                type: string
+                example: no-BWC
+              metadata:
+                description: 'Open-ended file-level metadata.
+
+                  For MCP discovery files, set `mcpEndpoint` to the MCP server URL; DDL files typically omit this object.
+
+                  '
+                type: object
+                additionalProperties: true
+                example:
+                  mcpEndpoint: https://api.example.com/mcp
+        refs:
+          description: 'Detailed data about referenced versions for current package version.
+
+            Required if no Files provided.
+
+            '
+          type: array
+          items:
+            type: object
+            required:
+            - refId
+            - version
+            - type
+            properties:
+              refId:
+                description: Referenced package Id. I.e. link to another package.
+                type: string
+                example: QS.CloudQSS.CPQ.CORE
+              version:
+                description: Referenced package version. I.e. link to another package's version. The mask <version>@<revision> may be used to link with a specific revision. If the @revision is not provided, the latest version's revision will be used.
+                type: string
+                example: 2022.3@5
+              parentRefId:
+                description: Required to build reference(dependencies) graph. Allows to specify the parent node package id in the graph.
+                type: string
+                example: QS.CloudQSS.CPQ.CORE
+              parentVersion:
+                description: 'Required to build reference(dependencies) graph. Allows to specify the parent node version in the graph.
+
+                  The mask <version>@<revision> may be used to link with a specific revision.
+
+                  If the @revision is not provided, the latest version''s revision will be used.
+
+                  '
+                type: string
+                example: 2022.2@4
+              excluded:
+                description: 'Required for conflict resolution case when different versions of the same package appear in the publication config.
+
+                  All excluded refs will be ignored (but will still be visible for package version).
+
+                  '
+                type: boolean
+    PackageVersionContent:
+      description: Published package version content
+      type: object
+      required:
+      - packageId
+      - version
+      - createdAt
+      - createdBy
+      - summary
+      - revision
+      - revisionsCount
+      - status
+      - apiProcessorVerson
+      properties:
+        packageId:
+          description: Package unique string identifier (full alias)
+          type: string
+          example: QS.CloudQSS.CPQ.Q-TMF
+        version:
+          description: Package version name.The <version>@<revision> mask is used to return the revision number.
+          type: string
+          example: 2022.2@5
+        createdAt:
+          description: Date of the package version publication.
+          type: string
+          format: date-time
+        createdBy:
+          $ref: '#/components/schemas/Principal'
+        previousVersion:
+          description: Name of the previous published version.The <version>@<revision> mask is used to return the revision number.
+          type: string
+          example: 2022.2@5
+        previousVersionPackageId:
+          description: Package id of the previous version to compare with. Required for agent snapshots.
+          type: string
+          example: QS.GRP.SOMEPKG
+        versionLabels:
+          description: List of version labels.
+          type: array
+          items:
+            type: string
+          example:
+          - part-of:CloudQSS-CPQBE
+        notLatestRevision:
+          type: boolean
+          default: false
+        revisionsCount:
+          description: Total number of revisions in the version.
+          type: integer
+          format: int32
+          example: 3
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        apiProcessorVerson:
+          description: Version of api-processor with which current version was built.
+          type: string
+    ApiType:
+      title: apiType
+      type: string
+      enum:
+      - rest
+      - graphql
+      - protobuf
+      - asyncapi
+    Principal:
+      description: User or API key
+      allOf:
+      - oneOf:
+        - $ref: '#/components/schemas/User'
+        - $ref: '#/components/schemas/ApiKey'
+      - type: object
+        required:
+        - type
+        properties:
+          type:
+            description: Identifies whether principal is user or API key
+            type: string
+            enum:
+            - user
+            - apiKey
+    User:
+      description: Represents an APIHUB user with identity and profile information returned by API endpoints.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          description: Unique user login (username) used to authenticate the user.
+          type: string
+          example: user1221
+        name:
+          description: Name of the user
+          type: string
+          example: John Doe
+        email:
+          description: Email address of the user
+          type: string
+          format: email
+          example: john.doe@example.com
+        avatarUrl:
+          description: URL of the user avatar image.
+          type: string
+          format: URL
+    PackageUpdate:
+      description: Parameters for the package update. Not changed parameters must not be transmitted. Parameters, required in creation, must not be empty if transmitted.
+      type: object
+      properties:
+        name:
+          description: Name of the package
+          type: string
+        description:
+          description: Common description of the package
+          type: string
+        serviceName:
+          description: 'Service name that package belongs to. Should be equal to service deployment name in kubernetes.
+
+            Parameter may be changed (filled in) only it was empty in creation. Otherwise, the 400 error will be returned.
+
+            '
+          type: string
+        defaultRole:
+          description: Default role of the package.
+          type: string
+        defaultReleaseVersion:
+          description: 'Default release version for the package.
+
+            Only `release` version may be placed as default. Return the error otherwise.
+
+            '
+          type: string
+          example: '2023.1'
+        releaseVersionPattern:
+          description: Release version mask. Value shall be inherited from parent group with the ability to override it.
+          type: string
+        excludeFromSearch:
+          description: 'If true, the package (including child packages) will be ignored by global search.
+
+            Changing the value of the parent package will change the value of all child packages.
+
+            A child package cannot have a negative value if the parent package has a positive value. The default value for a newly created package is equal to the value from the parent package.
+
+            '
+          type: boolean
+        restGroupingPrefix:
+          description: Regular expression used as criteria for grouping operations.
+          type: string
+    Permission:
+      description: Permission
+      type: string
+      enum:
+      - read
+      - create_and_update_package
+      - delete_package
+      - manage_draft_version
+      - manage_release_version
+      - manage_archived_version
+      - user_access_management
+      - access_token_management
+      example: read
+    PackageCreate:
+      description: Parameters for the package creation
+      required:
+      - alias
+      - name
+      - kind
+      type: object
+      properties:
+        parentId:
+          description: Parent package ID
+          type: string
+        kind:
+          description: 'Package kind.
+
+            * If kind = workspace, the parentId will be ignored.
+
+            * If kind = group or package or dashboard, the parentId is required.
+
+            '
+          type: string
+          enum:
+          - workspace
+          - group
+          - package
+          - dashboard
+        name:
+          description: Name of the new package
+          type: string
+        alias:
+          description: Package short alias (abbreviation)
+          type: string
+          maxLength: 10
+          pattern: ^[a-zA-Z0-9-_]
+        description:
+          description: Common description of the package
+          type: string
+        serviceName:
+          description: 'Service name that package belongs to. Should be equal to service deployment name in kubernetes.
+
+            Ignored for Workspace and Group kind.
+
+            '
+          type: string
+        defaultRole:
+          description: Default role of the package.
+          type: string
+        releaseVersionPattern:
+          description: Release version mask. Value shall be inherited from parent group with the ability to override it.
+          type: string
+        excludeFromSearch:
+          description: 'If true, the package (including child packages) will be ignored by global search.
+
+            Changing the value of the parent package will change the value of all child packages.
+
+            A child package cannot have a negative value if the parent package has a positive value. The default value for a newly created package is equal to the value from the parent package.
+
+            '
+          type: boolean
+  examples:
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
+    VersionReferencedAsPreviousByRelease:
+      description: Version cannot be changed to 'draft' because a released version uses it as its previous version
+      value:
+        status: 400
+        code: '8600'
+        message: 'Version 2024.1 for package QS.group.my-package cannot be changed to the ''draft'' status because it is the previous version of released versions: QS.group.other-package|2024.2@1'
+        params:
+          version: '2024.1'
+          packageId: QS.group.my-package
+          releaseVersions: QS.group.other-package|2024.2@1
+    PreviousVersionNotRelease:
+      description: A release version cannot reference a draft previous version
+      value:
+        status: 400
+        code: '8600'
+        message: Version 2024.2 for package QS.group.my-package cannot be published with the 'release' status because previous version 2024.1 for package QS.group.previous-package is in the 'draft' status. Change the previous version to 'release', or publish this version as a draft.
+        params:
+          version: '2024.2'
+          packageId: QS.group.my-package
+          previousVersion: '2024.1'
+          previousVersionPackageId: QS.group.previous-package
+    VersionStatusChangePreviousVersionNotRelease:
+      description: Version status cannot be changed to 'release' when the previous version is a draft
+      value:
+        status: 400
+        code: '8600'
+        message: Version 2024.2 for package QS.group.my-package cannot be changed to the 'release' status because previous version 2024.1 for package QS.group.previous-package is in the 'draft' status. Change the previous version to 'release', then retry.
+        params:
+          version: '2024.2'
+          packageId: QS.group.my-package
+          previousVersion: '2024.1'
+          previousVersionPackageId: QS.group.previous-package
+    GroupOrWorkspaceReferencedByDashboard:
+      description: Group or workspace cannot be deleted because dashboard versions reference packages inside it.
+      value:
+        status: 409
+        code: '8500'
+        message: 'Cannot delete $kind $packageId: it contains packages that are referenced by dashboards: $packages. Remove the references or delete the dashboards, then retry.'
+        params:
+          kind: group
+          packageId: sample.group
+          packages: sample.group.package1 (sample.dashboard|2024.2@3, other.dashboard|2024.1@1), sample.group.package2 (other.dashboard|1.0@1)
+    PackageNotFound:
+      description: Package not found by ID. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3020
+        message: package with packageId = $packageId not found
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
+    VersionReferencedByDashboard:
+      description: Version cannot be deleted because one or more dashboard versions reference it.
+      value:
+        status: 409
+        code: '8500'
+        message: 'Cannot delete version $version of package $packageId: it is referenced by these dashboard versions: $dashboards. Remove the references or delete the dashboards, then retry.'
+        params:
+          packageId: sample.package
+          version: '2024.1'
+          dashboards: sample.dashboard|2024.2@3, other.dashboard|2024.1@1
+    PackageReferencedByDashboard:
+      description: Package cannot be deleted because one or more dashboard versions reference it.
+      value:
+        status: 409
+        code: '8500'
+        message: 'Cannot delete package $packageId: it is referenced by these dashboard versions: $dashboards. Remove the references or delete the dashboards, then retry.'
+        params:
+          packageId: sample.package
+          dashboards: sample.dashboard|2024.2@3, other.dashboard|2024.1@1
+  parameters:
+    packageId:
+      name: packageId
+      in: path
+      description: Package unique identifier (full alias)
+      required: true
+      schema:
+        type: string
+        example: QS.CloudQSS.CPQ.Q-TMF
+    version:
+      name: version
+      in: path
+      description: Package version
+      required: true
+      schema:
+        type: string
+        example: '2022.3'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      description: 'Bearer token authentication (JWT). Default security scheme for API usage. Provide Authorization: Bearer <token>.'
+      scheme: bearer
+      bearerFormat: JWT
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-access-token
+      description: Authentication via the `apihub-access-token` cookie.
+    api-key:
+      type: apiKey
+      description: API key authentication. Send the key in the api-key header.
+      name: api-key
+      in: header
+    PersonalAccessToken:
+      type: apiKey
+      description: Personal access token authentication. Send the token in the X-Personal-Access-Token header; use for user-issued/script access.
+      name: X-Personal-Access-Token
+      in: header
+    RefreshTokenAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-refresh-token
+      description: Authentication via refresh token cookie
+    BasicAuth:
+      type: http
+      description: Login/password authentication.
+      scheme: basic
+externalDocs:
+  description: Find out more about this project and repository documentation
+  url: https://github.com/Netcracker/qubership-apihub
+x-refined-from:
+- netcracker-qubership-apihub-admin-openapi.yml
+- netcracker-qubership-apihub-registry-openapi.yml

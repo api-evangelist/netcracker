@@ -1,0 +1,425 @@
+openapi: 3.2.0
+info:
+  title: APIHUB Registry – External Internal Documents API
+  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
+
+    '
+  contact:
+    name: Netcracker Opensource Group
+    email: opensourcegroup@netcracker.com
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: '2026.1'
+  x-api-kind: BWC
+servers:
+- url: https://{apihub}.qubership.org
+  description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+  variables:
+    apihub:
+      description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+      enum:
+      - apihub
+      - dev.apihub
+      - staging.apihub
+      default: apihub
+security:
+- BearerAuth: []
+- CookieAuth: []
+- api-key: []
+- PersonalAccessToken: []
+tags:
+- name: Internal Documents
+  description: APIs for internal documents management.
+paths:
+  /api/v1/version-internal-documents/{hash}:
+    parameters:
+    - name: hash
+      in: path
+      description: Document hash
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Internal Documents
+      summary: Get version internal document content
+      description: Get version internal document content
+      operationId: getVersionInternalDocumentsHash
+      security:
+      - BearerAuth: []
+      - CookieAuth: []
+      - api-key: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                description: Text file content
+                type: string
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                description: Indicates inline content and file name
+                example: inline; filename="qitmf-v5.11.json"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v1/comparison-internal-documents/{hash}:
+    parameters:
+    - name: hash
+      in: path
+      description: Document hash
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Internal Documents
+      summary: Get comparison internal document content
+      description: Get comparison internal document content
+      operationId: getComparisonInternalDocumentsHash
+      security:
+      - BearerAuth: []
+      - CookieAuth: []
+      - api-key: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                description: Text file content
+                type: string
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                description: Indicates inline content and file name
+                example: inline; filename="qitmf-v5.11.json"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v1/packages/{packageId}/versions/{version}/version-internal-documents:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    - $ref: '#/components/parameters/version'
+    get:
+      tags:
+      - Internal Documents
+      summary: Get version internal documents
+      description: 'Get list of version internal documents for the version. Version internal documents are only supported for packages of kind `package`
+
+        '
+      operationId: getPackagesIdVersionsIdVersionInternalDocuments
+      security:
+      - BearerAuth: []
+      - CookieAuth: []
+      - api-key: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                description: List of internal documents in a package version.
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/components/schemas/InternalDocumentMetadata'
+                  - type: object
+                    required:
+                    - hash
+                    properties:
+                      hash:
+                        description: Hash of the corresponding document content.
+                        type: string
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current endpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v1/packages/{packageId}/versions/{version}/comparison-internal-documents:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    - $ref: '#/components/parameters/version'
+    - $ref: '#/components/parameters/previousVersionPackageId'
+    - $ref: '#/components/parameters/previousVersion'
+    get:
+      tags:
+      - Internal Documents
+      summary: Get version comparison internal documents
+      description: 'Get list of internal documents for the version comparison. Internal documents are only supported for packages of kind `package`
+
+        '
+      operationId: getPackagesIdVersionsIdComparisonInternalDocuments
+      security:
+      - BearerAuth: []
+      - CookieAuth: []
+      - api-key: []
+      parameters:
+      - name: refPackageId
+        description: Filter by package id of ref package and previous ref package.
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                description: List of internal documents in a version comparison.
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/components/schemas/InternalDocumentMetadata'
+                  - type: object
+                    required:
+                    - hash
+                    properties:
+                      hash:
+                        description: Hash of the corresponding document content.
+                        type: string
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current endpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+components:
+  parameters:
+    previousVersionPackageId:
+      name: previousVersionPackageId
+      in: query
+      description: 'Package unique identifier for previous version.
+
+        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+
+        '
+      schema:
+        type: string
+        example: QS.RUNENV.K8S-SERVER.CJM-QSS-DEV-2.Q-TMF
+    packageId:
+      name: packageId
+      in: path
+      description: Package unique identifier (full alias)
+      required: true
+      schema:
+        type: string
+        example: QS.CloudQSS.CPQ.Q-TMF
+    previousVersion:
+      name: previousVersion
+      in: query
+      description: 'Package previous version.
+
+        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+
+        '
+      schema:
+        type: string
+        example: '2022.3'
+    version:
+      name: version
+      in: path
+      description: Package version
+      required: true
+      schema:
+        type: string
+        example: '2022.3'
+  examples:
+    PackageNotFound:
+      description: Package not found by ID. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3020
+        message: package with packageId = $packageId not found
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
+  schemas:
+    InternalDocumentMetadata:
+      type: object
+      required:
+      - id
+      - fileName
+      properties:
+        id:
+          description: Published file id.
+          type: string
+          pattern: ^[a-z0-9-]
+          example: qitmf-v5-11-json
+        fileName:
+          type: string
+          description: File name (slug+extension).
+          example: qitmf-v5.11.json
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+  securitySchemes:
+    BearerAuth:
+      type: http
+      description: 'Bearer token authentication (JWT). Default security scheme for API usage. Provide Authorization: Bearer <token>.'
+      scheme: bearer
+      bearerFormat: JWT
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-access-token
+      description: Authentication via the `apihub-access-token` cookie.
+    api-key:
+      type: apiKey
+      description: API key authentication. Send the key in the api-key header.
+      name: api-key
+      in: header
+    BasicAuth:
+      type: http
+      description: Login/password authentication.
+      scheme: basic
+    PersonalAccessToken:
+      type: apiKey
+      description: Personal access token authentication. Send the token in the X-Personal-Access-Token header; use for user-issued/script access.
+      name: X-Personal-Access-Token
+      in: header
+    RefreshTokenAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-refresh-token
+      description: Authentication via refresh token cookie
+externalDocs:
+  description: Find out more about this project and repository documentation
+  url: https://github.com/Netcracker/qubership-apihub

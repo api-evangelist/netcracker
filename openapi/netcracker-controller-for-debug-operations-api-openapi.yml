@@ -1,0 +1,342 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Controller for debug operations API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Controller for debug operations
+paths:
+  /api/v3/dbaas/debug/internal/databases:
+    get:
+      summary: V3. Debug Get Logical Databases
+      description: 'Retrieves Logical Database instances in near-tabular form.
+
+        Operation supports filters in ''filter'' query parameter in style of RESTful Service Query Language (RSQL).'
+      tags:
+      - Controller for debug operations
+      parameters:
+      - description: This parameter specifies custom RESTful Service Query Language (RSQL) query to apply filtering.
+        name: filter
+        in: query
+        schema:
+          type: string
+      responses:
+        '500':
+          description: An error occurred during getting response
+        '400':
+          description: Incorrect RSQL query in 'filter' query parameter
+        '200':
+          description: Successfully retrieved list of debug logical databases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DebugLogicalDatabaseV3'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/debug/internal/dump:
+    get:
+      summary: V3. Get Dump
+      description: 'Retrieves a dump of DBaaS database information, including logical databases, physical databases, declarative configurations, Blue-Green domains and balancing rules.
+
+        By default, response body is returned as compressed zip file with json file inside.
+
+        However, it is possible to get response body in JSON format instead of file.'
+      tags:
+      - Controller for debug operations
+      responses:
+        '500':
+          description: An error occurred during getting dump
+        '200':
+          description: Successfully retrieved dump
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DumpResponseV3'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/DumpResponseV3'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/debug/internal/ghost:
+    get:
+      summary: V3. Get ghost databases
+      description: Returns list of ghost databases (databases that exist in adapter, but not registered in DBaaS)
+      tags:
+      - Controller for debug operations
+      responses:
+        '500':
+          description: Internal error
+        '200':
+          description: List of ghost databases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GhostDatabasesResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/debug/internal/info:
+    get:
+      summary: V3. Get overall status
+      description: Get DBaaS overall status
+      tags:
+      - Controller for debug operations
+      responses:
+        '500':
+          description: An error occurred during getting overall status
+        '200':
+          description: Successfully retrieved status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OverallStatusResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/debug/internal/lost:
+    get:
+      summary: V3. Get lost databases
+      description: Returns list of lost databases (databases that are registered in DBaaS but do not exist in the adapter)
+      tags:
+      - Controller for debug operations
+      responses:
+        '500':
+          description: Internal error
+        '200':
+          description: List of lost databases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatabaseResponseV3ListCP'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    DumpResponseV3:
+      type: object
+      properties:
+        rules:
+          type: array
+          items: {}
+        logicalDatabases:
+          type: array
+          items: {}
+        physicalDatabases:
+          type: array
+          items: {}
+        declarativeConfigurations:
+          type: array
+          items: {}
+        blueGreenDomains:
+          type: array
+          items: {}
+        backups:
+          type: array
+          items: {}
+        restores:
+          type: array
+          items: {}
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    GhostDatabasesResponse:
+      type: object
+      required:
+      - physicalDatabaseId
+      - dbNames
+      properties:
+        physicalDatabaseId:
+          type: string
+          description: Physical database identificator.
+        dbNames:
+          type: array
+          items:
+            type: string
+          description: Ghost databases names related to adapter with this physical databases id.
+        errorMessage:
+          type: string
+          description: Error message from adapter.
+    DebugLogicalDatabaseV3:
+      type: object
+      properties:
+        namespace:
+          type: string
+        microservice:
+          type: string
+        tenantId:
+          type: string
+        logicalDbName:
+          type: string
+        bgVersion:
+          type: string
+        type:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        physicalDbId:
+          type: string
+        physicalDbAdapterUrl:
+          type: string
+        declaration:
+          $ref: '#/components/schemas/DebugDatabaseDeclarativeConfigV3'
+    DatabaseResponseV3ListCP:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - name
+      - connectionProperties
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field might not be used when searching by classifier for security purpose. And it exists in the response when executing Create database API
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and it distinguishes this database from other databases in the same namespace. It contains such keys as dbClassifier, isServiceDb, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed.
+        type:
+          type: string
+          description: Type of database, for example PostgreSQL or MongoDB
+        name:
+          type: string
+          description: Name of database. It may be generated or, if name was specified in the request, then it will be specified.
+        externallyManageable:
+          type: boolean
+          description: This parameter specifies if a control over the database is not carried out by the DBaaS adapter
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: Additional settings for creating a database.
+        backupDisabled:
+          type: boolean
+          description: 'This field indicates if backup is disabled or not. If true, database would not be backed up. Example: false'
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: This is an information about connection to database. It contains such keys as url, authDbName, username, password, port, host.Setting keys depends on the database type.
+        resources:
+          $ref: '#/components/schemas/DbResource'
+          description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
+    OverallStatusResponse:
+      type: object
+      properties:
+        overallHealthStatus:
+          type: string
+          description: Overall health status
+        overallLogicalDbNumber:
+          type: integer
+          format: int32
+          description: Number of logical databases
+        physicalDatabaseInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhysicalDatabaseInfo'
+          description: Information about physical databases
+    DebugDatabaseDeclarativeConfigV3:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        settings:
+          type: object
+          additionalProperties: {}
+        lazy:
+          type: boolean
+        instantiationApproach:
+          type: string
+        versioningApproach:
+          type: string
+        versioningType:
+          type: string
+        classifier:
+          type: object
+          additionalProperties: {}
+        type:
+          type: string
+        namePrefix:
+          type: string
+        namespace:
+          type: string
+    PhysicalDatabaseInfo:
+      type: object
+      properties:
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier
+        healthStatus:
+          type: string
+          description: Adapter health status
+        logicalDbNumber:
+          type: string
+          description: Number of logical databases related to this physical database
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

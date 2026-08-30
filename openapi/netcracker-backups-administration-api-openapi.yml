@@ -1,0 +1,811 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Backups administration API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Backups administration
+  description: Allows to get list of available backups, trigger backup collector and restore some specific backup. All backup management is per namespace.
+paths:
+  /api/v3/dbaas/backups/{backupId}/restorations/{restorationId}:
+    get:
+      summary: V3. Get restoration info
+      description: Returns restoration info
+      tags:
+      - Backups administration
+      parameters:
+      - description: Identifier of backup process
+        required: true
+        name: backupId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - description: Identifier of restore process
+        required: true
+        name: restorationId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '404':
+          description: Selected backup or restoration not found
+        '200':
+          description: Backup is validated and can be restored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamespaceBackup'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+  /api/v3/dbaas/backups/{backupId}/{parameter}:
+    post:
+      summary: V3. Restore database
+      description: Restores backup for a specific backup ID
+      tags:
+      - Backups administration
+      parameters:
+      - description: Identifier of backup process
+        required: true
+        name: backupId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - description: This parameter specifies namespace for restoring to another project. This parameter is needed to use if backup and restore projects are different.
+        name: targetNamespace
+        in: query
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Namespace restoration started, return backup id to track status
+        '400':
+          description: Selected backup cannot be restored
+        '404':
+          description: Selected backup not found
+        '200':
+          description: Backup successfully restored
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+  /api/v3/dbaas/{namespace}/backups:
+    get:
+      summary: V3. Get all backups of namespace
+      description: Lists all backups prepared for specified namespace
+      tags:
+      - Backups administration
+      parameters:
+      - name: namespace
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successfully returned backups.
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+  /api/v3/dbaas/{namespace}/backups/collect:
+    post:
+      summary: V3. Backup namespace
+      description: Start backup collection process for specified namespace
+      tags:
+      - Backups administration
+      parameters:
+      - description: Namespace of the database needs to be saved
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      - description: Allows to disable eviction on adapters for current backup
+        name: allowEviction
+        in: query
+        schema:
+          type: boolean
+          default: 'true'
+      - description: The parameter enables(by default)/disables validating of DBaaS adapters on the supported backup procedure
+        name: ignoreNotBackupableDatabases
+        in: query
+        schema:
+          type: boolean
+          default: 'false'
+      responses:
+        '202':
+          description: Backup of namespace databases started, return backup id to track status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UUID'
+        '201':
+          description: Backup successfully collected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamespaceBackup'
+        '501':
+          description: Some backup adapters do not support backup operation
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+  /api/v3/dbaas/{namespace}/backups/{backupId}:
+    get:
+      summary: V3. Get backup info
+      description: Returns backup info
+      tags:
+      - Backups administration
+      parameters:
+      - description: Identifier of backup
+        required: true
+        name: backupId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - description: Namespace where backup was made
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      responses:
+        '404':
+          description: Selected backup not found
+        '200':
+          description: Backup info was successfully collected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamespaceBackup'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+    delete:
+      summary: V3. Delete backup
+      description: Start delete backup process for specified namespace
+      tags:
+      - Backups administration
+      parameters:
+      - description: 'Identifier of backup needs to be deleted '
+        required: true
+        name: backupId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - description: Namespace of the database backup
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Backup successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamespaceBackupDeletion'
+        '403':
+          description: Backup deletion is forbidden
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Backup is not found
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: The following backup can not be deleted
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Not Authorized
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+    put:
+      summary: V3. Add new backup info
+      description: Adds new backup info to specified backup id
+      tags:
+      - Backups administration
+      parameters:
+      - description: Identifier of backup process
+        required: true
+        name: backupId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - description: Namespace of databases in backup time
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NamespaceBackupDTO'
+        required: true
+      responses:
+        '200':
+          description: Information was added successfully
+          content:
+            application/json:
+              schema: {}
+        '403':
+          description: Backup namespace and specified namespace are different
+        '401':
+          description: Not Authorized
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+  /api/v3/dbaas/{namespace}/backups/{backupId}/restorations/{restorationId}:
+    get:
+      summary: V3. Get restoration info
+      description: Returns restoration info
+      tags:
+      - Backups administration
+      parameters:
+      - description: Identifier of backup process
+        required: true
+        name: backupId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - description: Namespace where backup was made
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      - description: Identifier of restore process
+        required: true
+        name: restorationId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      responses:
+        '404':
+          description: Selected backup or restoration not found
+        '200':
+          description: Restoration info was successfully collected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NamespaceBackup'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+  /api/v3/dbaas/{namespace}/backups/{backupId}/validate:
+    get:
+      summary: V3. Validate backup
+      description: Validates backup of the specified namespace
+      tags:
+      - Backups administration
+      parameters:
+      - description: Identifier of backup
+        required: true
+        name: backupId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - description: Namespace where backup was made
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      responses:
+        '500':
+          description: Selected backup cannot be restored, probably it had been removed or failed to be collected
+        '404':
+          description: Selected backup not found
+        '200':
+          description: Backup is validated and can be restored
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+  /api/v3/dbaas/{namespace}/backups/{backupId}/{parameter}:
+    post:
+      summary: V3. Restore namespace
+      description: Restores database within the initial namespace which was used during backup or to another namespace
+      tags:
+      - Backups administration
+      parameters:
+      - description: Backup identifier
+        required: true
+        name: backupId
+        in: path
+        schema:
+          $ref: '#/components/schemas/UUID'
+      - description: This parameter specifies namespace where backup was made
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      - description: This parameter specifies namespace for restoring to another project. This parameter is needed if backup and restore projects are different.
+        name: targetNamespace
+        in: query
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Namespace restoration started, return backup id to track status
+        '400':
+          description: Selected backup cannot be restored
+        '404':
+          description: Selected backup not found
+        '200':
+          description: Backup successfully restored
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - BACKUP_MANAGER
+components:
+  schemas:
+    NamespaceRestoration:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        restoreResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestoreResult'
+        failReasons:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/Status1'
+    DatabaseStateStatus:
+      type: string
+      enum:
+      - PROCESSING
+      - CREATED
+      - DELETING
+      - DELETING_FAILED
+      - ARCHIVED
+      - ORPHAN
+    Status1:
+      type: string
+      enum:
+      - SUCCESS
+      - PROCEEDING
+      - FAIL
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    DatabasesBackup:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        status:
+          $ref: '#/components/schemas/Status1'
+          type: string
+          description: This field contains the status of backup process of the specific adapter.
+        adapterId:
+          type: string
+          description: This field contains the adapter id.
+        localId:
+          type: string
+          description: Identifier of an adapter associated with backup process
+        trackId:
+          type: string
+          description: Identifier for polling process specific adapter.
+        trackPath:
+          type: string
+          description: Priority path for polling process.
+        databases:
+          type: array
+          items:
+            type: string
+          description: List of databases' names
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    FieldTypeEnum:
+      type: string
+      enum:
+      - PASSWORD
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    NamespaceBackupDeletion:
+      type: object
+      properties:
+        deleteResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeleteResult'
+        failReasons:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/Status1'
+    ConnectionDescription:
+      type: object
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldDescription'
+    DatabaseRegistry:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - database
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed
+        type:
+          type: string
+          description: Type of database, for example postgresql or mongodb
+        database:
+          $ref: '#/components/schemas/Database'
+          description: It lists of database classifiers
+        dbState:
+          $ref: '#/components/schemas/DbState'
+        databaseRegistry:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+        oldClassifier:
+          type: object
+          additionalProperties: {}
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        adapterId:
+          type: string
+        name:
+          type: string
+        markedForDrop:
+          type: boolean
+        backupDisabled:
+          type: boolean
+        dbOwnerRoles:
+          type: array
+          items:
+            type: string
+        settings:
+          type: object
+          additionalProperties: {}
+        connectionDescription:
+          $ref: '#/components/schemas/ConnectionDescription'
+        warnings:
+          type: array
+          items:
+            type: string
+        externallyManageable:
+          type: boolean
+        bgVersion:
+          type: string
+        physicalDatabaseId:
+          type: string
+    Status:
+      type: string
+      enum:
+      - FAIL
+      - ACTIVE
+      - PROCEEDING
+      - RESTORING
+      - INVALIDATED
+      - DELETION_FAILED
+    RestoreResult:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        databasesBackup:
+          $ref: '#/components/schemas/DatabasesBackup'
+          type: object
+          description: This object contains information about restoring the specific adapter.
+        status:
+          $ref: '#/components/schemas/Status1'
+          type: string
+          description: The field contains the restore status of specific adapter.
+        adapterId:
+          type: string
+        changedNameDb:
+          type: object
+          additionalProperties:
+            type: string
+          description: 'This associative array contain database names, where key: "old db name", value: "new db name". This array will not be empty if the targetNamespace parameter will be passed and it will be filled during restore to another namespace.'
+    DbState:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        state:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+          type: string
+          deprecated: true
+        databaseState:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+        description:
+          type: string
+        podName:
+          type: string
+    NamespaceBackup:
+      type: object
+      required:
+      - id
+      - namespace
+      - databases
+      - databaseRegistries
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the backup process. Backup process is associated with this id.
+        backups:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabasesBackup'
+          description: List of adapters with backup information.
+        failReasons:
+          type: array
+          items:
+            type: string
+          description: List of errors that can occur during backup process.
+        namespace:
+          type: string
+          description: This parameter specifies project namespace whose databases are needed to save.
+        databases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Database'
+          description: List of backup databases.
+        databaseRegistries:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+          description: List of backup database registers
+        restorations:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamespaceRestoration'
+          description: The object stores a restoring information related to this backup.
+        created:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Data of backup process creation.
+        status:
+          $ref: '#/components/schemas/Status'
+          type: string
+          description: 'Status of backup process. This field may contain: FAIL, ACTIVE, PROCEEDING, RESTORING, INVALIDATED, DELETION_FAILED'
+    Database:
+      type: object
+      required:
+      - oldClassifier
+      - classifier
+      - connectionProperties
+      - namespace
+      - type
+      - adapterId
+      - name
+      - resources
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
+        oldClassifier:
+          type: object
+          additionalProperties: {}
+          description: Old classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, isService, microserviceName, namespace. Setting keys depends on the database type.
+        classifier:
+          type: object
+          deprecated: true
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: The information about connection to database. It contains such keys as url, authDbName, username, password, port, host.Setting keys depends on the database type.
+        namespace:
+          type: string
+          deprecated: true
+          description: Namespace where database is placed
+        type:
+          type: string
+          deprecated: true
+          description: Type of database, for example postgresql or mongodb
+        adapterId:
+          type: string
+          description: This field indicates for which adapter the database was created.
+        name:
+          type: string
+          description: Name of database. It may be generated or, if name was specified in a request then it will be specified.
+        markedForDrop:
+          type: boolean
+          description: A marker indicating that the database will be deleted.
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database
+        backupDisabled:
+          type: boolean
+          description: 'This field indicates if backup is disabled or not. If true, database would not be backed up. Example: false'
+        dbOwnerRoles:
+          type: array
+          items:
+            type: string
+          description: The list of roles which are related to this logical database. The external security service (e.g. DBaaS Agent) can perform a verification process on this field.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: Additional settings for creating a database
+        connectionDescription:
+          $ref: '#/components/schemas/ConnectionDescription'
+          type: object
+          description: This parameter describes connection properties.
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Lists warning messages
+        externallyManageable:
+          type: boolean
+          description: This parameter specifies if a control over the database is not carried out by the DBaaS adapter.
+        bgVersion:
+          type: string
+          description: Database version. It uses for blue-green
+        physicalDatabaseId:
+          type: string
+        databaseRegistry:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+        resources:
+          $ref: '#/components/schemas/DbResource'
+          description: It lists resource which will be deleted when sending the request for delete a database
+        dbState:
+          $ref: '#/components/schemas/DbState'
+    FieldDescription:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/FieldTypeEnum'
+    NamespaceBackupDTO:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        backups:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabasesBackup'
+        failReasons:
+          type: array
+          items:
+            type: string
+        namespace:
+          type: string
+        databases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Database'
+        databaseRegistries:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+        restorations:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamespaceRestoration'
+        created:
+          $ref: '#/components/schemas/Date'
+        status:
+          $ref: '#/components/schemas/Status'
+    DeleteResult:
+      type: object
+      properties:
+        databasesBackup:
+          $ref: '#/components/schemas/DatabasesBackup'
+        status:
+          $ref: '#/components/schemas/Status1'
+        adapterId:
+          type: string
+        message:
+          type: string
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

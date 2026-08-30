@@ -1,0 +1,425 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Balancing Rules Administration V3 API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Balancing Rules Administration V3
+  description: 'Allows to configure a logic of balancing logical databases over physical. '
+paths:
+  /api/v3/dbaas/balancing/rules/permanent:
+    get:
+      summary: V3. Get permanent namespace balancing rule
+      description: Get list of applied permanent balancing rules.
+      tags:
+      - Balancing Rules Administration V3
+      parameters:
+      - description: Namespace for which the rules will be searched
+        required: false
+        name: namespace
+        in: query
+        schema:
+          type: string
+      responses:
+        '404':
+          description: Rules not found
+        '200':
+          description: Return founded rules
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+        - DBAAS_DB_EDITOR
+    delete:
+      summary: V3. Delete permanent namespace balancing rule
+      description: 'Delete all permanent balancing rules on namespace. '
+      tags:
+      - Balancing Rules Administration V3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PermanentPerNamespaceRuleDeleteDTO'
+        required: true
+      responses:
+        '200':
+          description: Rules deleted
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+        - DBAAS_DB_EDITOR
+    put:
+      summary: V3. Add permanent namespace balancing rule
+      description: "Allows adding new permanent namespace balancing rule. Balancing rules are intended to define in which physical database new logical database should be created. This API allows add such rule for a namespace: it means that all logical databases for microservices in this namespace will be placed in specific physical database according to rule. Such rule is permanent and it won't be deleted during physical database deletion. \n + *WARNING! Rules can be overridden. Rule's integrity and validity is the responsibility of project(applies) side.* \n It means that rule doesn't merge and there can be only one version of rule. If you change configuration of previous rule and send it, then logical databases will be created by the new changed rule. Therefore, be careful before deleting or modifying the rule."
+      tags:
+      - Balancing Rules Administration V3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PermanentPerNamespaceRuleDTO'
+        required: true
+      responses:
+        '400':
+          description: Cannot create two different rules for same namespace with different physicalDbId and same DbType
+        '200':
+          description: New rules created
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+        - DBAAS_DB_EDITOR
+  /api/v3/dbaas/{namespace}/physical_databases/balancing/rules/{ruleName}:
+    delete:
+      summary: V3. Delete on namespace physDb balancing rule
+      description: Deletes a namespace balancing rule by name. The rule is deleted only if it belongs to the requested namespace.
+      tags:
+      - Balancing Rules Administration V3
+      parameters:
+      - description: Namespace where the rule is placed
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      - description: Name of the rule used as an identifier
+        required: true
+        name: ruleName
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Rule deleted
+        '404':
+          description: Rule not found in the requested namespace
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+    put:
+      summary: V3. On namespace physDb balancing rule
+      description: There are no changes in comparison with version 1. Auto balancing rules allows configure behavior of DBaaS when a physical database of some specific type is choosen for new logical database. This rule currently works for new databases only, no migration of logical databases between physical databases is supported yet.
+      tags:
+      - Balancing Rules Administration V3
+      parameters:
+      - description: Namespace where the rule will be placed, each rule must have a namespace. Rules works only on logical databases created in the same namespace where they have been created.
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      - description: Name of the rule used as an identifier
+        required: true
+        name: ruleName
+        in: path
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuleRegistrationRequest'
+        required: true
+      responses:
+        '409':
+          description: Cannot create two different rules for same type with same order
+        '201':
+          description: New rule created
+        '200':
+          description: Existing rule changed
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/{namespace}/physical_databases/rules/debug:
+    post:
+      summary: Debug for microservices' balancing rules.
+      description: This API receives JSON-configs with rules and list of microservices to check and returns in response a mapping what physical database is going to be assigned to each microservice from the request based on the balancing rules from the request and the existing rules in DBaaS. Response will also contain a list of labels for the assigned physical database to help analyze which rule was applied.
+      tags:
+      - Balancing Rules Administration V3
+      parameters:
+      - description: Namespace where the rule is expected to be placed, each rule must have a namespace. Rules works only on logical databases created in the same namespace where they have been created.
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebugRulesRequest'
+        required: true
+      responses:
+        '200':
+          description: Return result of rules evaluation
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Error happened when processing rules
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/{namespace}/physical_databases/rules/onMicroservices:
+    get:
+      summary: V3. Get on microservice physical database balancing rules.
+      description: Allows getting physical database balancing rules for microservices.
+      tags:
+      - Balancing Rules Administration V3
+      parameters:
+      - description: 'Namespace where the rule is placed, each rule has a namespace.
+
+          Rules works only on logical databases created in the same namespace where they have been created.'
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Gotten on microservice physical database balancing rules
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+    put:
+      summary: V3. On microservice physDb balancing rule.
+      description: "Allows adding balancing rules for microservices.  Balancing rules are intended to define in which physical database new logical database should be created. This API allows adding such rules for each microservice, or for group of microservices separately. \n *WARNING! Rules can be overridden. Rule's integrity and validity is the responsibility of project(applies) side.* \n It means that rule doesn't merge and there can be only one version of rule. If you change configuration of previous rule and send it, then logical databases will be created by the new changed rule. Therefore, be careful before deleting or modifying the rule."
+      tags:
+      - Balancing Rules Administration V3
+      parameters:
+      - description: Namespace where the rule will be placed, each rule must have a namespace. Rules works only on logical databases created in the same namespace where they have been created.
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OnMicroserviceRuleRequest'
+        required: true
+      responses:
+        '201':
+          description: New rule created
+        '400':
+          description: Received request with wrong body
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/{namespace}/physical_databases/rules/onMicroservices/validation:
+    put:
+      summary: Validation for microservices' balancing rules.
+      description: This API receives JSON-configs with rules for microservices and returns in response mapping label to physical db (whether all mentioned lables exist), indicates errors if any. Response also contains information about default physical databases for each db type.
+      tags:
+      - Balancing Rules Administration V3
+      parameters:
+      - description: Namespace where the rule is expected to be placed, each rule must have a namespace. Rules works only on logical databases created in the same namespace where they have been created.
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OnMicroserviceRuleRequest'
+        required: true
+      responses:
+        '200':
+          description: Schema is valid
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Schema is not valid
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    PermanentPerNamespaceRuleDTO:
+      type: object
+      required:
+      - dbType
+      - physicalDatabaseId
+      - namespaces
+      description: Rule allows to define in which physical database new logical databases should be created
+      properties:
+        dbType:
+          type: string
+          description: Physical db type (ex. postgresql, mongodb, etc), for which rule should be applied.
+        physicalDatabaseId:
+          type: string
+          description: Identifier of physical database where newly created logical databases should be placed.
+        namespaces:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+          description: Namespaces for which rules should be applied
+    RuleBody:
+      type: object
+      required:
+      - type
+      - config
+      description: Rule allows to define physical database for new logical databases
+      properties:
+        type:
+          $ref: '#/components/schemas/RuleType'
+          type: string
+          description: Type of rule is required, it defines what logic would be used when rule is applying.
+        config:
+          type: object
+          additionalProperties: {}
+          description: "Configuration contains rule-specific information: \n - perNamespace rule only expects phydbid (physical database identifier) to be specified in rule."
+    RuleRegistrationRequest:
+      type: object
+      required:
+      - type
+      description: Rule registration request allows to add a new rule for the specific type of logical databases, which would be applied in specific order.
+      properties:
+        order:
+          type: integer
+          format: int64
+          description: Inside namespace+type domain, order defines which rule would be used first. Thelesser order takes precedence. The order is optional; if not specified then the maximum over namespace+type domain would be calculated.
+        type:
+          type: string
+          description: Type of database required. The rule would only work on logical databases of the specified type.
+        rule:
+          $ref: '#/components/schemas/RuleBody'
+    RuleOnMicroservice:
+      type: object
+      required:
+      - label
+      description: Rule allows to define physical database for new logical databases on microservice
+      properties:
+        label:
+          type: string
+          description: Label uses to find physical DB which contains this label
+    DebugRulesRequest:
+      type: object
+      required:
+      - microservices
+      - rules
+      description: Debug rules request allows to validate a list of rules against a list of microservices to check what database is going to be assigned to each microservice
+      properties:
+        microservices:
+          type: array
+          items:
+            type: string
+          description: List of microservices
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnMicroserviceRuleRequest'
+          description: List of rules
+    PermanentPerNamespaceRuleDeleteDTO:
+      type: object
+      required:
+      - namespaces
+      properties:
+        dbType:
+          type: string
+          description: Db type for which rules should be deleted. If omitted all rules for specified namespaces will be deleted.
+        namespaces:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+          description: Namespaces for which rules should be deleted
+    RuleType:
+      type: string
+      enum:
+      - perNamespace
+      description: "Rule type specified what configuration applies to which logic. \n - perNamespace rule would just use specified physical database for any new logical database in namespace, where rule works"
+    OnMicroserviceRuleRequest:
+      type: object
+      required:
+      - type
+      - microservices
+      description: Rule registration request allows to add a new rule for the specific type of logical databases, which would be applied in specific order.
+      properties:
+        type:
+          type: string
+          description: Type of physical database which logical base belongs to
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/RuleOnMicroservice'
+          description: List of rules to microservices. Allows to define physical database
+        microservices:
+          type: array
+          items:
+            type: string
+          description: List of microservice names to which the specified rule has a place to be
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

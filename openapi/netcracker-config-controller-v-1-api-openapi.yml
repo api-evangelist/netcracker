@@ -1,0 +1,211 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Config Controller V 1 API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Config Controller V 1
+paths:
+  /api/declarations/v1/apply:
+    post:
+      summary: Apply config
+      description: Apply declarative config
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: Operation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeclarativeResponse'
+        '202':
+          description: Asynchronous execution started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeclarativeResponse'
+        '400':
+          description: Validation error
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Config Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/declarations/v1/operation/{trackingId}/extendedTroubleshootingInfo:
+    get:
+      summary: Operation status
+      description: Get operation status by trackingId
+      parameters:
+      - description: Id to track operation
+        required: true
+        name: trackingId
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return operation status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationStatusExtendedResponse'
+        '404':
+          description: Not found operation status
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Config Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/declarations/v1/operation/{trackingId}/status:
+    get:
+      summary: Operation status
+      description: Get operation status by trackingId
+      parameters:
+      - description: Id to track operation
+        required: true
+        name: trackingId
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return operation status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeclarativeResponse'
+        '404':
+          description: Not found operation status
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Config Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/declarations/v1/operation/{trackingId}/terminate:
+    post:
+      summary: Terminate operation
+      description: Terminate operation by trackingId
+      parameters:
+      - description: Id to track operation
+        required: true
+        name: trackingId
+        in: path
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Operation completed successfully
+        '404':
+          description: Incorrect trackingID
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Config Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    Condition:
+      type: object
+      properties:
+        type:
+          type: string
+        state:
+          type: string
+        reason:
+          type:
+          - string
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+    OperationStatusExtendedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          readOnly: true
+        message:
+          type: string
+        operationDetails:
+          $ref: '#/components/schemas/OperationDetails'
+    DeclarativeResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        trackingId:
+          type:
+          - string
+          - 'null'
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Condition'
+    OperationState:
+      type: object
+      properties:
+        status:
+          type: string
+        description:
+          type: string
+    OperationDetails:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDetails'
+    TaskDetails:
+      type: object
+      properties:
+        taskId:
+          type: string
+        taskName:
+          type: string
+        state:
+          $ref: '#/components/schemas/OperationState'
+        classifier:
+          type: object
+          additionalProperties: {}
+        type:
+          type: string
+        backupId:
+          type: string
+        restoreId:
+          type: string
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

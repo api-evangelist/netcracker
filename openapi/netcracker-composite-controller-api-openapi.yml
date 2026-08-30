@@ -1,0 +1,134 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Composite Controller API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Composite Controller
+paths:
+  /api/composite/v1/structures:
+    post:
+      summary: Save or update composite
+      description: Create a new composite structure or update an existing one.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompositeStructureDto'
+        required: true
+      responses:
+        '204':
+          description: Composite is saved
+        '400':
+          description: Validation error
+        '409':
+          description: Conflict error. Namespace in request body is already associated with another composite structure
+        '500':
+          description: Internal server error
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Composite Controller
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+    get:
+      summary: Get all composite structures
+      description: Retrieve all composite structures that are registered in DBaaS.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Internal server error
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Composite Controller
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/composite/v1/structures/{compositeId}:
+    get:
+      summary: Get composite structure by composite id
+      description: Retrieve a composite structure by its Id. Composite id by design is baseline or baseline origin if namespace in blue-green
+      parameters:
+      - name: compositeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Composite is found
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Composite not found
+        '500':
+          description: Internal server error
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Composite Controller
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/composite/v1/structures/{compositeId}/delete:
+    delete:
+      summary: Delete composite by composite id
+      description: Delete a composite structure by its ID.
+      parameters:
+      - name: compositeId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: Composite is deleted successfully
+        '404':
+          description: Composite not found
+        '500':
+          description: Internal server error
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Composite Controller
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    CompositeStructureDto:
+      type: object
+      required:
+      - id
+      - namespaces
+      properties:
+        id:
+          type: string
+          description: Composite identifier. Usually it's baseline or origin baseline in blue-green scheme
+        namespaces:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+          description: Namespaces that are included in composite structure (baseline and satellites)
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

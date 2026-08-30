@@ -1,0 +1,329 @@
+openapi: 3.2.0
+info:
+  title: APIHUB Registry – External User profile API
+  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
+
+    '
+  contact:
+    name: Netcracker Opensource Group
+    email: opensourcegroup@netcracker.com
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: '2026.1'
+  x-api-kind: BWC
+servers:
+- url: https://{apihub}.qubership.org
+  description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+  variables:
+    apihub:
+      description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+      enum:
+      - apihub
+      - dev.apihub
+      - staging.apihub
+      default: apihub
+security:
+- BearerAuth: []
+- CookieAuth: []
+- api-key: []
+- PersonalAccessToken: []
+tags:
+- name: User profile
+  description: APIs for user's personal settings.
+paths:
+  /api/v1/personalAccessToken:
+    post:
+      tags:
+      - User profile
+      summary: Create a personal access token
+      description: 'Generates a new personal access token for the current user.\
+
+        User cannot have more than 100 tokens. The limitation is applicable to active and expired tokens which are not deleted.
+
+        '
+      operationId: postPersonalAccessToken
+      requestBody:
+        description: Create personal access token parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the personal access token. The name must be unique per user.
+                  example: token1
+                daysUntilExpiry:
+                  type: integer
+                  description: "The number of days after which the token will expire.\\\n  * \"-1\" means that token does not have an expiration date.\n  * \"0\" is prohibited.\n"
+                  minimum: -1
+              required:
+              - name
+              - daysUntilExpiry
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/PersonalAccessToken'
+                - type: object
+                  required:
+                  - token
+                  properties:
+                    token:
+                      description: 'Generated personall acess token.
+
+                        '
+                      type: string
+              examples: {}
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Unauthorized:
+                  $ref: '#/components/examples/Unauthorized'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+    get:
+      tags:
+      - User profile
+      summary: Personal access token list retrieve
+      description: 'Retrieve all personal access token that have been generated for the current user.\ User cannot have more than 100 tokens. The limitation is applicable to active and expired tokens which are not deleted.
+
+        '
+      operationId: getPersonalAccessToken
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PersonalAccessToken'
+              examples: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Unauthorized:
+                  $ref: '#/components/examples/Unauthorized'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v1/personalAccessToken/{id}:
+    parameters:
+    - name: id
+      description: Personal access token Id
+      in: path
+      required: true
+      schema:
+        type: string
+    delete:
+      tags:
+      - User profile
+      summary: Delete personal access token
+      description: 'Delete personal access token. Deleted token cannot be used to authenticate to APIHUB.
+
+        '
+      operationId: deletePersonalAccessToken
+      responses:
+        '204':
+          description: No content
+          content: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Unauthorized:
+                  $ref: '#/components/examples/Unauthorized'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+components:
+  examples:
+    Unauthorized:
+      description: Unauthorized access
+      value:
+        status: 401
+        code: APIHUB-4101
+        message: Authentication required
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
+  schemas:
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+    PersonalAccessToken:
+      type: object
+      description: Personal access token details
+      title: Personal access token
+      required:
+      - id
+      - name
+      - expiresAt
+      - status
+      - createdAt
+      properties:
+        id:
+          description: Personal access token identifier
+          type: string
+        name:
+          description: Personal access token name
+          type: string
+          example: token1
+        expiresAt:
+          description: Date and time of personal access token expiration. Null if token does not have an expiration date.
+          type:
+          - string
+          - 'null'
+          format: date-time
+        createdAt:
+          description: Date and time of personal access token creation
+          type: string
+          format: date-time
+        status:
+          description: 'The status of the personal access token, calculated based on the expiry date.\
+
+            Expired token cannot be used to authenticate to APIHUB.
+
+            '
+          type: string
+          enum:
+          - active
+          - expired
+  securitySchemes:
+    BearerAuth:
+      type: http
+      description: 'Bearer token authentication (JWT). Default security scheme for API usage. Provide Authorization: Bearer <token>.'
+      scheme: bearer
+      bearerFormat: JWT
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-access-token
+      description: Authentication via the `apihub-access-token` cookie.
+    api-key:
+      type: apiKey
+      description: API key authentication. Send the key in the api-key header.
+      name: api-key
+      in: header
+    BasicAuth:
+      type: http
+      description: Login/password authentication.
+      scheme: basic
+    PersonalAccessToken:
+      type: apiKey
+      description: Personal access token authentication. Send the token in the X-Personal-Access-Token header; use for user-issued/script access.
+      name: X-Personal-Access-Token
+      in: header
+    RefreshTokenAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-refresh-token
+      description: Authentication via refresh token cookie
+externalDocs:
+  description: Find out more about this project and repository documentation
+  url: https://github.com/Netcracker/qubership-apihub

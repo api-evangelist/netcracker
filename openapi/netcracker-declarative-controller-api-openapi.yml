@@ -1,0 +1,82 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Declarative Controller API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Declarative Controller
+paths:
+  /api/dbaas/declarative/namespaces/{namespace}/service/{serviceName}:
+    post:
+      deprecated: true
+      parameters:
+      - name: namespace
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: serviceName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      summary: Declarative Settings
+      tags:
+      - Declarative Controller
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/dbaas/declarative/status/{trackingId}:
+    get:
+      summary: Operation status
+      description: Get operation status by trackingId
+      deprecated: true
+      parameters:
+      - description: Id to track operation
+        required: true
+        name: trackingId
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return operation status
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Not found operation status
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Declarative Controller
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

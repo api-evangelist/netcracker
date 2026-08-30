@@ -1,0 +1,389 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Aggregated Database Administration No Namespace Controller V 3 API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Aggregated Database Administration No Namespace Controller V 3
+paths:
+  /api/v3/dbaas/databases/changed:
+    get:
+      summary: V3. List databases changed since a cursor
+      description: 'Returns databases whose credentials changed (password rotation or restore) strictly after the given cursor, ordered by change time, plus the current high-water mark. Consumed by the dbaas-operator rotation poller. Cluster-scoped: requires the CLUSTER_OPERATOR role.'
+      parameters:
+      - description: Maximum number of databases to return (1..1000).
+        name: limit
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 500
+      - description: Registry id component of the keyset cursor (tie-breaker for rows sharing sinceTs). Defaults to the zero UUID when omitted.
+        name: sinceId
+        in: query
+        schema:
+          type: string
+      - description: Return databases changed strictly after this ISO-8601 timestamp (keyset cursor, paired with sinceId). Omit on the first call to receive only the current high-water mark.
+        name: sinceTs
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Changed databases and the current high-water mark
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangedDatabasesResponse'
+        '400':
+          description: Invalid 'since' or 'limit' parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmfErrorResponse'
+        '401':
+          description: Authentication is required and has failed or has not been provided
+          content:
+            application/json:
+              schema:
+                type: string
+        '403':
+          description: Not Allowed
+      tags:
+      - Aggregated Database Administration No Namespace Controller V 3
+      security:
+      - SecurityScheme:
+        - CLUSTER_OPERATOR
+  /api/v3/dbaas/databases/find-by-name/{dbname}:
+    get:
+      summary: V3. Get database by name
+      description: Returns list of databases for the specific logical database name
+      parameters:
+      - name: dbname
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: namespace
+        in: query
+        schema:
+          type: string
+      - name: withDecryptedPassword
+        in: query
+        schema:
+          type: boolean
+          default: 'false'
+      responses:
+        '500':
+          description: Internal error
+        '200':
+          description: List of databases with the specific logical database name
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatabaseResponseV3ListCP'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Aggregated Database Administration No Namespace Controller V 3
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/databases/marked-for-drop:
+    post:
+      summary: Get list of marked for drop databases
+      description: List of databases with marked for drop state related to requested namespaces (orphan databases are also included)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: List of marked for drop databases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatabaseResponseV3ListCP'
+        '400':
+          description: The request was invalid or cannot be served
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmfErrorResponse'
+        '401':
+          description: Authentication is required and has failed or has not been provided
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal processing error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmfErrorResponse'
+        '403':
+          description: Not Allowed
+      tags:
+      - Aggregated Database Administration No Namespace Controller V 3
+      security:
+      - SecurityScheme:
+        - NAMESPACE_CLEANER
+    delete:
+      summary: Cleanup marked for drop databases
+      description: Housekeeping operation which drops all databases with marked for drop state (orphan databases are also included)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CleanupMarkedForDropRequest'
+        required: true
+      responses:
+        '200':
+          description: List of marked for drop databases, no cleanup performed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatabaseResponseV3ListCP'
+        '202':
+          description: List of marked for drop databases, async cleanup process is started
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatabaseResponseV3ListCP'
+        '400':
+          description: The request is invalid or cannot be served
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmfErrorResponse'
+        '401':
+          description: Authentication is required and has failed or has not been provided
+          content:
+            application/json:
+              schema:
+                type: string
+        '403':
+          description: DBaaS is working in PROD mode. Deleting logical databases is prohibited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmfErrorResponse'
+        '500':
+          description: Internal processing error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmfErrorResponse'
+      tags:
+      - Aggregated Database Administration No Namespace Controller V 3
+      security:
+      - SecurityScheme:
+        - NAMESPACE_CLEANER
+components:
+  schemas:
+    TmfErrorResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/TmfError'
+        '@type':
+          type: string
+        '@schemaLocation':
+          type: string
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    ChangedDatabasesResponse:
+      type: object
+      description: Page of databases whose credentials changed since the requested keyset cursor, plus the current high-water mark used to seed the cursor.
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChangedDatabaseResponse'
+          description: Databases changed after the requested cursor, ordered by (lastRotatedAt, id) ascending. Advance the cursor from the last item.
+        highWaterMark:
+          $ref: '#/components/schemas/ChangedDatabasesCursor'
+          type: object
+          description: Latest (lastRotatedAt, id) currently known across all databases. Use it only to SEED the cursor on the first (since-less) call; null when nothing has rotated yet.
+    ChangedDatabasesCursor:
+      type: object
+      description: Keyset cursor (lastRotatedAt, id) for the changed-databases feed. Seed the poll cursor from the high-water mark on the first (since-less) call; thereafter advance the cursor from the returned items.
+      properties:
+        lastRotatedAt:
+          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          description: lastRotatedAt component of the cursor.
+        id:
+          type: string
+          description: Registry id component of the cursor (tie-breaker for equal timestamps).
+    TmfError:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    CleanupMarkedForDropRequest:
+      type: object
+      required:
+      - namespaces
+      properties:
+        namespaces:
+          type: array
+          items:
+            type: string
+          description: A list of namespaces where the marked for drop databases should be cleaned
+        delete:
+          type: boolean
+          description: Confirmation parameter. If this is not passed or 'false' then marked for drop databases will not be deleted and response will contain marked for drop databases that are registered in DBaaS for the specified namespaces
+        force:
+          type: boolean
+          description: If this parameter is 'true', then deletion errors from physical adapters will be ignored
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    ChangedDatabaseResponse:
+      type: object
+      description: A database whose credentials changed (password rotation or restore). Carries only the identity needed to locate the consumer; connection properties are fetched separately.
+      properties:
+        id:
+          type: string
+          description: Registry id. Together with lastRotatedAt it forms the keyset cursor the caller echoes back as sinceId to page deterministically through rows that share a timestamp.
+        namespace:
+          type: string
+          description: Namespace where the database is placed.
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier identifying the database within the namespace.
+        type:
+          type: string
+          description: Type of database (e.g. postgresql, mongodb).
+        lastRotatedAt:
+          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          description: Timestamp of the credential change; also serves as the poll cursor.
+    DatabaseResponseV3ListCP:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - name
+      - connectionProperties
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field might not be used when searching by classifier for security purpose. And it exists in the response when executing Create database API
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and it distinguishes this database from other databases in the same namespace. It contains such keys as dbClassifier, isServiceDb, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed.
+        type:
+          type: string
+          description: Type of database, for example PostgreSQL or MongoDB
+        name:
+          type: string
+          description: Name of database. It may be generated or, if name was specified in the request, then it will be specified.
+        externallyManageable:
+          type: boolean
+          description: This parameter specifies if a control over the database is not carried out by the DBaaS adapter
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: Additional settings for creating a database.
+        backupDisabled:
+          type: boolean
+          description: 'This field indicates if backup is disabled or not. If true, database would not be backed up. Example: false'
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: This is an information about connection to database. It contains such keys as url, authDbName, username, password, port, host.Setting keys depends on the database type.
+        resources:
+          $ref: '#/components/schemas/DbResource'
+          description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
+    OffsetDateTime:
+      type: string
+      format: date-time
+      examples:
+      - '2022-03-10T12:15:50-04:00'
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

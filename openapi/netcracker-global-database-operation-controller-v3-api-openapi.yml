@@ -1,0 +1,148 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Global Database Operation Controller v3 API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Global Database Operation Controller v3
+  description: This controller provides APIs for performing operations on existing databases and users without requiring a specific namespace in the endpoints.
+paths:
+  /api/v3/dbaas/databases/update-host:
+    post:
+      summary: V3. Update Physical Host in Connection Properties
+      description: This API updates the physical database host in the connection properties of logical databases. In the request body, you can specify whether to create a copy of the registry record (default behavior) or to make changes in place. If changes are made in place, the original database record will be updated.
+      tags:
+      - Global Database Operation Controller v3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UpdateHostRequest'
+        required: true
+      responses:
+        '200':
+          description: The host have been updated successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DatabaseResponseV3ListCP'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    UpdateHostRequest:
+      type: object
+      required:
+      - type
+      - classifier
+      - physicalDatabaseHost
+      - physicalDatabaseId
+      description: Request object containing the necessary information to update the physical host in a logical database
+      properties:
+        type:
+          type: string
+          description: The physical type of logical database. For example mongodb or postgresql
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: 'The unique key of existing database. '
+        makeCopy:
+          type: boolean
+          description: If true, a copy of the logical database registry will be created before applying changes. If false, changes will be made directly to the existing registry.
+          default: true
+        physicalDatabaseHost:
+          type: string
+          description: 'Contains physical database host on which it''s needed to change. The host must follow the format: <physical database k8s service>.<physical database namespace>. Example: pg-patroni.core-postgresql.'
+        physicalDatabaseId:
+          type: string
+          description: Specifies id of new physical database. The value can be found in dbaas-adapter env
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    DatabaseResponseV3ListCP:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - name
+      - connectionProperties
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field might not be used when searching by classifier for security purpose. And it exists in the response when executing Create database API
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and it distinguishes this database from other databases in the same namespace. It contains such keys as dbClassifier, isServiceDb, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed.
+        type:
+          type: string
+          description: Type of database, for example PostgreSQL or MongoDB
+        name:
+          type: string
+          description: Name of database. It may be generated or, if name was specified in the request, then it will be specified.
+        externallyManageable:
+          type: boolean
+          description: This parameter specifies if a control over the database is not carried out by the DBaaS adapter
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: Additional settings for creating a database.
+        backupDisabled:
+          type: boolean
+          description: 'This field indicates if backup is disabled or not. If true, database would not be backed up. Example: false'
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: This is an information about connection to database. It contains such keys as url, authDbName, username, password, port, host.Setting keys depends on the database type.
+        resources:
+          $ref: '#/components/schemas/DbResource'
+          description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

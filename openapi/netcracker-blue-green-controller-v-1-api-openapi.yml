@@ -1,0 +1,440 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Blue Green Controller V 1 API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Blue Green Controller V 1
+paths:
+  /api/bluegreen/v1/operation/commit:
+    post:
+      summary: Commit Blue-Green Domain
+      description: Group namespaces into one Blue-Green domain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BgStateRequest'
+        required: true
+      responses:
+        '200':
+          description: Commit operation successfully done
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Incorrect request
+        '409':
+          description: Invalid request body
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/destroy-domain:
+    delete:
+      summary: Delete Blue-Green domain
+      description: Destroy a registered Blue-Green domain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BgNamespaceRequest'
+        required: true
+      responses:
+        '200':
+          description: Blue-green domain successfully destroyed
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Incorrect request
+        '404':
+          description: Blue-Green domain not found
+        '409':
+          description: Invalid request body
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/get-domains:
+    get:
+      summary: Get all Blue-Green domains
+      description: Get all registered Blue-Green domains
+      responses:
+        '200':
+          description: All registered Blue-Green domains
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/get-domains/{namespace}:
+    get:
+      summary: Get specific Blue-Green domain
+      description: Get specific registered Blue-Green domain by namespace
+      parameters:
+      - name: namespace
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Specific registered Blue-Green domain
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/init-domain:
+    post:
+      summary: Init Blue-Green Domain
+      description: Group namespaces into one Blue-Green domain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BgStateRequest'
+        required: true
+      responses:
+        '200':
+          description: Blue-green domain successfully registered
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Incorrect request
+        '409':
+          description: Invalid request body
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/list-domains:
+    get:
+      summary: List all Blue-Green domains
+      description: List of registered Blue-Green domains
+      responses:
+        '200':
+          description: List of registered Blue-Green domains
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/orphans:
+    post:
+      summary: Get list of orphan databases
+      description: List of databases with orphan state related to requested namespaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+        required: true
+      responses:
+        '200':
+          description: List of databases
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Bad request
+        '500':
+          description: Internal processing error
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+    delete:
+      summary: Cleanup orphan databases
+      description: Housekeeping operation which drops all databases with ORPHAN state.WARNING! If delete=true this operation will drop databases even when DBaaS is in PROD mode
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteOrphansRequest'
+        required: true
+      responses:
+        '200':
+          description: Orphan databases successfully dropped
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Bad request
+        '500':
+          description: Internal processing error
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/promote:
+    post:
+      summary: Promote
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BgStateRequest'
+        required: true
+      responses:
+        '200':
+          description: Promote is already done
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Incorrect request
+        '409':
+          description: Invalid request body
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/rollback:
+    post:
+      summary: rollback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BgStateRequest'
+        required: true
+      responses:
+        '200':
+          description: Rollback is already done
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Incorrect request
+        '409':
+          description: Invalid request body
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/warmup:
+    post:
+      summary: Warmup namespace
+      description: The API prepares databases in namespace to work in versioning mode. If database is versioned then will be create full copy.If database is static will be create only new classifier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BgStateRequest'
+        required: true
+      responses:
+        '200':
+          description: Warmup is already done
+          content:
+            application/json:
+              schema: {}
+        '202':
+          description: 'Warmup process has started, return trackingId '
+        '400':
+          description: Incorrect request
+        '409':
+          description: Invalid request body
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/{trackingId}/status:
+    get:
+      summary: Operation status
+      description: Get operation status by trackingId
+      parameters:
+      - description: Id to track operation
+        required: true
+        name: trackingId
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Return operation status
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/bluegreen/v1/operation/{trackingId}/terminate:
+    post:
+      summary: Terminate operation
+      description: Terminate operation by trackingId
+      parameters:
+      - description: Id to track operation
+        required: true
+        name: trackingId
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Terminate operation and return status
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      tags:
+      - Blue Green Controller V 1
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    BgStateRequest:
+      type: object
+      properties:
+        BGState:
+          $ref: '#/components/schemas/BGState'
+    BGState:
+      type: object
+      properties:
+        controllerNamespace:
+          type: string
+        originNamespace:
+          $ref: '#/components/schemas/BGStateNamespace'
+        peerNamespace:
+          $ref: '#/components/schemas/BGStateNamespace'
+        updateTime:
+          $ref: '#/components/schemas/Date'
+    DeleteOrphansRequest:
+      type: object
+      required:
+      - namespaces
+      properties:
+        namespaces:
+          type: array
+          items:
+            type: string
+          description: List of namespaces orhan databases of which is needed to delete
+        delete:
+          type: boolean
+          description: confirmation parameter. If this is not passed or false then orhan database will not be deleted and response will contain orhan databases that are registered in DBaaS
+    BgNamespaceRequest:
+      type: object
+      properties:
+        peerNamespace:
+          type: string
+        originNamespace:
+          type: string
+        controllerNamespace:
+          type: string
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    BGStateNamespace:
+      type: object
+      properties:
+        name:
+          type: string
+        state:
+          type: string
+        version:
+          type: string
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

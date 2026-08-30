@@ -1,0 +1,127 @@
+openapi: 3.2.0
+info:
+  title: APIHUB Registry – External Try It API
+  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
+
+    '
+  contact:
+    name: Netcracker Opensource Group
+    email: opensourcegroup@netcracker.com
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: '2026.1'
+  x-api-kind: BWC
+servers:
+- url: https://{apihub}.qubership.org
+  description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+  variables:
+    apihub:
+      description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+      enum:
+      - apihub
+      - dev.apihub
+      - staging.apihub
+      default: apihub
+security:
+- BearerAuth: []
+- CookieAuth: []
+- api-key: []
+- PersonalAccessToken: []
+tags:
+- name: TryIt
+  description: API for 'try it' functionality
+paths:
+  /playground/proxy:
+    get:
+      summary: Proxy endpoint for try it in case of non-cloud environments.
+      description: Allows to send any request to any address.
+      operationId: getAgentsIdNamespacesIdServicesProxy
+      security:
+      - BearerAuth: []
+      - CookieAuth: []
+      tags:
+      - TryIt
+      parameters:
+      - name: X-Apihub-Proxy-Url
+        in: header
+        required: true
+        schema:
+          type: string
+        description: 'Full URL that includes paths and query params
+
+          '
+        example: http://127.0.0.1:8080/api/v2/escaped/te%20xt/text/text123?escaped=te%20xt
+      - name: X-Apihub-Authorization
+        in: header
+        required: true
+        schema:
+          type: string
+        description: 'The header is a replacement for Authorization header, because original Authorization header should be passed to the target service.
+
+          '
+      responses:
+        1XX:
+          description: Information responses
+          content:
+            '*/*':
+              schema:
+                description: Schema of any type
+        2XX:
+          description: Successful responses
+          content:
+            '*/*':
+              schema:
+                description: Schema of any type
+        3XX:
+          description: Redirection messages
+          content:
+            '*/*':
+              schema:
+                description: Schema of any type
+        4XX:
+          description: Client error responses
+          content:
+            '*/*':
+              schema:
+                description: Schema of any type
+        5XX:
+          description: Server error responses
+          content:
+            '*/*':
+              schema:
+                description: Schema of any type
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      description: 'Bearer token authentication (JWT). Default security scheme for API usage. Provide Authorization: Bearer <token>.'
+      scheme: bearer
+      bearerFormat: JWT
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-access-token
+      description: Authentication via the `apihub-access-token` cookie.
+    api-key:
+      type: apiKey
+      description: API key authentication. Send the key in the api-key header.
+      name: api-key
+      in: header
+    BasicAuth:
+      type: http
+      description: Login/password authentication.
+      scheme: basic
+    PersonalAccessToken:
+      type: apiKey
+      description: Personal access token authentication. Send the token in the X-Personal-Access-Token header; use for user-issued/script access.
+      name: X-Personal-Access-Token
+      in: header
+    RefreshTokenAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-refresh-token
+      description: Authentication via refresh token cookie
+externalDocs:
+  description: Find out more about this project and repository documentation
+  url: https://github.com/Netcracker/qubership-apihub

@@ -1,0 +1,1865 @@
+openapi: 3.2.0
+info:
+  contact: {}
+  description: API for Maas Service.
+  title: Maas Service V1 API
+tags:
+- name: V1
+paths:
+  /api/composite/v1/structure:
+    post:
+      description: Register new Composite
+      operationId: Create
+      responses:
+        '204':
+          description: ''
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Create Composite Registration
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1.RegistrationRequest'
+        description: RegistrationRequest
+        required: true
+  /api/composite/v1/structure/{id}:
+    delete:
+      description: Destroy Composite Registrations
+      operationId: DeleteById
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+        '404':
+          description: ''
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Destroy Composite Registrations
+      tags:
+      - V1
+    get:
+      description: Get Composite Registration By Baseline ID
+      operationId: GetById
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1.RegistrationResponse'
+        '404':
+          description: ''
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Composite Registration By ID
+      tags:
+      - V1
+  /api/composite/v1/structures:
+    get:
+      description: Get All Composite Registrations
+      operationId: GetAll
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/v1.RegistrationResponse'
+                type: array
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get All Composite Registrations
+      tags:
+      - V1
+  /api/v1/auth/account/client:
+    delete:
+      description: Delete Client Account
+      operationId: DeleteClientAccount
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Delete Client Account using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.ClientAccountDto'
+        description: ClientAccountDto
+        required: true
+    post:
+      description: Create new account
+      operationId: CreateAccount
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.ClientAccountDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Create Account
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.ClientAccountDto'
+        description: ClientAccountDto
+        required: true
+  /api/v1/auth/account/manager:
+    post:
+      description: Save Manager Account
+      operationId: SaveManagerAccount
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.ManagerAccountDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Save Manager Account using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.ManagerAccountDto'
+        description: ManagerAccountDto
+        required: true
+  /api/v1/auth/accounts:
+    get:
+      description: Get All Accounts
+      operationId: GetAllAccounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.Account'
+                type: array
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Get All Accounts using Manager Role
+      tags:
+      - V1
+  /api/v1/bg-status:
+    get:
+      description: Get Bg Status By Namespace
+      operationId: GetBgStatusByNamespace
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.BgStatus'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Bg Status By Namespace using Agent Role
+      tags:
+      - V1
+    post:
+      description: Apply Bg Status
+      operationId: ApplyBgStatus
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Apply Bg Status using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/model.CpDeploymentVersion'
+              type: array
+        description: CpMessageDto
+        required: true
+  /api/v1/config:
+    post:
+      description: Apply Config
+      operationId: ApplyConfig
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Apply Config using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Request Body
+        required: true
+  /api/v1/kafka/instance:
+    delete:
+      description: Unregister Kafka Instance
+      operationId: UnregisterKafkaInstance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.KafkaInstance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Unregister Kafka Instance using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/controller.Instance'
+        description: Instance
+        required: true
+    post:
+      description: Register New Kafka Instance
+      operationId: RegisterNewKafkaInstance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.KafkaInstance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Register New Kafka Instance using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.KafkaInstance'
+        description: KafkaInstance
+        required: true
+    put:
+      description: Update New Kafka Instance
+      operationId: UpdateKafkaInstance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.KafkaInstance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Update New Kafka Instance using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.KafkaInstance'
+        description: KafkaInstance
+        required: true
+  /api/v1/kafka/instance/default:
+    put:
+      description: Set Default Kafka Instance
+      operationId: SetDefaultKafkaInstance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.KafkaInstance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Set Default Kafka Instance using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.KafkaInstance'
+        description: KafkaInstance
+        required: true
+  /api/v1/kafka/instances:
+    get:
+      description: Get All Kafka Instances
+      operationId: GetAllKafkaInstances
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.KafkaInstance'
+                type: array
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Get All Kafka Instances using Manager Role
+      tags:
+      - V1
+  /api/v1/kafka/topic:
+    delete:
+      description: Delete Topic
+      operationId: DeleteTopic
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.TopicDeletionResp'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Delete Topic using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.TopicSearchRequest'
+        description: TopicSearchRequest
+        required: true
+    post:
+      description: Get Or Create Topic
+      operationId: GetOrCreateTopicV1
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '410':
+          description: Gone
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Or Create Topic using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+        description: Request Body
+        required: true
+  /api/v1/kafka/topic/get-by-classifier:
+    post:
+      description: Get Topic By Classifier
+      operationId: GetTopicByClassifierV1
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Topic By Classifier using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+        description: Request body
+        required: true
+  /api/v1/kafka/topic/search:
+    post:
+      description: Search Topics
+      operationId: SearchTopicsV1
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+                type: array
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Search Topics using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.TopicSearchRequest'
+        description: TopicSearchRequest
+        required: true
+  /api/v1/namespace:
+    delete:
+      description: Delete Namespace
+      operationId: DeleteNamespace
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Delete Namespace using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.Namespace'
+        description: Namespace
+        required: true
+  /api/v1/rabbit/instance:
+    delete:
+      description: Unregister Rabbit Instance
+      operationId: UnregisterRabbitInstance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.RabbitInstance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Unregister Rabbit Instance using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/controller.Instance'
+        description: Instance
+        required: true
+    post:
+      description: Register New Rabbit Instance
+      operationId: RegisterNewRabbitInstance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.RabbitInstance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Register New Rabbit Instance using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.RabbitInstance'
+        description: RabbitInstance
+        required: true
+    put:
+      description: Update Rabbit Instance
+      operationId: UpdateRabbitInstance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.RabbitInstance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Update Rabbit Instance using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.RabbitInstance'
+        description: RabbitInstance
+        required: true
+  /api/v1/rabbit/instance/default:
+    put:
+      description: Set Default Rabbit Instance
+      operationId: SetDefaultRabbitInstance
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.RabbitInstance'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Set Default Rabbit Instance using Manager Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.RabbitInstance'
+        description: RabbitInstance
+        required: true
+  /api/v1/rabbit/instances:
+    get:
+      description: Get All Rabbit Instances
+      operationId: GetAllRabbitInstances
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.RabbitInstance'
+                type: array
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Get All Rabbit Instances using Manager Role
+      tags:
+      - V1
+  /api/v1/rabbit/vhost:
+    delete:
+      description: Delete VHost
+      operationId: DeleteVHost
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Delete VHost using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.SearchForm'
+        description: SearchForm
+        required: true
+    post:
+      description: Get Or Create VHost
+      operationId: GetOrCreateVHost
+      parameters:
+      - description: cloudbss311-platform-core-support-dev3
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.VHostRegistrationResponse'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.VHostRegistrationResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Or Create VHost using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.VHostRegistrationReqDto'
+        description: VHostRegistrationReqDto
+        required: true
+  /api/v1/rabbit/vhost/get-by-classifier:
+    post:
+      description: Set Default Rabbit Instance
+      operationId: GetVHostAndConfigByClassifier
+      parameters:
+      - description: cloudbss311-platform-core-support-dev3
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/controller.VhostAndConfigResult'
+        '204':
+          description: No Content
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get VHost And Config By Classifier using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.Classifier'
+        description: Classifier
+        required: true
+  /api/v1/synchronize-tenants:
+    post:
+      description: Sync Tenants
+      operationId: SyncTenants
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.SyncTenantsResp'
+                type: array
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Sync Tenants using Agent Role
+      tags:
+      - V1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/model.Tenant'
+              type: array
+        description: Request Body
+        required: true
+  /api/v1/tenants:
+    get:
+      description: Get Tenants By Namespace
+      operationId: GetTenantsByNamespace
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.Tenant'
+                type: array
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Tenants By Namespace using Agent Role
+      tags:
+      - V1
+components:
+  schemas:
+    model.ClientAccountDto:
+      properties:
+        namespace:
+          example: namespace
+          type: string
+        password:
+          example: client
+          type: string
+        roles:
+          example:
+          - agent
+          items:
+            type: string
+          type: array
+        username:
+          example: client
+          type: string
+      type: object
+    model.TopicSearchRequest:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          example: <id of kafka instance where topics are created>
+          type: string
+        leaveRealTopicIntact:
+          type: boolean
+        namespace:
+          example: <namespace to which topics belong>
+          type: string
+        template:
+          type: integer
+        topic:
+          example: <exact topic name in kafka>
+          type: string
+        versioned:
+          type: boolean
+      type: object
+    controller.VhostAndConfigResult:
+      properties:
+        entities:
+          $ref: '#/components/schemas/model.RabbitEntities'
+        vhost:
+          $ref: '#/components/schemas/model.VHostRegistrationResponse'
+      type: object
+    model.ManagerAccountDto:
+      properties:
+        password:
+          example: 24002eadbc
+          type: string
+        username:
+          example: manager
+          type: string
+      type: object
+    model.TopicRegistrationRespDto:
+      properties:
+        actualSettings:
+          $ref: '#/components/schemas/model.TopicSettings'
+        addresses:
+          additionalProperties:
+            items:
+              type: string
+            type: array
+          type: object
+        caCert:
+          example: ' '
+          type: string
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        credential:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/model.KafkaCredentials'
+            type: array
+          type: object
+        externallyManaged:
+          type: boolean
+        instance:
+          example: localkafka
+          type: string
+        name:
+          example: local.sampleTopic2.430d243ba9c74f25bf05f492a52804fd
+          type: string
+        namespace:
+          example: local
+          type: string
+        requestedSettings:
+          $ref: '#/components/schemas/model.TopicSettings'
+        template:
+          example: '2'
+          type: string
+        versioned:
+          example: false
+          type: boolean
+      type: object
+    model.Namespace:
+      properties:
+        namespace:
+          example: <your namespace>
+          type: string
+      type: object
+    model.TopicDeletionResp:
+      properties:
+        deletedSuccessfully:
+          items:
+            $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+          type: array
+        failedToDelete:
+          items:
+            $ref: '#/components/schemas/model.TopicDeletionError'
+          type: array
+      type: object
+    model.Account:
+      properties:
+        domainNamespaces:
+          example:
+          - namespace1
+          items:
+            type: string
+          type: array
+        manager:
+          example:
+          - client
+          items:
+            type: string
+          type: array
+        namespace:
+          example: _GLOBAL
+          type: string
+        password:
+          example: '***'
+          type: string
+        salt:
+          example: '***'
+          type: string
+        username:
+          example: manager
+          type: string
+      type: object
+    model.VHostRegistrationResponse:
+      properties:
+        apiUrl:
+          example: http://127.0.0.1:15672/api
+          type: string
+        cnn:
+          example: amqp://127.0.0.1:5672/namespace.test12
+          type: string
+        password:
+          example: plain:504a449065924332b062c4a84e830cbe
+          type: string
+        username:
+          example: 9757343a78a04057a07ee4215f1b1355
+          type: string
+      type: object
+    model.TopicDeletionError:
+      properties:
+        message:
+          example: <error message>
+          type: string
+        topic:
+          $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+      type: object
+    v1.RegistrationResponse:
+      properties:
+        id:
+          type: string
+        namespaces:
+          items:
+            type: string
+          type: array
+      type: object
+    model.KafkaCredentials:
+      properties:
+        clientCert:
+          type: string
+        clientKey:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+        username:
+          type: string
+      type: object
+    controller.Instance:
+      properties:
+        id:
+          example: maas-rabbitmq-code-dev
+          type: string
+      type: object
+    model.VHostRegistrationReqDto:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          example: <[optional] rabbitmq instance for virtual host. if not specified default instance will be used>
+          type: string
+      required:
+      - classifier
+      type: object
+    model.SearchForm:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          type: string
+        namespace:
+          example: cloudbss311-platform-core-support-dev3
+          type: string
+        user:
+          type: string
+        vhost:
+          type: string
+      type: object
+    model.BgStatus:
+      properties:
+        active:
+          example: v2
+          type: string
+        candidates:
+          example:
+          - v2
+          - v3
+          items:
+            type: string
+          type: array
+        legacy:
+          example: v3
+          type: string
+        namespace:
+          example: namespace
+          type: string
+        timestamp:
+          example: '2021-08-18T17:29:06.82837Z'
+          type: string
+      type: object
+    v1.RegistrationRequest:
+      properties:
+        id:
+          type: string
+        namespaces:
+          items:
+            type: string
+          type: array
+      required:
+      - id
+      - namespaces
+      type: object
+    model.RabbitInstance:
+      properties:
+        amqpUrl:
+          example: amqp://127.0.0.1:5672
+          type: string
+        apiUrl:
+          example: http://127.0.0.1:15672/api
+          type: string
+        default:
+          example: true
+          type: boolean
+        id:
+          example: fd02de58-da04-4842-a258-37ebe4e5ac1e
+          type: string
+        password:
+          example: guest
+          type: string
+        user:
+          example: guest
+          type: string
+      type: object
+    model.TopicSettings:
+      properties:
+        configs:
+          additionalProperties:
+            type: string
+          type: object
+        minNumPartitions:
+          example: 1
+          type: integer
+        numPartitions:
+          example: 1
+          type: integer
+        replicaAssignment:
+          additionalProperties:
+            items:
+              type: integer
+            type: array
+          type: object
+        replicationFactor:
+          example: 1
+          type: integer
+        versioned:
+          example: true
+          type: boolean
+      type: object
+    model.CpDeploymentVersion:
+      properties:
+        createdWhen:
+          example: '2021-08-18T16:33:15.142354459Z'
+          type: string
+        stage:
+          example: ACTIVE
+          type: string
+        updatedWhen:
+          example: '2021-08-18T16:33:15.14235456Z'
+          type: string
+        version:
+          example: v1
+          type: string
+      type: object
+    model.Tenant:
+      properties:
+        externalId:
+          example: '101'
+          type: string
+        namespace:
+          type: string
+        tenantPresentation:
+          additionalProperties: true
+          type: object
+      type: object
+    model.Classifier:
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        tenantId:
+          type: string
+      required:
+      - name
+      - namespace
+      type: object
+    model.RabbitEntities:
+      properties:
+        bindings:
+          items: {}
+          type: array
+        exchanges:
+          description: 'todo: rabbit entites should be refactored to specific type []map[string]interface{}'
+          items: {}
+          type: array
+        queues:
+          items: {}
+          type: array
+      type: object
+    model.KafkaInstance:
+      properties:
+        addresses:
+          additionalProperties:
+            items:
+              type: string
+            type: array
+          type: object
+        caCert:
+          example: MIIDPjCCAiYCCQCNmVmmEXs5XjANBgkqhkiG9w0BAQsFADBVMQswCQYDVQQGEwJYWDEVMBMGA1UEBwwMRGVmYXVsdCBDaXR5MRwwGgYDVQQKDBNEZWZhdWx0IENvbXBhbnkgTHRkMREwDwYDVQQDDAhsb2NhbGs4czAeFw0yMDA4MTgxMjUzMDFaFw0yMDExMjUxMjUzMDFaMG0xEDAOBgNVBAYTB1Vua25vd24xEDAOBgNVBAgTB1Vua25vd24xEDAOBgNVBAcTB1Vua25vd24xEDAOBgNVBAoTB1Vua25vd24xEDAOBgNVBAsTB1Vua25vd24xETAPBgNVBAMTCGxvY2FsazhzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjcTaRTo7E7UI9jO9gtRAi5au57elqRX2YMj/OOGcwQdzP6JfMFZsKFNUoIoF8bJ51JXhbDxVgB+GHvEMmQ0jqGnMjSTsdxEQUCRTnINMAIAYLBKm5FGi5pJodZRzhNKoWhloRO9/2p2AYB+T39MxXFch3fwMdghVKbSqOCo0nsqCZwyB5CcZgLi69qifZPQAIFPUPDHG5Z6oGUjE/p+45RnOcAdCOgO0QllxO+fioCMPizRqIiim88UuZU7EjhaIwSTjOIohcPQStNU6vAp0ZGIgr8BhAZHiL8JRDto37ayo7ltDYtLg4Ojo3e9ue8Dwo5PSs+N6Od8Z//Xq6V8zwQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQCDsV/jDojj4t977V5BMSTDeELEvNX8VMMtqAGpB1jtVNVXRLfG2SAcv6ZdOUbyuBagF8D0dsV5VvcqPw8YHNpHMKCTSdcida28rV2C31M+XRvvh90eoPtXfE60wo4Ky4UbKiJERiBIXMFLrg8PZ51PukT4fD0DioNpIxzRFb4VkypYv4srADX5shSvJN9Zxdj2EywR+S1k2F4TIDdOnWY9xGMftJz1fc58dMFMwGi7Evr+pR/w7yWDcvRgdgAYUpGaehmnYhzuw4XKWmVX1D6aVFRhonHaxN0rUemPZYSqjHp+lWOiUsYqatxB5MGQqj1/QV3XTAWglFbk1BB2stQg
+          type: string
+        credentials:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/model.KafkaCredentials'
+            type: array
+          type: object
+        default:
+          example: true
+          type: boolean
+        id:
+          example: cpq-kafka-maas-test
+          type: string
+        maasProtocol:
+          example: SASL_PLAINTEXT
+          type: string
+      type: object
+    model.SyncTenantsResp:
+      properties:
+        tenant:
+          $ref: '#/components/schemas/model.Tenant'
+        topics:
+          items:
+            $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+          type: array
+      type: object
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

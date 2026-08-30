@@ -1,0 +1,319 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Physical databases registration controller API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Physical databases registration controller
+  description: Provides API to register new physical databases
+paths:
+  /api/v3/dbaas/{type}/physical_databases:
+    get:
+      summary: V3. List registered physical databases
+      description: Returns the list of registered physical databases by database type
+      tags:
+      - Physical databases registration controller
+      parameters:
+      - description: 'Type of database, for example: MongoDB, PostgreSQL, elasticsearch, etc. or all - to list all registered physical databases'
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Registered physical databases by specific type were found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisteredPhysicalDatabasesDTO'
+        '404':
+          description: Registered physical databases by specific type were not found.
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/{type}/physical_databases/{phydbid}:
+    put:
+      summary: V3. Register new physical database
+      description: Creates new physical database and returns path to it with physical database identifier.
+      tags:
+      - Physical databases registration controller
+      parameters:
+      - description: Physical database identifier. The value belongs to the specific database cluster
+        required: true
+        name: phydbid
+        in: path
+        schema:
+          type: string
+      - description: 'Type of database. Example: MongoDB, PostgreSQL, elasticsearch, etc.'
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhysicalDatabaseRegistryRequestV3'
+        required: true
+      responses:
+        '201':
+          description: Database created
+          content:
+            application/json:
+              schema:
+                type: string
+        '200':
+          description: Updated existing database
+          content:
+            application/json:
+              schema:
+                type: string
+        '202':
+          description: Adapter should continue to create roles for new portions
+          content:
+            application/json:
+              schema:
+                type: string
+        '409':
+          description: Database could not be registered as physical database already exists with another adapter id or the same adapter already exists and it is used with other physical database
+        '502':
+          description: Adapter is not available during handshake process
+        '400':
+          description: Adapter already running or request validation failed
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+    delete:
+      summary: V3. Delete physical database
+      description: Deletes physical database by database type and physical database id
+      tags:
+      - Physical databases registration controller
+      parameters:
+      - description: Physical database identifier. The value belongs to the specific database cluster
+        required: true
+        name: phydbid
+        in: path
+        schema:
+          type: string
+      - description: 'Type of database, for example: MongoDB, PostgreSQL, elasticsearch, etc.'
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successfully deleted physical databases.
+          content:
+            application/json:
+              schema: {}
+        '406':
+          description: Database is marked as default or there are connected logical databases.
+        '404':
+          description: Physical database with specific type and id was not found.
+        '400':
+          description: The request was invalid or cannot be served
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/{type}/physical_databases/{phydbid}/global:
+    put:
+      summary: V3. Change default physical database
+      description: Moves the 'global' flag to the specified existing physical database
+      tags:
+      - Physical databases registration controller
+      parameters:
+      - description: Physical database identifier. The value belongs to the specific database cluster
+        required: true
+        name: phydbid
+        in: path
+        schema:
+          type: string
+      - description: 'Type of database. Example: MongoDB, PostgreSQL, elasticsearch, etc.'
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Updated existing physical database
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Specified physical database does not registered
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    RegisteredPhysicalDatabasesDTO:
+      type: object
+      properties:
+        identified:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
+          description: List of registered physical databases with with a known identifier
+    Spec:
+      type: object
+      properties:
+        specRootUrl:
+          type: string
+          description: The root URL part for that API version
+        major:
+          type: integer
+          format: int32
+          description: The last adapter API major version
+        minor:
+          type: integer
+          format: int32
+          description: The last adapter API minor version
+        supportedMajors:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Contains a list of supported adapter API major versions
+    Metadata:
+      type: object
+      required:
+      - apiVersion
+      - supportedRoles
+      - features
+      properties:
+        apiVersion:
+          type: string
+          description: Adapter API version
+        apiVersions:
+          $ref: '#/components/schemas/ApiVersion'
+          type: object
+          description: Adapter API version
+        supportedRoles:
+          type: array
+          items:
+            type: string
+          description: list of supported roles
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+          description: Prohibition or permission of features
+        roHost:
+          type: string
+          description: Host of RO pod
+    HttpBasicCredentials:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          description: Basic authentication username.
+        password:
+          type: string
+          description: Basic authentication password.
+    ApiVersion:
+      type: object
+      properties:
+        specs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Spec'
+          description: The root URL part for that API version
+    PhysicalDatabaseRegistryRequestV3:
+      type: object
+      required:
+      - adapterAddress
+      - httpBasicCredentials
+      - metadata
+      - status
+      description: V3 Request model for sending physical database registration to DBaaS
+      properties:
+        adapterAddress:
+          type: string
+          description: Physical address of DBaaS adapter. The address is used for CRUD operation with logic databases.
+        httpBasicCredentials:
+          $ref: '#/components/schemas/HttpBasicCredentials'
+          type: object
+          description: Basic authentication username and password for requests from DBaaS Aggregator to DBaaS adapter.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Additional information about physical database. It may be a version of database cluster, any labels, and etc.
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+          type: object
+          description: Information about supported roles, adapter api version and features
+        status:
+          type: string
+          description: 'Adapter status: running or run'
+    PhysicalDatabaseRegistrationResponseDTOV3:
+      type: object
+      required:
+      - type
+      - adapterId
+      - adapterAddress
+      - global
+      - labels
+      - supports
+      properties:
+        type:
+          type: string
+          description: Adapter type.
+        adapterId:
+          type: string
+          description: Adapter identifier.
+        adapterAddress:
+          type: string
+          description: Adapter address.
+        global:
+          type: boolean
+          description: If physical database is global, it is used as a default for its database type.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Additional information that has been sent during physical database registration.
+        supports:
+          type: object
+          additionalProperties:
+            type: boolean
+          description: Information about features this adapter supports.
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+        supportedVersion:
+          type: string
+        supportedRoles:
+          type: array
+          items:
+            type: string
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

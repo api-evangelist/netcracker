@@ -1,0 +1,711 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Controller Database administration API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Controller Database administration
+  description: 'Allows to create, access and drop databases. This API uses classifier as a key to create and retrieve databases. Classifier is an abstract key that could be any JSON object mapping to (String -> Object) map. For example classifier could be &#123;   "tenantId": "uuid",   "namespace": "cloud-catalog-ci",   "microserviceName": "product-catalog-manager"&#125;'
+paths:
+  /api/v3/dbaas/{namespace}/databases:
+    put:
+      summary: V3. Creates new database V3
+      description: Creates new database and returns it with connection information, or returns the already created database if it exists. This version differs from version v1 in that there is the additional require field "dbOwner", which should contain name of database owner. It can be for exammple microserviceName value.
+      tags:
+      - Controller Database administration
+      parameters:
+      - description: Namespace where database will be placed
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      - description: Determines if database should be created asynchronously
+        name: async
+        in: query
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseCreateRequestV3'
+        required: true
+      responses:
+        '403':
+          description: You cannot access databases in this namespace
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: There is no appropriate adapter for the specified database type
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Requested role is not allowed
+          content:
+            application/json:
+              schema:
+                type: string
+        '201':
+          description: Database created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '200':
+          description: Already having such database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '202':
+          description: Database is in process of creation
+        '500':
+          description: Unknown error which may be related with internal work of DBaaS.
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/{namespace}/databases/get-by-classifier/{type}:
+    post:
+      summary: V3. Get database by classifier
+      description: Returns connection to an already created database using classifier to search
+      tags:
+      - Controller Database administration
+      parameters:
+      - name: namespace
+        in: path
+        required: true
+        schema:
+          type: string
+      - description: The type of base in which the database was created. For example PostgreSQL  or MongoDB
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassifierWithRolesRequest'
+        required: true
+      responses:
+        '404':
+          description: Cannot find database with such classifier
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Requested role is not allowed
+          content:
+            application/json:
+              schema:
+                type: string
+        '200':
+          description: Successfully found database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Database'
+        '403':
+          description: Not Allowed
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+        - DISCR_TOOL_CLIENT
+  /api/v3/dbaas/{namespace}/databases/list:
+    get:
+      summary: V3. List of all databases
+      description: Returns the list of all databases.
+      tags:
+      - Controller Database administration
+      parameters:
+      - description: Project namespace in which the databases is used
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      - description: Parameter for adding database resources to response
+        required: true
+        name: withResources
+        in: query
+        schema:
+          type: boolean
+          default: 'false'
+      responses:
+        '500':
+          description: Internal error
+        '200':
+          description: List of databases in namespace
+          content:
+            application/json:
+              schema:
+                type: array
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+        - DISCR_TOOL_CLIENT
+  /api/v3/dbaas/{namespace}/databases/registration/externally_manageable:
+    put:
+      summary: V3. External database registration
+      description: This API supports registration in DBaaS for any external logical database.
+      tags:
+      - Controller Database administration
+      parameters:
+      - description: Namespace with which new database will be connected
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalDatabaseRequestV3'
+        required: true
+      responses:
+        '200':
+          description: Successfully found database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '201':
+          description: The database was added or updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Database'
+        '400':
+          description: The request was invalid or cannot be served
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmfErrorResponse'
+        '401':
+          description: Authentication is required and has failed or has not been provided
+        '403':
+          description: The request was valid, but the server is refusing action
+        '409':
+          description: Logical database with such classifier and type already exist in namespace and it is internal logical database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmfErrorResponse'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TmfErrorResponse'
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/{namespace}/databases/statuses:
+    get:
+      summary: V3. Deprecated. Get list of ghosts and lost databases
+      description: Databases may get lost if they were marked to delete but were not actually deleted. An existing database stays as a ghost if it was not registered in DBaaS.
+      deprecated: true
+      tags:
+      - Controller Database administration
+      parameters:
+      - description: Namespace for which to get the database statuses
+        required: true
+        name: namespace
+        in: path
+        schema:
+          type: string
+      responses:
+        '500':
+          description: Internal error
+        '200':
+          description: List of ghosts and lost databases
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabasesInfo'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/{namespace}/databases/{type}:
+    delete:
+      summary: ' V3.Delete database by classifier'
+      description: 'Deletes database by id in the specific namespace. If the optional ''force'' parameter is set to true, errors from the physical adapter during drop are ignored and the database is removed from DBaaS regardless. Warning: using force=true may result in the logical database leaking in the physical database.'
+      tags:
+      - Controller Database administration
+      parameters:
+      - description: Project namespace in which the base is used
+        name: namespace
+        in: path
+        required: true
+        schema:
+          type: string
+      - description: The physical type of logical database. For example mongodb or postgresql
+        required: true
+        name: type
+        in: path
+        schema:
+          type: string
+      - description: If true, errors from the physical adapter during drop are ignored
+        name: force
+        in: query
+        schema:
+          type: boolean
+          default: 'false'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassifierWithRolesRequest'
+        required: true
+      responses:
+        '200':
+          description: Successfully deleted database.
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Requested role is not allowed
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Cannot find database with such classifier
+          content:
+            application/json:
+              schema:
+                type: string
+        '403':
+          description: You cannot access databases in this namespace
+          content:
+            application/json:
+              schema:
+                type: string
+        '406':
+          description: Dbaas is working in PROD mode. Deleting logical databases is prohibited
+          content:
+            application/json:
+              schema:
+                type: string
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    TmfError:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+    DatabaseStateStatus:
+      type: string
+      enum:
+      - PROCESSING
+      - CREATED
+      - DELETING
+      - DELETING_FAILED
+      - ARCHIVED
+      - ORPHAN
+    DatabaseInfo:
+      type: object
+      properties:
+        name:
+          type: string
+    TmfErrorResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/TmfError'
+        '@type':
+          type: string
+        '@schemaLocation':
+          type: string
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    DatabasesInfoSegment:
+      type: object
+      properties:
+        name:
+          type: string
+        totalDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+        registration:
+          $ref: '#/components/schemas/DatabasesRegistrationInfo'
+        deletingDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    FieldTypeEnum:
+      type: string
+      enum:
+      - PASSWORD
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    DatabasesRegistrationInfo:
+      type: object
+      properties:
+        totalDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+        lostDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+        ghostDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+    DatabaseCreateRequestV3:
+      type: object
+      required:
+      - classifier
+      - type
+      description: V3 Request model for adding database to DBaaS
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of database and distinguishes this database from other databases in the same namespace. It contains such keys as dbClassifier, isServiceDb, microserviceName, namespace. Setting keys depends on the database type. If database with such classifier exists, then this database will be given away. The backupDisabled parameter can not be modified; it is installed only once during creating database request.
+        type:
+          type: string
+          description: Describes the type of database in which you want to create a database. For example mongodb or postgresql
+        namePrefix:
+          type: string
+          description: This is a prefix of the database name. Prefix depends on the type of the database and it should be less than 27 characters if dbName is not specified.
+        backupDisabled:
+          type: boolean
+          description: This field indicates if backup is disabled or not. If true - database would not be backed up.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: Additional settings for creating database. There is a possibility to update settings after database creation.
+        physicalDatabaseId:
+          type: string
+          description: Specifies the identificator of physical database where a logical database will be created. If it is not specified then logical database will be created in default physical database. You can get the list of all physical databases by "List registered physical databases" API.
+        originService:
+          type: string
+          description: Origin service which send request
+        userRole:
+          type: string
+          description: Indicates connection properties with which user role should be returned to a client
+    ConnectionDescription:
+      type: object
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldDescription'
+    DatabaseRegistry:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - database
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed
+        type:
+          type: string
+          description: Type of database, for example postgresql or mongodb
+        database:
+          $ref: '#/components/schemas/Database'
+          description: It lists of database classifiers
+        dbState:
+          $ref: '#/components/schemas/DbState'
+        databaseRegistry:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+        oldClassifier:
+          type: object
+          additionalProperties: {}
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        adapterId:
+          type: string
+        name:
+          type: string
+        markedForDrop:
+          type: boolean
+        backupDisabled:
+          type: boolean
+        dbOwnerRoles:
+          type: array
+          items:
+            type: string
+        settings:
+          type: object
+          additionalProperties: {}
+        connectionDescription:
+          $ref: '#/components/schemas/ConnectionDescription'
+        warnings:
+          type: array
+          items:
+            type: string
+        externallyManageable:
+          type: boolean
+        bgVersion:
+          type: string
+        physicalDatabaseId:
+          type: string
+    DbState:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        state:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+          type: string
+          deprecated: true
+        databaseState:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+        description:
+          type: string
+        podName:
+          type: string
+    ClassifierWithRolesRequest:
+      type: object
+      required:
+      - classifier
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Database composite identify key. See details in https://perch.qubership.org/display/CLOUDCORE/DbaaS+Database+Classifier
+        originService:
+          type: string
+          description: Origin service which send request
+        userRole:
+          type: string
+          description: Indicates connection properties with which user role should be returned to a client
+    ExternalDatabaseRequestV3:
+      type: object
+      required:
+      - classifier
+      - connectionProperties
+      - type
+      - dbName
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: See the description of "classifier" properties of DatabaseCreateRequest entity
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: There is an information about connection to database. It contains such keys as url, authDbName, username, password, port, host, etc. You should specify them in order for the client to be able to connect to the database.
+        type:
+          type: string
+          description: Type of physical database.
+        dbName:
+          type: string
+          description: Name of logical database.
+        updateConnectionProperties:
+          type: boolean
+          description: Is connection properties update required. False by default. If true, then old connection properties will be replaced by the new ones provided.
+    Database:
+      type: object
+      required:
+      - oldClassifier
+      - classifier
+      - connectionProperties
+      - namespace
+      - type
+      - adapterId
+      - name
+      - resources
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
+        oldClassifier:
+          type: object
+          additionalProperties: {}
+          description: Old classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, isService, microserviceName, namespace. Setting keys depends on the database type.
+        classifier:
+          type: object
+          deprecated: true
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: The information about connection to database. It contains such keys as url, authDbName, username, password, port, host.Setting keys depends on the database type.
+        namespace:
+          type: string
+          deprecated: true
+          description: Namespace where database is placed
+        type:
+          type: string
+          deprecated: true
+          description: Type of database, for example postgresql or mongodb
+        adapterId:
+          type: string
+          description: This field indicates for which adapter the database was created.
+        name:
+          type: string
+          description: Name of database. It may be generated or, if name was specified in a request then it will be specified.
+        markedForDrop:
+          type: boolean
+          description: A marker indicating that the database will be deleted.
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database
+        backupDisabled:
+          type: boolean
+          description: 'This field indicates if backup is disabled or not. If true, database would not be backed up. Example: false'
+        dbOwnerRoles:
+          type: array
+          items:
+            type: string
+          description: The list of roles which are related to this logical database. The external security service (e.g. DBaaS Agent) can perform a verification process on this field.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: Additional settings for creating a database
+        connectionDescription:
+          $ref: '#/components/schemas/ConnectionDescription'
+          type: object
+          description: This parameter describes connection properties.
+        warnings:
+          type: array
+          items:
+            type: string
+          description: Lists warning messages
+        externallyManageable:
+          type: boolean
+          description: This parameter specifies if a control over the database is not carried out by the DBaaS adapter.
+        bgVersion:
+          type: string
+          description: Database version. It uses for blue-green
+        physicalDatabaseId:
+          type: string
+        databaseRegistry:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+        resources:
+          $ref: '#/components/schemas/DbResource'
+          description: It lists resource which will be deleted when sending the request for delete a database
+        dbState:
+          $ref: '#/components/schemas/DbState'
+    FieldDescription:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/FieldTypeEnum'
+    DatabasesInfo:
+      type: object
+      properties:
+        global:
+          $ref: '#/components/schemas/DatabasesInfoSegment'
+        perAdapters:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabasesInfoSegment'
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

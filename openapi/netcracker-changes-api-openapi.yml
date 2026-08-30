@@ -1,0 +1,2184 @@
+openapi: 3.2.0
+info:
+  title: APIHUB Registry – External Changes API
+  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
+
+    '
+  contact:
+    name: Netcracker Opensource Group
+    email: opensourcegroup@netcracker.com
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: '2026.1'
+  x-api-kind: BWC
+servers:
+- url: https://{apihub}.qubership.org
+  description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+  variables:
+    apihub:
+      description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+      enum:
+      - apihub
+      - dev.apihub
+      - staging.apihub
+      default: apihub
+security:
+- BearerAuth: []
+- CookieAuth: []
+- api-key: []
+- PersonalAccessToken: []
+tags:
+- name: Changes
+  description: Changes APIs.
+paths:
+  /api/v2/packages/{packageId}/versions/{version}/changes/summary:
+    get:
+      tags:
+      - Changes
+      summary: Get changes summary
+      description: 'Get summary of changes between two packages versions.
+
+        '
+      operationId: getPackageIdVersionChangesSummary
+      parameters:
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/previousVersion'
+      - $ref: '#/components/parameters/previousVersionPackageId'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: object
+                  title: packageComparison
+                  description: List of changes data.
+                  required:
+                  - operationTypes
+                  properties:
+                    operationTypes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          apiType:
+                            $ref: '#/components/schemas/ApiType'
+                          numberOfImpactedOperations:
+                            allOf:
+                            - $ref: '#/components/schemas/ChangeSummary'
+                            - type: object
+                              description: Number of operations impacted by each severety type.
+                          changesSummary:
+                            allOf:
+                            - $ref: '#/components/schemas/ChangeSummary'
+                            - type: object
+                              description: Number of declarative changes of each severety type.
+                          tags:
+                            type: array
+                            items:
+                              type: string
+                            example:
+                            - tag1
+                            - tag2
+                    noContent:
+                      type: boolean
+                      description: true - operation comparison cache is not stored in database
+                      default: false
+                    contractsChangesSummary:
+                      $ref: '#/components/schemas/VersionComparisonContractsSummary'
+                - type: object
+                  title: dashboardComparison
+                  required:
+                  - refs
+                  - packages
+                  properties:
+                    refs:
+                      description: "Refs shows which packages in compared dashboards were added/deleted/changed and changes summary for each package:\n  * added package - packageRef is returned\n  * deleted package - previousPackageRef is returned returned\n  * changed package - both packageRef and previousPackageRef are returned\n"
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          packageRef:
+                            description: 'Parent package and version link.
+
+                              Created by the concatenation of the packageId and version name with At sign.
+
+                              '
+                            type: string
+                            example: QS.CloudQSS.CPQ.Q-TMF@2023.2
+                          previousPackageRef:
+                            description: 'Parent package and version link.
+
+                              Created by the concatenation of the packageId and version name with At sign.
+
+                              '
+                            type: string
+                            example: QS.CloudQSS.CPQ.Q-TMF@2023.2
+                          operationTypes:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                apiType:
+                                  $ref: '#/components/schemas/ApiType'
+                                numberOfImpactedOperations:
+                                  allOf:
+                                  - $ref: '#/components/schemas/ChangeSummary'
+                                  - type: object
+                                    description: Number of operations impacted by each severety type.
+                                changesSummary:
+                                  allOf:
+                                  - $ref: '#/components/schemas/ChangeSummary'
+                                  - type: object
+                                    description: Number of declarative changes of each severety type.
+                                tags:
+                                  type: array
+                                  items:
+                                    type: string
+                                  example:
+                                  - tag1
+                                  - tag2
+                          noContent:
+                            type: boolean
+                            description: true - operation comparison cache is not stored in database
+                            default: false
+                          contractsChangesSummary:
+                            $ref: '#/components/schemas/VersionComparisonContractsSummary'
+                    packages:
+                      $ref: '#/components/schemas/PackagesMap'
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v4/packages/{packageId}/versions/{version}/{apiType}/changes:
+    get:
+      tags:
+      - Changes
+      summary: Get list of changed operations
+      description: 'Get changes between two compared package versions with details by operations.\
+
+        The result list depends on the API type.
+
+        '
+      operationId: getPackagesIdVersionsIdApiTypeChangesV4
+      parameters:
+      - $ref: '#/components/parameters/apiType'
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/apiAudience'
+      - $ref: '#/components/parameters/asyncapiChannel'
+      - $ref: '#/components/parameters/asyncapiProtocol'
+      - $ref: '#/components/parameters/severity'
+      - $ref: '#/components/parameters/previousVersion'
+      - $ref: '#/components/parameters/previousVersionPackageId'
+      - name: version
+        in: path
+        description: 'Package version.
+
+          The mask <version>@<revision> may be used for search in a specific revision.
+
+          '
+        required: true
+        schema:
+          type: string
+          example: 2022.3@3
+      - name: refPackageId
+        description: Filter by package id of ref package and previous ref package.
+        in: query
+        schema:
+          type: string
+      - name: apiKind
+        description: Filter by api kind
+        in: query
+        schema:
+          type: string
+          enum:
+          - bwc
+          - no-bwc
+          - experimental
+      - name: documentSlug
+        in: query
+        description: Document unique string identifier
+        schema:
+          type: string
+          pattern: ^[a-z0-9-]
+          example: qitmf-v5-11-json
+      - name: tag
+        in: query
+        schema:
+          type: string
+        description: 'A full match is required.\
+
+          Multiple tags separated by comma can be specified.
+
+          '
+      - name: emptyTag
+        in: query
+        description: 'Flag, filtering the operations without tags at all.
+
+          In response will be returned the list of operations, on what the tag is not filled in.
+
+          This attribute has a higher priority than the **tag**. In case, then **emptyTag: true**, it will override the **tag** filter.
+
+          '
+        schema:
+          type: boolean
+          default: false
+      - name: group
+        in: query
+        description: 'Name of the group for filtering.\
+
+          The filter is applied only to the groups of current version. Groups from previous version will be ignored.\
+
+          Either "group" or "emptyGroup" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.
+
+          '
+        schema:
+          type: string
+          example: v1
+      - name: emptyGroup
+        in: query
+        description: 'Flag for filtering operations without a group.\
+
+          The filter is applied only to the groups of current version. Groups from previous version will be ignored.\
+
+          Either "group" or "emptyGroup" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.
+
+          '
+        schema:
+          type: boolean
+          default: false
+      - name: textFilter
+        in: query
+        description: 'Filter by operation''s title/path/method.
+
+          For AsyncAPI: searches by message title(or messageId), channel title(or channelId) or operation action.
+
+          '
+        schema:
+          type: string
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - operations
+                properties:
+                  previousVersion:
+                    description: Name of the previous published version. The <version>@<revision> mask is used to return the revision number.
+                    type: string
+                    example: 2022.2@5
+                  previousVersionPackageId:
+                    description: Previous release version package id.
+                    type: string
+                    example: QS.CloudQSS.CPQ.Q-TMF
+                  operations:
+                    type: array
+                    items:
+                      allOf:
+                      - oneOf:
+                        - title: RestOperation
+                          type: object
+                          properties:
+                            previousOperation:
+                              $ref: '#/components/schemas/RestOperationInfoFromDifferentVersions'
+                            currentOperation:
+                              $ref: '#/components/schemas/RestOperationInfoFromDifferentVersions'
+                        - title: GraphQLOperation
+                          type: object
+                          required:
+                          - type
+                          - method
+                          properties:
+                            previousOperation:
+                              $ref: '#/components/schemas/GqlOperationInfoFromDifferentVersions'
+                            currentOperation:
+                              $ref: '#/components/schemas/GqlOperationInfoFromDifferentVersions'
+                        - title: AsyncAPIOperation
+                          description: AsyncAPI 3.0 operation change entry. Type-specific fields (action, channel, protocol) are inside previousOperation/currentOperation.
+                          type: object
+                          properties:
+                            previousOperation:
+                              $ref: '#/components/schemas/AsyncAPIOperationInfoFromDifferentVersions'
+                            currentOperation:
+                              $ref: '#/components/schemas/AsyncAPIOperationInfoFromDifferentVersions'
+                      - type: object
+                        required:
+                        - changeSummary
+                        - comparisonInternalDocumentId
+                        properties:
+                          changeSummary:
+                            allOf:
+                            - $ref: '#/components/schemas/ChangeSummary'
+                            - type: object
+                              description: Number of declarative changes in one specific operation.
+                          comparisonInternalDocumentId:
+                            description: 'Unique string identifier of the internal merged document, where diffs between operation and previous operation are present. Corresponds to `id` field for the document in `comparison-internal-documents.json`
+
+                              '
+                            type: string
+                            pattern: ^[a-z0-9-]
+                            example: qitmf-v5-11-qitmf-v5-12-merged-json
+                  packages:
+                    $ref: '#/components/schemas/PackagesMap'
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v3/packages/{packageId}/versions/{version}/{apiType}/export/changes:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    - $ref: '#/components/parameters/version'
+    - $ref: '#/components/parameters/apiType'
+    - $ref: '#/components/parameters/apiAudience'
+    - $ref: '#/components/parameters/asyncapiChannel'
+    - $ref: '#/components/parameters/asyncapiProtocol'
+    - $ref: '#/components/parameters/severity'
+    - $ref: '#/components/parameters/previousVersion'
+    - $ref: '#/components/parameters/previousVersionPackageId'
+    - name: refPackageId
+      description: Filter by package id of ref package and previous ref package.
+      in: query
+      schema:
+        type: string
+    - name: apiKind
+      description: Filter by api kind
+      in: query
+      schema:
+        type: string
+        enum:
+        - bwc
+        - no-bwc
+        - experimental
+    - name: tag
+      in: query
+      schema:
+        type: string
+      description: 'A full match is required.\
+
+        Multiple tags separated by comma can be specified.
+
+        '
+    - name: emptyTag
+      in: query
+      description: 'Flag, filtering the operations without tags at all.
+
+        In response will be returned the list of operations, on what the tag is not filled in.
+
+        This attribute has a higher priority than the **tag**. In case, then **emptyTag: true**, it will override the **tag** filter.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    - name: group
+      in: query
+      description: 'Name of the group for filtering.\
+
+        The filter is applied only to the groups of current version. Groups from previous version will be ignored.\
+
+        Either "group" or "emptyGroup" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.
+
+        '
+      schema:
+        type: string
+        example: v1
+    - name: emptyGroup
+      in: query
+      description: 'Flag for filtering operations without a group.\
+
+        The filter is applied only to the groups of current version. Groups from previous version will be ignored.\
+
+        Either "group" or "emptyGroup" (= true) can be sent in the request, if both of them are specified then 400 will be returned in the response.
+
+        '
+      schema:
+        type: boolean
+        default: false
+    - name: textFilter
+      in: query
+      description: 'Filter by operation''s title/path/method.
+
+        For AsyncAPI: searches by message title(or messageId), channel title(or channelId) or operation action.
+
+        '
+      schema:
+        type: string
+    get:
+      tags:
+      - Changes
+      summary: Export API changes to xlsx file
+      description: Export API changes to xlsx file
+      operationId: getPackageIdVersionIdChangesExportV3
+      responses:
+        '200':
+          description: Success
+          content:
+            application/xlsx:
+              schema:
+                type: string
+                format: binary
+                description: xlsx file to download
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                description: xlsx file name
+                example: attachment; filename="APIChanges_package.id_version.xlsx"
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+                VersionNotFound:
+                  $ref: '#/components/examples/VersionNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v2/packages/{packageId}/versions/{version}/changes/export:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    - $ref: '#/components/parameters/version'
+    - $ref: '#/components/parameters/previousVersion'
+    - $ref: '#/components/parameters/previousVersionPackageId'
+    - name: format
+      in: query
+      description: File format for export
+      schema:
+        type: string
+        enum:
+        - xlsx
+        default: xlsx
+    get:
+      tags:
+      - Changes
+      summary: Export API changes to xlsx file
+      description: Export API changes to xlsx file
+      operationId: getPackageIdVersionIdChangesExport
+      responses:
+        '200':
+          description: Success
+          content:
+            application/xlsx:
+              schema:
+                type: string
+                format: binary
+                description: xlsx file to download
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                description: xlsx file name
+                example: attachment; filename="APIChanges_package.id_version.xlsx"
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+                VersionNotFound:
+                  $ref: '#/components/examples/VersionNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v2/compare:
+    post:
+      tags:
+      - Changes
+      summary: Version changelog async calculation
+      description: 'Calculate changes between any two packages/versions/revisions for any type of API.
+
+
+        * **200 Comparison calculated successfully** if there is such comparison.
+
+
+        * **202 Accepted** will be returned after starting of the async changelog calculation.
+
+        '
+      operationId: postCompare
+      parameters:
+      - name: clientBuild
+        in: query
+        description: Client-side package build will be used.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: builderId
+        in: query
+        required: false
+        description: Builder identifier. **Required** if clientBuild=true.
+        schema:
+          type: string
+      - name: reCalculate
+        in: query
+        description: 'Flag for the force changelog re-calculation.
+
+          May be used after the previous API call with **error** status.
+
+          '
+        schema:
+          type: boolean
+          default: false
+      requestBody:
+        description: Changelog calculation parameters.
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - packageId
+              - version
+              - previousVersionPackageId
+              - previousVersion
+              properties:
+                packageId:
+                  description: Package unique identifier (full alias).
+                  type: string
+                  example: QS.CQSS.CPQ.TMF
+                version:
+                  description: 'Package version.
+
+                    The mask <version>@<revision> may be used for search in a specific revision.
+
+
+                    If the @revision is not provided, the latest version''s revision will be used.
+
+                    '
+                  type: string
+                  example: 2022.3@3
+                previousVersionPackageId:
+                  description: Package id of the previous version to compare with.
+                  type: string
+                  example: QS.CloudQSS.CPQ.Q-TMF
+                previousVersion:
+                  description: 'Name of the previous published version to compare with.
+
+                    The mask <version>@<revision> may be used for search in a specific revision.
+
+
+                    If the @revision is not provided, the latest version''s revision will be used.
+
+                    '
+                  type: string
+                  example: 2022.2@4
+      responses:
+        '200':
+          description: Comparison calculated successfully
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                description: build config
+                properties:
+                  packageId:
+                    description: Package unique identifier (full alias).
+                    type: string
+                    example: QS.CQSS.CPQ.TMF
+                  version:
+                    description: 'Package version.
+
+                      The mask <version>@<revision> will be used for return in a specific revision.
+
+
+                      If the @<revision> was not transmitted in the request - it won''t be returned in response. Consider the version as the latest one.
+
+                      '
+                    type: string
+                    example: 2022.3@3
+                  previousVersionPackageId:
+                    description: Previous release version package id.
+                    type: string
+                    example: QS.CloudQSS.CPQ.Q-TMF
+                  previousVersion:
+                    description: 'Name of the previous published version.
+
+                      The mask <version>@<revision> will be used for return a specific revision.
+
+
+                      If the @<revision> was not transmitted in the request - it won''t be returned in response. Consider the version as the latest one.
+
+                      '
+                    type: string
+                    example: 2022.2@4
+                  buildType:
+                    description: 'Type of the build process. Available options are:
+
+                      **changelog** - Only the changelog calculation, no API contracts version will be created.
+
+                      '
+                    type: string
+                    enum:
+                    - changelog
+                  createdBy:
+                    description: User, created the changelog build.
+                    type: string
+                  buildId:
+                    description: Id of the created build.
+                    type: string
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    description: Calculation process status.
+                    type: string
+                    enum:
+                    - running
+                    - error
+                  message:
+                    description: The message for **error** status.
+                    type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v1/packages/{packageId}/versions/{version}/ddl/entities/{ddlEntityId}/changes:
+    get:
+      tags:
+      - Changes
+      summary: Get DDL entity changes
+      description: Get changes of one DDL entity between current and previous published package versions. Only `table` entities are supported now.
+      operationId: getPackageVersionDdlEntityChanges
+      parameters:
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/ddlEntityId'
+      - $ref: '#/components/parameters/severity'
+      - $ref: '#/components/parameters/previousVersion'
+      - $ref: '#/components/parameters/previousVersionPackageId'
+      - in: query
+        name: previousVersionDdlEntityId
+        description: DDL entity identifier from previous version.\ Empty, if requested entity is added in the current version; otherwise, must be specified.
+        schema:
+          type: string
+          example: public-table-accounts
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  changes:
+                    description: List of individual DDL entity changes.
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SingleOperationChange'
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v1/packages/{packageId}/versions/{version}/ddl/changes:
+    get:
+      tags:
+      - Changes
+      summary: Get list of changed DDL entities
+      description: 'Get DDL contract changes between two compared package versions with details by entities.
+
+        Only `table` entities are supported now.
+
+        '
+      operationId: getPackageVersionDdlChanges
+      parameters:
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/severity'
+      - $ref: '#/components/parameters/previousVersion'
+      - $ref: '#/components/parameters/previousVersionPackageId'
+      - name: refPackageId
+        description: Filter by package id of ref package and previous ref package.
+        in: query
+        schema:
+          type: string
+      - name: textFilter
+        in: query
+        description: Filter by DDL entity name (case-insensitive substring match).
+        schema:
+          type: string
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - entities
+                properties:
+                  previousVersion:
+                    description: Name of the previous published version. The <version>@<revision> mask is used to return the revision number.
+                    type: string
+                    example: 2022.2@5
+                  previousVersionPackageId:
+                    description: Previous release version package id.
+                    type: string
+                    example: QS.CloudQSS.CPQ.Q-TMF
+                  entities:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - changeSummary
+                      - comparisonInternalDocumentId
+                      properties:
+                        ddlEntityData:
+                          $ref: '#/components/schemas/DdlEntityChange'
+                        previousDdlEntityData:
+                          $ref: '#/components/schemas/DdlEntityChange'
+                        changeSummary:
+                          allOf:
+                          - $ref: '#/components/schemas/ChangeSummary'
+                          - type: object
+                            description: Number of declarative changes in one specific DDL entity.
+                        comparisonInternalDocumentId:
+                          description: 'Unique string identifier of the internal merged document, where diffs between entity and previous entity are present. Corresponds to `id` field for the document in `comparison-internal-documents.json`
+
+                            '
+                          type: string
+                          example: shop_1.0.0_shop-pkg_shop_2.0.0_shop-pkg
+                  packages:
+                    $ref: '#/components/schemas/PackagesMap'
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v1/packages/{packageId}/versions/{version}/ddl/entities/{ddlEntityId}/changes/summary:
+    get:
+      tags:
+      - Changes
+      summary: Single DDL entity changes summary
+      description: 'Get summary of changes for one DDL entity between current and previous published package version.
+
+        Only `table` entities are supported now.
+
+        '
+      operationId: getPackageVersionDdlEntityChangesSummary
+      parameters:
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/ddlEntityId'
+      - $ref: '#/components/parameters/previousVersion'
+      - $ref: '#/components/parameters/previousVersionPackageId'
+      - name: refPackageId
+        description: Filter by package id of ref package and previous ref package.
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeSummary'
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v1/packages/{packageId}/versions/{version}/ddl/export/changes:
+    get:
+      tags:
+      - Changes
+      summary: Export DDL changes to xlsx file
+      description: Export DDL contract changes between two compared package versions. Only `table` entities are supported now.
+      operationId: getPackageVersionDdlChangesExport
+      parameters:
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/severity'
+      - $ref: '#/components/parameters/previousVersion'
+      - $ref: '#/components/parameters/previousVersionPackageId'
+      - name: refPackageId
+        description: Filter by package id of ref package and previous ref package.
+        in: query
+        schema:
+          type: string
+      - name: textFilter
+        in: query
+        description: Filter by DDL entity name (case-insensitive substring match).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/xlsx:
+              schema:
+                type: string
+                format: binary
+                description: xlsx file to download
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                description: xlsx file name
+                example: attachment; filename="DDLChanges_package.id_version.xlsx"
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                IncorrectInputParams:
+                  $ref: '#/components/examples/IncorrectInputParameters'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+                VersionNotFound:
+                  $ref: '#/components/examples/VersionNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v2/packages/{packageId}/versions/{version}/{apiType}/operations/{operationId}/changes:
+    get:
+      tags:
+      - Changes
+      summary: Single operation change log
+      description: 'Get changes of one operation between current and previous published package version.
+
+        The result depends on the API type.
+
+        '
+      operationId: getPackagesIdVersionsApiTypeOperationsIdChanges
+      parameters:
+      - $ref: '#/components/parameters/apiType'
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/operationId'
+      - $ref: '#/components/parameters/severity'
+      - $ref: '#/components/parameters/previousVersion'
+      - $ref: '#/components/parameters/previousVersionPackageId'
+      - in: query
+        name: previousVersionOperationId
+        description: Operation unique identifier from previous version (not the same as operationId tag from the OpenAPI file).\ Empty, if requested operation is added in the current version; otherwise, must be specified.
+        schema:
+          type: string
+          example: get-quoteManagement-v5-quote-id
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  changes:
+                    description: List of discrepancies data in the operation.
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SingleOperationChange'
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v2/packages/{packageId}/versions/{version}/{apiType}/operations/{operationId}/changes/summary:
+    get:
+      tags:
+      - Changes
+      summary: Single operation changes summary
+      description: 'Get summary of changes for one operation between current and previous published package version.
+
+        The result depends on the API type.
+
+        '
+      operationId: getPackagesIdVersionsApiTypeOperationsIdChangesSummary
+      parameters:
+      - $ref: '#/components/parameters/apiType'
+      - $ref: '#/components/parameters/packageId'
+      - $ref: '#/components/parameters/version'
+      - $ref: '#/components/parameters/operationId'
+      - $ref: '#/components/parameters/previousVersion'
+      - $ref: '#/components/parameters/previousVersionPackageId'
+      - name: refPackageId
+        description: Filter by package id of ref package and previous ref package.
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeSummary'
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current ednpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v1/packages/{packageId}/versions/{version}/comparison-internal-documents:
+    parameters:
+    - $ref: '#/components/parameters/packageId'
+    - $ref: '#/components/parameters/version'
+    - $ref: '#/components/parameters/previousVersionPackageId'
+    - $ref: '#/components/parameters/previousVersion'
+    get:
+      tags:
+      - Changes
+      summary: Get version comparison internal documents
+      description: 'Get list of internal documents for the version comparison. Internal documents are only supported for packages of kind `package`
+
+        '
+      operationId: getPackagesIdVersionsIdComparisonInternalDocuments
+      security:
+      - BearerAuth: []
+      - CookieAuth: []
+      - api-key: []
+      parameters:
+      - name: refPackageId
+        description: Filter by package id of ref package and previous ref package.
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                description: List of internal documents in a version comparison.
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/components/schemas/InternalDocumentMetadata'
+                  - type: object
+                    required:
+                    - hash
+                    properties:
+                      hash:
+                        description: Hash of the corresponding document content.
+                        type: string
+        '301':
+          description: Moved Permanently
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Current endpoint with new packageId of moved package
+            X-New-Package-Id:
+              schema:
+                type: string
+              description: New packageId of moved package
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                PackageNotFound:
+                  $ref: '#/components/examples/PackageNotFound'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+  /api/v2/packages/{packageId}/versions/{version}/changes:
+    get:
+      tags:
+      - Changes
+      summary: Get version changes
+      description: 'Get validation changes for a package version.
+
+        '
+      operationId: getVersionChanges
+      deprecated: true
+      parameters:
+      - $ref: '#/components/parameters/packageId'
+      - name: version
+        in: path
+        required: true
+        description: Version identifier
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  previousVersion:
+                    type: string
+                  previousVersionPackageId:
+                    type: string
+                  changes:
+                    type: array
+                    items:
+                      type: object
+                  bwcMessages:
+                    type: array
+                    items:
+                      type: object
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                InternalServerError:
+                  $ref: '#/components/examples/InternalServerError'
+components:
+  schemas:
+    VersionStatusEnum:
+      description: Package version status
+      type: string
+      enum:
+      - draft
+      - release
+      - archived
+    GqlOperationInfoFromDifferentVersions:
+      description: Operation info from previous/current version.
+      allOf:
+      - $ref: '#/components/schemas/OperationInfoFromDifferentVersionsV2'
+      - type: object
+        required:
+        - type
+        - method
+        properties:
+          type:
+            description: Operation type
+            type: string
+            enum:
+            - query
+            - mutation
+            - subscription
+          method:
+            description: GraphQL operation method.
+            type: string
+            example: getPaymentMethodSpecificationCore
+    DdlEntityChange:
+      description: One side (current or previous) of a DDL entity in a changelog change entry.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/DdlEntity'
+      - type: object
+        properties:
+          packageRef:
+            description: Package and version reference key.
+            type: string
+            example: QS.CloudQSS.CPQ.Q-TMF@2023.2
+    ChangeReplace:
+      type: object
+      description: Data of single operation change when change action = replace
+      properties:
+        currentDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousValueHash:
+          type: string
+          description: 'Previous hash of the changed entity.\
+
+            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
+
+            '
+        currentValueHash:
+          type: string
+          description: 'Current hash of the changed entity.\
+
+            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
+
+            '
+    RestOperationInfoFromDifferentVersions:
+      description: Operation info from previous/current version.
+      allOf:
+      - $ref: '#/components/schemas/OperationInfoFromDifferentVersionsV2'
+      - type: object
+        required:
+        - path
+        - method
+        properties:
+          path:
+            description: Operation endpoint path.
+            type: string
+            example: /quoteManagement/v5/quote
+          method:
+            description: Operation method.
+            type: string
+            enum:
+            - post
+            - get
+            - put
+            - patch
+            - delete
+            - head
+            - options
+            - connect
+            - trace
+    VersionComparisonContractsSummary:
+      description: 'Contract comparison summary, keyed by contract type. MCP is omitted in v1 because MCP discovery
+
+        entities are not diffed.
+
+        '
+      type: object
+      properties:
+        ddl:
+          type: object
+          properties:
+            changesSummary:
+              allOf:
+              - $ref: '#/components/schemas/ChangeSummary'
+              - type: object
+                description: Number of declarative DDL changes of each severity type.
+            numberOfImpactedEntities:
+              allOf:
+              - $ref: '#/components/schemas/ChangeSummary'
+              - type: object
+                description: Number of DDL entities impacted by each severity type.
+    ApiType:
+      title: apiType
+      type: string
+      enum:
+      - rest
+      - graphql
+      - protobuf
+      - asyncapi
+    PackagesMap:
+      description: 'A map of referenced package versions to the package version objects.
+
+        The key is `packageId@version@revision` — three `@`-separated segments (note: the `version` field
+
+        of each value is `version@revision`, only two segments).
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/PackageVersionRef'
+      example:
+        QS.CloudQSS.CPQ.Q-TMF@2023.2@3:
+          refId: QS.CloudQSS.CPQ.Q-TMF
+          kind: package
+          name: Quote Management TMF648
+          version: 2023.2@3
+          status: release
+          parentPackages:
+          - qubership
+          - Qubership JSS
+          - Sample Management
+          deletedAt: '2023-05-30T17:17:11.755146Z'
+          deletedBy: user1221
+          notLatestRevision: true
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+    SingleOperationChange:
+      allOf:
+      - type: object
+        description: Discrepancy data in a single operation.
+        properties:
+          description:
+            description: Human-readable description of point of change.
+            type: string
+            example: '[Added] Property: summary.'
+          severity:
+            $ref: '#/components/schemas/ChangeSeverity'
+          scope:
+            type: string
+            description: 'Part of operation (like request/response) where change was made. Scope differs for apiTypes.\
+
+              Scope is needed to correctly identify severity of change, because the same change can have different severity in request/response.
+
+              '
+          action:
+            description: Action, what was done with the endpoint.
+            type: string
+            enum:
+            - add
+            - remove
+            - replace
+            - rename
+      - oneOf:
+        - $ref: '#/components/schemas/ChangeAdd'
+        - $ref: '#/components/schemas/ChangeRemove'
+        - $ref: '#/components/schemas/ChangeReplace'
+        - $ref: '#/components/schemas/ChangeRename'
+    AsyncAPIOperationInfoFromDifferentVersions:
+      description: AsyncAPI 3.0 operation info from previous/current version.
+      allOf:
+      - $ref: '#/components/schemas/OperationInfoFromDifferentVersionsV2'
+      - type: object
+        required:
+        - action
+        - channel
+        - protocol
+        - asyncOperationId
+        - messageId
+        properties:
+          action:
+            description: 'AsyncAPI operation action: send or receive.'
+            type: string
+            enum:
+            - send
+            - receive
+          channel:
+            description: 'AsyncAPI channel identifier.
+
+              Uses channel.title if available; otherwise uses channelId (key in the document''s root channels map).
+
+              '
+            type: string
+            example: User Signup Channel
+          protocol:
+            description: 'Communication protocol derived from the channel''s first server.
+
+              Expected values: kafka, amqp. Any other protocol value from the spec is displayed as-is.
+
+              If the channel has no server references or the protocol cannot be resolved, the value is "Unknown".
+
+              '
+            type: string
+            example: kafka
+          asyncOperationId:
+            description: 'AsyncAPI operationId as defined in the AsyncAPI specification.
+
+              The key in the root operations map that identifies the operation.
+
+              '
+            type: string
+            example: onUserSignUp
+          messageId:
+            description: 'AsyncAPI messageId as defined in the AsyncAPI specification.
+
+              The key in the channel''s messages map that identifies the message.
+
+              '
+            type: string
+            example: userSignedUp
+    PackageVersionRef:
+      description: Package version reference
+      type: object
+      title: Referenced package version
+      required:
+      - refId
+      - kind
+      - name
+      - version
+      - status
+      properties:
+        refId:
+          description: Referenced package Id.
+          type: string
+          example: QS.CloudQSS.CPQ.CORE
+        kind:
+          description: Package kind
+          type: string
+          enum:
+          - package
+          - dashboard
+        name:
+          description: Name of the referenced package
+          type: string
+          example: Quote Management TMF648
+        version:
+          description: Referenced package version number. The <version>@<revision> mask is used to return the revision number.
+          type: string
+          example: 2022.2@5
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        parentPackages:
+          description: Array of parent package names
+          type: array
+          items:
+            type: string
+        deletedAt:
+          description: date when package version was deleted package version
+          type: string
+          format: date-type
+          example: '2023-05-30T17:17:11.755146Z'
+        deletedBy:
+          description: user who deleted package version
+          type: string
+          example: user1221
+        notLatestRevision:
+          type: boolean
+          default: false
+    DdlEntity:
+      type: object
+      description: 'Identified DDL entity — its stable id and descriptor (kind/name/schemaName/description). The core
+
+        shared by the build result and the API; each context adds its own fields via allOf.
+
+        '
+      required:
+      - ddlEntityId
+      - kind
+      - name
+      - schemaName
+      - description
+      properties:
+        ddlEntityId:
+          description: Stable DDL entity identifier, `{schemaName}-{kind}-{name}` slugified.
+          type: string
+          example: public-table-users
+        kind:
+          description: DDL contract entity kind. Only `table` is produced in the current version.
+          type: string
+          enum:
+          - table
+          example: table
+        name:
+          description: Table name.
+          type: string
+          example: users
+        schemaName:
+          description: Schema name the entity belongs to (the entity scope).
+          type: string
+          example: public
+        description:
+          description: Value of `COMMENT ON TABLE`, or an empty string when none is present.
+          type: string
+          example: Registered users
+    ChangeRename:
+      type: object
+      description: Data of single operation change when change action = rename.
+      properties:
+        currentDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousKey:
+          type: string
+          description: Previous key (name) of the renamed entity.
+        currentKey:
+          type: string
+          description: Current key (name) of the renamed entity.
+    ChangeSummary:
+      description: 'Numbers of changes between the current and previous published version.
+
+        '
+      type: object
+      properties:
+        breaking:
+          description: Number of changes, breaking the backward compatibility.
+          type: integer
+          default: 0
+        semi-breaking:
+          description: Number of changes, breaking the backward compatibility in a legal way. For example, deleting correctly deprecated endpoint.
+          type: integer
+          default: 0
+        deprecated:
+          description: Number of deprecated endpoints.
+          type: integer
+          default: 0
+        non-breaking:
+          description: Number of non-breaking changes.
+          type: integer
+          default: 0
+        annotation:
+          description: Number of annotation changes.
+          type: integer
+          default: 0
+        unclassified:
+          description: Number of unclassified changes.
+          type: integer
+          default: 0
+    ChangeAdd:
+      type: object
+      description: Data of single operation change when change action = add
+      properties:
+        currentDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        currentValueHash:
+          type: string
+          description: 'Hash of the added entity.\
+
+            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
+
+            '
+    ChangeSeverity:
+      description: Severity of the particular change.
+      type: string
+      enum:
+      - breaking
+      - semi-breaking
+      - deprecated
+      - non-breaking
+      - annotation
+      - unclassified
+    InternalDocumentMetadata:
+      type: object
+      required:
+      - id
+      - fileName
+      properties:
+        id:
+          description: Published file id.
+          type: string
+          pattern: ^[a-z0-9-]
+          example: qitmf-v5-11-json
+        fileName:
+          type: string
+          description: File name (slug+extension).
+          example: qitmf-v5.11.json
+    ChangeRemove:
+      type: object
+      description: Data of single operation change when change action = remove.
+      properties:
+        previousDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousValueHash:
+          type: string
+          description: 'Hash of the removed entity.\
+
+            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
+
+            '
+    OperationInfoFromDifferentVersionsV2:
+      description: Operation info from previous/current version.
+      type: object
+      required:
+      - operationId
+      - title
+      - apiKind
+      - documentId
+      - apiAudience
+      properties:
+        operationId:
+          description: Operation unique identifier (for rest api this operationId is not the same as operationId field from the OpenAPI file).
+          type: string
+          example: get-quoteManagement-v5-quote
+        documentId:
+          description: Unique string identifier of the document from which the operation is originated
+          type: string
+          pattern: ^[a-z0-9-]
+          example: qitmf-v5-11-json
+        title:
+          description: Operation summary/title.
+          type: string
+        apiKind:
+          type: string
+          enum:
+          - bwc
+          - no-bwc
+          - experimental
+        apiAudience:
+          description: 'Operation''s target audience:
+
+            * internal - APIs are available for integration within product application.
+
+            * external - APIs exposed outside the boundary of product application: solution delivery integrations, 3rd party integrations, customer integrations.
+
+            * unknown - If any value other than internal or external is used, the API is considered as unknown.
+
+            '
+          type: string
+          enum:
+          - internal
+          - external
+          - unknown
+        tags:
+          description: Tags of operation. For rest - tag is taken from OAS, for graphql - tag is root schema type (query, mutation, subscription).
+          type: array
+          items:
+            type: string
+          example:
+          - Access Control API, Address Management API
+        packageRef:
+          description: 'Parent package and version link. Created by the concatenation of the packageId and version name with At sign.
+
+            '
+          type: string
+          example: QS.CloudQSS.CPQ.Q-TMF@2023.2
+  parameters:
+    packageId:
+      name: packageId
+      in: path
+      description: Package unique identifier (full alias)
+      required: true
+      schema:
+        type: string
+        example: QS.CloudQSS.CPQ.Q-TMF
+    apiType:
+      name: apiType
+      description: Type of the API.
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - rest
+        - graphql
+        - protobuf
+        - asyncapi
+    ddlEntityId:
+      name: ddlEntityId
+      in: path
+      required: true
+      description: DDL entity logical identifier. Clients must percent-encode unsafe characters.
+      schema:
+        type: string
+        example: public-table-users
+    severity:
+      name: severity
+      in: query
+      description: Filter API changes by severity.
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - breaking
+          - non-breaking
+          - deprecated
+          - semi-breaking
+          - annotation
+          - unclassified
+    previousVersion:
+      name: previousVersion
+      in: query
+      description: 'Package previous version.
+
+        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+
+        '
+      schema:
+        type: string
+        example: '2022.3'
+    version:
+      name: version
+      in: path
+      description: Package version
+      required: true
+      schema:
+        type: string
+        example: '2022.3'
+    asyncapiProtocol:
+      name: asyncapiProtocol
+      in: query
+      description: 'Filter operations by communication protocol.
+
+        Applicable only when apiType = asyncapi; ignored for other API types.
+
+        The value is the protocol string from the channel''s server (e.g. kafka, amqp).
+
+        Use "Unknown" for operations where the protocol could not be resolved.
+
+        '
+      schema:
+        type: string
+        example: kafka
+    previousVersionPackageId:
+      name: previousVersionPackageId
+      in: query
+      description: 'Package unique identifier for previous version.
+
+        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+
+        '
+      schema:
+        type: string
+        example: QS.RUNENV.K8S-SERVER.CJM-QSS-DEV-2.Q-TMF
+    apiAudience:
+      name: apiAudience
+      in: query
+      description: 'Filter operations by apiAudience.
+
+        * internal - APIs are available for integration within product application.
+
+        * external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.
+
+        * unknown - If any value other than internal or external is used, the API is considered as unknown.
+
+        '
+      schema:
+        type: string
+        enum:
+        - all
+        - internal
+        - external
+        - unknown
+        default: all
+    operationId:
+      name: operationId
+      in: path
+      description: Operation unique identifier (slug). Not the same as operationId tag from the OpenAPI file.
+      required: true
+      schema:
+        type: string
+        example: get-quoteManagement-v5-quote-quoteId
+    page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: number
+        default: 0
+    limit:
+      name: limit
+      in: query
+      description: Requested number of resources to be provided in response.
+      schema:
+        type: number
+        default: 100
+        maximum: 100
+        minimum: 1
+    asyncapiChannel:
+      name: asyncapiChannel
+      in: query
+      description: 'Filter operations by AsyncAPI channel identifier (comma-separated).
+
+        Applicable only when apiType = asyncapi; ignored for other API types.
+
+        '
+      schema:
+        type: string
+        example: userSignup,orderCreated
+  examples:
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
+    PackageNotFound:
+      description: Package not found by ID. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3020
+        message: package with packageId = $packageId not found
+    VersionNotFound:
+      description: Version not found by number. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3050
+        message: Published version $version not found
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
+  securitySchemes:
+    BearerAuth:
+      type: http
+      description: 'Bearer token authentication (JWT). Default security scheme for API usage. Provide Authorization: Bearer <token>.'
+      scheme: bearer
+      bearerFormat: JWT
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-access-token
+      description: Authentication via the `apihub-access-token` cookie.
+    api-key:
+      type: apiKey
+      description: API key authentication. Send the key in the api-key header.
+      name: api-key
+      in: header
+    BasicAuth:
+      type: http
+      description: Login/password authentication.
+      scheme: basic
+    PersonalAccessToken:
+      type: apiKey
+      description: Personal access token authentication. Send the token in the X-Personal-Access-Token header; use for user-issued/script access.
+      name: X-Personal-Access-Token
+      in: header
+    RefreshTokenAuth:
+      type: apiKey
+      in: cookie
+      name: apihub-refresh-token
+      description: Authentication via refresh token cookie
+externalDocs:
+  description: Find out more about this project and repository documentation
+  url: https://github.com/Netcracker/qubership-apihub

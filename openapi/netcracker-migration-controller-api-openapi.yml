@@ -1,0 +1,266 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Migration controller API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Migration controller
+  description: 'Provides API to migrate: database registration from another source, database passwords to external system.'
+paths:
+  /api/v3/dbaas/migration/databases:
+    put:
+      summary: V3. Register databases
+      description: This API allows you to register the database in DBaaS. The registered database would not be created, and it is assumed that it already exists in the cluster The purpose for this API is to register databases which weren not created through DBaaS. If registered database already exist in DBaaS then it will not be added.
+      tags:
+      - Migration controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RegisterDatabaseRequestV3'
+        required: true
+      responses:
+        '200':
+          description: Migration completed
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal error during migration
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - MIGRATION_CLIENT
+  /api/v3/dbaas/migration/databases/with-user-creation:
+    put:
+      summary: V3. Register databases with user creation
+      description: This API allows you to register the database in DBaaS with user creation. It can be useful when username and password is unknown and you want you database to dbaas registry. Previous users will not be unbind, so in point of security you should unbind user them by yourself.The registered database would not be created, and it is assumed that it already exists in the cluster The purpose for this API is to register databases which were not created through DBaaS. If registered database already exist in DBaaS then it will not be added.
+      tags:
+      - Migration controller
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/RegisterDatabaseWithUserCreationRequest'
+        required: true
+      responses:
+        '200':
+          description: Migration completed. Response is a map where key is database type and value is MigrationResult
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResult'
+        '409':
+          description: There are some conflicts detected during migration. Response is a map where key is database type and value is MigrationResult
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResult'
+        '500':
+          description: Internal error during migration. Response is a map where key is database type and value is MigrationResult
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationResult'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - MIGRATION_CLIENT
+        - DB_CLIENT
+components:
+  schemas:
+    RegisterDatabaseWithUserCreationRequest:
+      type: object
+      required:
+      - classifier
+      - type
+      - name
+      description: Request to add database to registration
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of database, it should not exist in registration, or the request would be ignored.
+        type:
+          type: string
+          description: The type of database, for example postgresql or mongodb.
+        name:
+          type: string
+          description: Name of database.
+        backupDisabled:
+          type: boolean
+          description: This parameter specifies if the DBaaS should except this database from backup/restore procedure. The parameter cannot be modified and it is installed only once during registration request.
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
+        dbHost:
+          type: string
+          description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    MigrationResult:
+      type: object
+      properties:
+        migrated:
+          type: array
+          items:
+            type: string
+        migratedDbInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseResponseV3ListCP'
+        conflicted:
+          type: array
+          items:
+            type: string
+        failed:
+          type: array
+          items:
+            type: string
+        failureReasons:
+          type: array
+          items:
+            type: string
+    RegisterDatabaseRequestV3:
+      type: object
+      required:
+      - classifier
+      - connectionProperties
+      - resources
+      - namespace
+      - type
+      - name
+      description: Request to add database to registration
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of database, it should not exist in registration, or the request would be ignored.
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: Connection properties used to connect to database. It contains such keys as url, authDbName, username, password, port, host. Setting keys depends on the database type.
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+          description: List of the resources needed to drop during database drop.
+        namespace:
+          type: string
+          description: Namespace where database is placed.
+        type:
+          type: string
+          description: The type of database, for example postgresql or mongodb.
+        adapterId:
+          type: string
+          description: Identifier of an adapter to work with database. If not specified then the default would be used.
+        name:
+          type: string
+          description: Name of database.
+        backupDisabled:
+          type: boolean
+          description: This parameter specifies if the DBaaS should except this database from backup/restore procedure. The parameter cannot be modified and it is installed only once during registration request.
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
+        dbHost:
+          type: string
+          description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    DatabaseResponseV3ListCP:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - name
+      - connectionProperties
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field might not be used when searching by classifier for security purpose. And it exists in the response when executing Create database API
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and it distinguishes this database from other databases in the same namespace. It contains such keys as dbClassifier, isServiceDb, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed.
+        type:
+          type: string
+          description: Type of database, for example PostgreSQL or MongoDB
+        name:
+          type: string
+          description: Name of database. It may be generated or, if name was specified in the request, then it will be specified.
+        externallyManageable:
+          type: boolean
+          description: This parameter specifies if a control over the database is not carried out by the DBaaS adapter
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: Additional settings for creating a database.
+        backupDisabled:
+          type: boolean
+          description: 'This field indicates if backup is disabled or not. If true, database would not be backed up. Example: false'
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: This is an information about connection to database. It contains such keys as url, authDbName, username, password, port, host.Setting keys depends on the database type.
+        resources:
+          $ref: '#/components/schemas/DbResource'
+          description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

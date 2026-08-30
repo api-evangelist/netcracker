@@ -1,0 +1,271 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Database users controller v3 API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Database users controller v3
+  description: This controller contains API for operations with database users.
+paths:
+  /api/v3/dbaas/users:
+    put:
+      summary: V3. Get or create user
+      description: The API allows to get or create specific user for database.
+      tags:
+      - Database users controller v3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetOrCreateUserRequest'
+        required: true
+      responses:
+        '200':
+          description: User is already created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOrCreateUserResponse'
+        '201':
+          description: New user is created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetOrCreateUserResponse'
+        '202':
+          description: Operation in progress
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+    delete:
+      summary: V3. Delete user
+      description: The API allows to delete specific user for database.
+      tags:
+      - Database users controller v3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserOperationRequest'
+        required: true
+      responses:
+        '200':
+          description: User is successfully deleted
+          content:
+            application/json:
+              schema:
+                type: string
+        '204':
+          description: User is not found
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/users/restore:
+    post:
+      summary: V3. Restore users
+      description: The API allows to restore users for database. If role field is passed, then only users with this role will be processed.
+      tags:
+      - Database users controller v3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestoreUsersRequest'
+        required: true
+      responses:
+        '200':
+          description: Users recreated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulRestoreUsersResponse'
+        '500':
+          description: Error during restore
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RestoreUsersResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+  /api/v3/dbaas/users/rotate-password:
+    post:
+      summary: V3. Rotate user password.
+      description: The API allows to rotate password for specific user.
+      tags:
+      - Database users controller v3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserOperationRequest'
+        required: true
+      responses:
+        '200':
+          description: Password was successfully reset.
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+        '400':
+          description: Bad Request
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    SuccessfulRestoreUsersResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    GetOrCreateUserRequest:
+      type: object
+      required:
+      - classifier
+      - logicalUserId
+      - type
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as scope, microserviceName, namespace.
+        logicalUserId:
+          type: string
+          description: User uniq identifier. Using this field with classifier and type dbaas will determine to create or return created before user.
+        type:
+          type: string
+          description: The physical type of logical database. For example postgresql
+        physicalDbId:
+          type: string
+          description: Identificator of physical database related to a logical database.
+        usernamePrefix:
+          type: string
+          description: Prefix for username
+        userRole:
+          type: string
+          description: User role, for example admin, rw, ro
+    UnsuccessfulRestore:
+      type: object
+      properties:
+        connectionProperties:
+          type: object
+          additionalProperties: {}
+        errorMessage:
+          type: string
+    UserOperationRequest:
+      type: object
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        logicalUserId:
+          type: string
+          description: User uniq identifier. Using this field with classifier and type dbaas will determine to create or return created before user.
+        type:
+          type: string
+          description: The physical type of logical database. For example mongodb or postgresql
+        userId:
+          type: string
+          description: The user identificator.
+    SuccessfullRestore:
+      type: object
+      properties:
+        connectionProperties:
+          type: object
+          additionalProperties: {}
+    GetOrCreateUserResponse:
+      type: object
+      required:
+      - userId
+      - connectionProperties
+      properties:
+        userId:
+          type: string
+          description: The user identificator.
+        connectionProperties:
+          type: object
+          additionalProperties: {}
+          description: The information about connection to database. It contains such keys as url, authDbName, username, password, port, host.Setting keys depends on the database type.
+    RestoreUsersRequest:
+      type: object
+      required:
+      - classifier
+      - type
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as scope, microserviceName, namespace.
+        type:
+          type: string
+          description: The physical type of logical database. For example postgresql
+        role:
+          type: string
+          description: User role
+    RestoreUsersResponse:
+      type: object
+      properties:
+        unsuccessfully:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnsuccessfulRestore'
+        successfully:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccessfullRestore'
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication

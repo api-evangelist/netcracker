@@ -1,0 +1,787 @@
+openapi: 3.2.0
+info:
+  contact: {}
+  description: API for Maas Service.
+  title: Maas Service V2 API
+tags:
+- name: V2
+paths:
+  /api/v2/auth/account/manager/{name}/password:
+    put:
+      description: Update Password
+      operationId: UpdatePassword
+      parameters:
+      - description: new-password
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Update Password using Manager Role
+      tags:
+      - V2
+  /api/v2/config:
+    post:
+      description: Apply Config V2
+      operationId: ApplyConfigV2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Apply Config V2 using Agent Role
+      tags:
+      - V2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Request Body
+        required: true
+  /api/v2/kafka/discrepancy-report/{namespace}:
+    get:
+      description: Get Report
+      operationId: GetReport
+      parameters:
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      - description: status
+        in: query
+        name: status
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.DiscrepancyReportItem'
+                type: array
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      summary: Get Report
+      tags:
+      - V2
+  /api/v2/kafka/recover-topic:
+    post:
+      description: Sync Topic To Kafka
+      operationId: SyncTopicToKafka
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.KafkaTopicSyncReport'
+                type: array
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Sync Topic To Kafka using Agent Role
+      tags:
+      - V2
+  /api/v2/kafka/recovery/{namespace}:
+    post:
+      description: Sync All Topics To Kafka
+      operationId: SyncAllTopicsToKafka
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.KafkaTopicSyncReport'
+                type: array
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Sync All Topics To Kafka using Agent Role
+      tags:
+      - V2
+  /api/v2/kafka/topic:
+    post:
+      description: Get Or Create Topic
+      operationId: GetOrCreateTopicV2
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      - description: onTopicExists
+        in: query
+        name: onTopicExists
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '410':
+          description: Gone
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Or Create Topic using Agent Role
+      tags:
+      - V2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.TopicTemplate'
+        description: Request Body
+        required: true
+  /api/v2/kafka/topic/get-by-classifier:
+    post:
+      description: Get Topic By Classifier
+      operationId: GetTopicByClassifierV2
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+                type: array
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '410':
+          description: Gone
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Topic By Classifier using Agent Role
+      tags:
+      - V2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.Classifier'
+        description: Classifier
+        required: true
+  /api/v2/kafka/topic/search:
+    post:
+      description: Search Topics
+      operationId: SearchTopicsV2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+                type: array
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Search Topics using Agent Role
+      tags:
+      - V2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.TopicSearchRequest'
+        description: TopicSearchRequest
+        required: true
+  /api/v2/kafka/topic/watch-create:
+    post:
+      description: Watch Topics Create
+      operationId: WatchTopicsCreate
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      - description: timeout
+        in: query
+        name: timeout
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '405':
+          description: Method Not Allowed
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Watch Topics Create using Agent Role
+      tags:
+      - V2
+  /api/v2/monitoring/entity-distribution:
+    get:
+      description: Get Monitoring Entities
+      operationId: GetMonitoringEntities
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Get Monitoring Entities using Manager Role
+      tags:
+      - V2
+  /api/v2/monitoring/entity-request-audit:
+    get:
+      description: Get Monitoring Entity Requests
+      operationId: GetMonitoringEntityRequests
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      summary: Get Monitoring Entity Requests
+      tags:
+      - V2
+  /api/v2/rabbit/recovery/{namespace}:
+    post:
+      description: Recover Namespace
+      operationId: RecoverNamespace
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      - description: namespace
+        in: path
+        name: namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Recover Namespace using Agent Role
+      tags:
+      - V2
+  /api/v2/rabbit/validations:
+    get:
+      description: Validate Rabbit Configs
+      operationId: ValidateRabbitConfigs
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    $ref: '#/components/schemas/model.LazyBindingDto'
+                  type: array
+                type: object
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Validate Rabbit Configs using Agent Role
+      tags:
+      - V2
+components:
+  schemas:
+    model.TopicSearchRequest:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          example: <id of kafka instance where topics are created>
+          type: string
+        leaveRealTopicIntact:
+          type: boolean
+        namespace:
+          example: <namespace to which topics belong>
+          type: string
+        template:
+          type: integer
+        topic:
+          example: <exact topic name in kafka>
+          type: string
+        versioned:
+          type: boolean
+      type: object
+    model.TopicSettings:
+      properties:
+        configs:
+          additionalProperties:
+            type: string
+          type: object
+        minNumPartitions:
+          example: 1
+          type: integer
+        numPartitions:
+          example: 1
+          type: integer
+        replicaAssignment:
+          additionalProperties:
+            items:
+              type: integer
+            type: array
+          type: object
+        replicationFactor:
+          example: 1
+          type: integer
+        versioned:
+          example: true
+          type: boolean
+      type: object
+    model.Classifier:
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        tenantId:
+          type: string
+      required:
+      - name
+      - namespace
+      type: object
+    model.TopicTemplate:
+      properties:
+        configs:
+          additionalProperties:
+            type: string
+          type: object
+        minNumPartitions:
+          example: 1
+          type: integer
+        name:
+          example: topic Name
+          type: string
+        namespace:
+          example: local
+          type: string
+        numPartitions:
+          example: 1
+          type: integer
+        replicaAssignment:
+          additionalProperties:
+            items:
+              type: integer
+            type: array
+          type: object
+        replicationFactor:
+          example: 1
+          type: integer
+        versioned:
+          example: true
+          type: boolean
+      type: object
+    model.TopicRegistrationRespDto:
+      properties:
+        actualSettings:
+          $ref: '#/components/schemas/model.TopicSettings'
+        addresses:
+          additionalProperties:
+            items:
+              type: string
+            type: array
+          type: object
+        caCert:
+          example: ' '
+          type: string
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        credential:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/model.KafkaCredentials'
+            type: array
+          type: object
+        externallyManaged:
+          type: boolean
+        instance:
+          example: localkafka
+          type: string
+        name:
+          example: local.sampleTopic2.430d243ba9c74f25bf05f492a52804fd
+          type: string
+        namespace:
+          example: local
+          type: string
+        requestedSettings:
+          $ref: '#/components/schemas/model.TopicSettings'
+        template:
+          example: '2'
+          type: string
+        versioned:
+          example: false
+          type: boolean
+      type: object
+    model.KafkaTopicSyncReport:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        errMsg:
+          example: can not get topic info
+          type: string
+        name:
+          example: maas.local.test-topic-0
+          type: string
+        status:
+          example: added
+          type: string
+      type: object
+    model.KafkaCredentials:
+      properties:
+        clientCert:
+          type: string
+        clientKey:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+        username:
+          type: string
+      type: object
+    model.DiscrepancyReportItem:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        name:
+          example: maas.test.81.my-awesome-test-topic
+          type: string
+        status:
+          example: ok
+          type: string
+      type: object
+    model.LazyBindingDto:
+      properties:
+        entity:
+          additionalProperties: true
+          type: object
+        exchangeVersion:
+          example: v1
+          type: string
+        queueVersion:
+          example: v1
+          type: string
+        vhost:
+          example: maas.core-dev.test
+          type: string
+      type: object
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

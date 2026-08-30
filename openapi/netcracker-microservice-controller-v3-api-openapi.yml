@@ -1,0 +1,92 @@
+openapi: 3.2.0
+info:
+  title: DBaaS Aggregator Microservice controller v3 API
+  version: 6.13.2
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+tags:
+- name: Microservice controller v3
+  description: This controller contains APIs based on microservice value.
+paths:
+  /api/v3/dbaas/namespaces/{namespace}/services/{serviceName}/access-grants:
+    get:
+      summary: V3. Get actual access grants for microservice databases
+      description: The API allows to get actual access grants of microservice databases.
+      tags:
+      - Microservice controller v3
+      parameters:
+      - description: Project namespace in which the databases are used
+        name: namespace
+        in: path
+        required: true
+        schema:
+          type: string
+      - description: Microservice name
+        name: serviceName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Access grants were successfully found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessGrantsResponse'
+        '404':
+          description: Access grants for service's databases was not founded
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          description: Not Authorized
+        '403':
+          description: Not Allowed
+      security:
+      - SecurityScheme:
+        - DB_CLIENT
+components:
+  schemas:
+    ServiceRole:
+      type: object
+      properties:
+        name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    AccessGrantsResponse:
+      type: object
+      properties:
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceRole'
+          description: Lists services roles
+        policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyRole'
+          description: Lists polices roles
+        disableGlobalPermissions:
+          type: boolean
+          description: Is global permissions disabled
+    PolicyRole:
+      type: object
+      properties:
+        type:
+          type: string
+        defaultRole:
+          type: string
+        additionalRole:
+          type: array
+          items:
+            type: string
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication
