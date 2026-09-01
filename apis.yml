@@ -1604,6 +1604,8 @@ apis:
   humanURL: https://netcracker.github.io/apihub/
   baseURL: https://{apihub}.qubership.org
   tags:
+  - v2
+  tags_raw:
   - V2
   properties:
   - type: OpenAPI
