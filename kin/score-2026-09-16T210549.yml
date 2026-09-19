@@ -1,28 +1,29 @@
-# Kin Score artifact — netcracker — 2026-08-17T064519
+# Kin Score artifact — netcracker — 2026-09-16T210549
 # The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
 ---
 kin_score:
   slug: netcracker
-  schema_version: 0.11.0
-  scored_at: '2026-08-17'
-  run_ts: 2026-08-17T064519
-  composite: 49.6
-  band: developing
+  schema_version: 0.22.0
+  scored_at: '2026-09-16'
+  run_ts: 2026-09-16T210549
+  composite: 61.3
+  band: strong
   facets:
-    discoverability: 72.2
-    contract_quality: 56.3
-    governance: 20.8
-    operational_transparency: 31.6
-    developer_ergonomics: 71.2
-    commercial_clarity: 36.8
+    discoverability: 68.5
+    contract_quality: 58.3
+    contract_governance: 18.2
+    operational_transparency: 28.9
+    developer_ergonomics: 75.6
+    access_clarity: 36.8
   agent_readiness:
-    score: 60.6
-    band: agent-native
+    score: 33.9
+    band: agent-ready
     dimensions:
       spec_presence: true
       agentic_access: derived
-      mcp_server: true
-      auth_clarity: true
+      reversibility_documented: documented
+      mcp_server: false
+      auth_clarity: bearer
       idempotency: documented
       error_semantics: verified
       openapi_examples: verified
@@ -32,20 +33,27 @@ kin_score:
       well_known_catalog: false
       consent_identity: false
       agent_card: false
-      dry_run_mode: true
+      dry_run_mode: false
+      delegated_identity: false
+      protected_resource_metadata: false
+      dynamic_client_registration: false
+      agentic_commerce: false
   regulatory:
     applies: true
     regime: Telecommunications
     regime_id: telecommunications
-    score: 50.0
+    score: 58.3
     matched_via: tags
+  open_source:
+    applies: true
+    score: 100.0
   provenance:
     mcp: first-party
     skills: derived
     agentic_access: derived
     conformance: first-party
     contracts:
-      total: 4
+      total: 40
       derived: 0
       coverage: 0.0
-      callable: 50.0
+      callable: 52.5
