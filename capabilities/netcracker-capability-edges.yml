@@ -11,7 +11,7 @@ capability_model:
   attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
     CC BY 4.0
   notice: NOTICE
-edge_count: 7
+edge_count: 14
 edges:
 - tag: Physical databases registration controller
   spec_file: netcracker-physical-databases-registration-controller-api-openapi.yml
@@ -35,6 +35,38 @@ edges:
   reason: 'Role, permission, administrator and package-membership administration — authorisation model
     management, which is Identity & Access Management. Not HR role/job architecture: the schemas are Role,
     Permission, Member, User.'
+- tag: Operations
+  spec_file: netcracker-operations-api-openapi.yml
+  capability_id: BC-4270.10
+  capability_id_l1: BC-4270
+  capability_name: Public API Lifecycle Management
+  confidence: 0.75
+  evidence: Export deprecated operations to xlsx file ... Single operation change log ... DeprecatedItems,
+    ChangeSeverity
+  reason: Catalogs API operations across spec versions with change logs and deprecation tracking — API
+    specification, versioning and deprecation management.
+  recovered_from: sweep-20260829T005356Z-edges.json
+- tag: Aggregated Database Administration No Namespace Controller V 3
+  spec_file: netcracker-aggregated-database-administration-no-namespace-controller-v-3-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.72
+  evidence: '"V3. Get database by name"; "Get list of marked for drop databases"; "Cleanup marked for
+    drop databases"; DBaaS "stores information about all databases used in a cloud project"'
+  reason: Database-as-a-Service administration over cloud managed databases — provisioning, discovery
+    and decommissioning of infrastructure resources, which is IT infrastructure (cloud/storage) management.
+  recovered_from: sweep-20260829T005356Z-edges.json
+- tag: Backups administration
+  spec_file: netcracker-backups-administration-api-openapi.yml
+  capability_id: BC-4220.60
+  capability_id_l1: BC-4220
+  capability_name: Disaster Recovery & Resilience
+  confidence: 0.7
+  evidence: '"V3. Backup namespace"; "V3. Restore namespace"; "V3. Validate backup"; schema NamespaceRestoration'
+  reason: Namespace-level backup collection, validation, deletion and restoration of DBaaS databases —
+    platform backup/restore and resilience operations.
+  recovered_from: sweep-20260829T005356Z-edges.json
 - tag: Blue Green Controller V 1
   spec_file: netcracker-blue-green-controller-v-1-api-openapi.yml
   capability_id: BC-4210.40
@@ -44,6 +76,18 @@ edges:
   evidence: '"Commit Blue-Green Domain"; "Promote"; "rollback"; "Warmup namespace"'
   reason: Blue-green domain init, promote, commit and rollback are canonical progressive-deployment strategies
     for shipping changes to production with controlled blast radius, here at the database layer.
+- tag: Controller Database administration
+  spec_file: netcracker-controller-database-administration-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: V3. Creates new database V3; V3. List of all databases; V3. External database registration;
+    V3.Delete database by classifier
+  reason: Database-as-a-Service aggregator that provisions, registers, lists and deletes managed databases
+    in a cloud namespace. That is cloud/data infrastructure provisioning and stewardship, i.e. IT Infrastructure
+    Management, not a data-governance or industry capability.
+  recovered_from: sweep-20260829T005356Z-edges.json
 - tag: Database operation controller v3
   spec_file: netcracker-database-operation-controller-v3-api-openapi.yml
   capability_id: BC-600.50
@@ -55,6 +99,38 @@ edges:
   reason: Provisioning, linking, recreating and reconfiguring managed cloud databases per namespace is
     cloud/database infrastructure operations, i.e. IT Infrastructure Management. Nothing telecom-specific
     despite the vendor being a BSS/OSS supplier.
+- tag: Global Database Operation Controller v3
+  spec_file: netcracker-global-database-operation-controller-v3-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: '"Database as a Service" (DBaaS) component ... POST /api/v3/dbaas/databases/update-host  V3.
+    Update Physical Host in Connection Properties'
+  reason: Operations administer managed cloud databases (updating the physical host in connection properties)
+    — this is cloud/database infrastructure operations, not any line-of-business capability.
+  recovered_from: sweep-20260829T005356Z-edges.json
+- tag: Migration controller
+  spec_file: netcracker-migration-controller-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: PUT /api/v3/dbaas/migration/databases  V3. Register databases ... RegisterDatabaseWithUserCreationRequest
+  reason: Registers/migrates managed databases into the DBaaS aggregator — cloud database infrastructure
+    management, not business data migration.
+  recovered_from: sweep-20260829T005356Z-edges.json
+- tag: Publish
+  spec_file: netcracker-publish-api-openapi.yml
+  capability_id: BC-4270.10
+  capability_id_l1: BC-4270
+  capability_name: Public API Lifecycle Management
+  confidence: 0.7
+  evidence: POST /api/v2/packages/{packageId}/publish  Publish package version via upload ... Get publish
+    process status
+  reason: Publication workflow for API definition package versions in the APIHUB registry — versioning
+    and release of API specifications to consumers.
+  recovered_from: sweep-20260829T005356Z-edges.json
 - tag: Users
   spec_file: netcracker-users-api-openapi.yml
   capability_id: BC-620.20
