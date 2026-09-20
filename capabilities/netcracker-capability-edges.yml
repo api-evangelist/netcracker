@@ -1,0 +1,90 @@
+slug: netcracker
+provider: Netcracker
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Telecommunications
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 7
+edges:
+- tag: Physical databases registration controller
+  spec_file: netcracker-physical-databases-registration-controller-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.8
+  evidence: '"V3. Register new physical database"; "DBaaS stores information about all databases used
+    in a cloud project"'
+  reason: Database-as-a-Service aggregator registering and managing physical database instances in a cloud
+    project — this is compute/storage infrastructure provisioning and stewardship, i.e. IT Infrastructure
+    Management.
+- tag: Roles
+  spec_file: netcracker-roles-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: '"Create a new role", "Get list of permissions", "Add a system administrator", "Add members
+    to the package"'
+  reason: 'Role, permission, administrator and package-membership administration — authorisation model
+    management, which is Identity & Access Management. Not HR role/job architecture: the schemas are Role,
+    Permission, Member, User.'
+- tag: Blue Green Controller V 1
+  spec_file: netcracker-blue-green-controller-v-1-api-openapi.yml
+  capability_id: BC-4210.40
+  capability_id_l1: BC-4210
+  capability_name: Deployment Orchestration
+  confidence: 0.7
+  evidence: '"Commit Blue-Green Domain"; "Promote"; "rollback"; "Warmup namespace"'
+  reason: Blue-green domain init, promote, commit and rollback are canonical progressive-deployment strategies
+    for shipping changes to production with controlled blast radius, here at the database layer.
+- tag: Database operation controller v3
+  spec_file: netcracker-database-operation-controller-v3-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: '"Database as a Service" (DBaaS) component ... POST /api/v3/dbaas/namespaces/{namespace}/databases/recreate  V3.
+    Recreate database with existing classifier'
+  reason: Provisioning, linking, recreating and reconfiguring managed cloud databases per namespace is
+    cloud/database infrastructure operations, i.e. IT Infrastructure Management. Nothing telecom-specific
+    despite the vendor being a BSS/OSS supplier.
+- tag: Users
+  spec_file: netcracker-users-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: '"Add members to the package", "Package member update", "Package member delete", "Get users
+    list"; schemas Member, Permission, Role'
+  reason: 'User accounts, package membership and associated roles/permissions are administered here —
+    access administration for the platform, i.e. Identity & Access Management. Not HR employee records:
+    the entities are platform users and package members.'
+- tag: V1
+  spec_file: netcracker-v1-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: '"Unregister Kafka Instance using Manager Role"; schemas model.RabbitInstance, model.TopicRegistrationRespDto,
+    model.KafkaCredentials'
+  reason: 'Messaging-as-a-Service control plane: registration of Kafka/RabbitMQ instances, topics, vhosts
+    and namespace configuration. This is middleware/infrastructure provisioning and stewardship rather
+    than any telecom or commercial capability.'
+- tag: V2
+  spec_file: netcracker-v2-api-openapi.yml
+  capability_id: BC-600.50
+  capability_id_l1: BC-600
+  capability_name: IT Infrastructure Management
+  confidence: 0.7
+  evidence: '"Get Or Create Topic using Agent Role"; "Sync All Topics To Kafka using Agent Role"; "Recover
+    Namespace using Agent Role"'
+  reason: Second version of the MaaS control plane — Kafka topic provisioning, discrepancy reporting and
+    namespace recovery. Messaging infrastructure management, i.e. Cross-Industry IT infrastructure, not
+    a telecom business capability.
