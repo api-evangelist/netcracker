@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Migration controller API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Migration controller
   description: 'Provides API to migrate: database registration from another source, database passwords to external system.'
@@ -43,6 +43,8 @@ paths:
       security:
       - SecurityScheme:
         - MIGRATION_CLIENT
+      operationId: putApiV3DbaasMigrationDatabases
+      x-operation-id-source: derived
   /api/v3/dbaas/migration/databases/with-user-creation:
     put:
       summary: V3. Register databases with user creation
@@ -86,6 +88,8 @@ paths:
       - SecurityScheme:
         - MIGRATION_CLIENT
         - DB_CLIENT
+      operationId: putApiV3DbaasMigrationDatabasesWithUserCreation
+      x-operation-id-source: derived
 components:
   schemas:
     RegisterDatabaseWithUserCreationRequest:
@@ -115,97 +119,6 @@ components:
         dbHost:
           type: string
           description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    MigrationResult:
-      type: object
-      properties:
-        migrated:
-          type: array
-          items:
-            type: string
-        migratedDbInfo:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseResponseV3ListCP'
-        conflicted:
-          type: array
-          items:
-            type: string
-        failed:
-          type: array
-          items:
-            type: string
-        failureReasons:
-          type: array
-          items:
-            type: string
-    RegisterDatabaseRequestV3:
-      type: object
-      required:
-      - classifier
-      - connectionProperties
-      - resources
-      - namespace
-      - type
-      - name
-      description: Request to add database to registration
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of database, it should not exist in registration, or the request would be ignored.
-        connectionProperties:
-          type: array
-          items:
-            type: object
-            additionalProperties: {}
-          description: Connection properties used to connect to database. It contains such keys as url, authDbName, username, password, port, host. Setting keys depends on the database type.
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/DbResource'
-          description: List of the resources needed to drop during database drop.
-        namespace:
-          type: string
-          description: Namespace where database is placed.
-        type:
-          type: string
-          description: The type of database, for example postgresql or mongodb.
-        adapterId:
-          type: string
-          description: Identifier of an adapter to work with database. If not specified then the default would be used.
-        name:
-          type: string
-          description: Name of database.
-        backupDisabled:
-          type: boolean
-          description: This parameter specifies if the DBaaS should except this database from backup/restore procedure. The parameter cannot be modified and it is installed only once during registration request.
-        physicalDatabaseId:
-          type: string
-          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
-        dbHost:
-          type: string
-          description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    DbResource:
-      type: object
-      required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
     DatabaseResponseV3ListCP:
       type: object
       required:
@@ -258,6 +171,97 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    MigrationResult:
+      type: object
+      properties:
+        migrated:
+          type: array
+          items:
+            type: string
+        migratedDbInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseResponseV3ListCP'
+        conflicted:
+          type: array
+          items:
+            type: string
+        failed:
+          type: array
+          items:
+            type: string
+        failureReasons:
+          type: array
+          items:
+            type: string
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    RegisterDatabaseRequestV3:
+      type: object
+      required:
+      - classifier
+      - connectionProperties
+      - resources
+      - namespace
+      - type
+      - name
+      description: Request to add database to registration
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of database, it should not exist in registration, or the request would be ignored.
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: Connection properties used to connect to database. It contains such keys as url, authDbName, username, password, port, host. Setting keys depends on the database type.
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+          description: List of the resources needed to drop during database drop.
+        namespace:
+          type: string
+          description: Namespace where database is placed.
+        type:
+          type: string
+          description: The type of database, for example postgresql or mongodb.
+        adapterId:
+          type: string
+          description: Identifier of an adapter to work with database. If not specified then the default would be used.
+        name:
+          type: string
+          description: Name of database.
+        backupDisabled:
+          type: boolean
+          description: This parameter specifies if the DBaaS should except this database from backup/restore procedure. The parameter cannot be modified and it is installed only once during registration request.
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
+        dbHost:
+          type: string
+          description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
   securitySchemes:
     SecurityScheme:
       type: http

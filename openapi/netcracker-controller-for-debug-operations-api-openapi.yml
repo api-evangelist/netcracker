@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Controller for debug operations API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Controller for debug operations
 paths:
@@ -40,6 +40,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasDebugInternalDatabases
+      x-operation-id-source: derived
   /api/v3/dbaas/debug/internal/dump:
     get:
       summary: V3. Get Dump
@@ -69,6 +71,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasDebugInternalDump
+      x-operation-id-source: derived
   /api/v3/dbaas/debug/internal/ghost:
     get:
       summary: V3. Get ghost databases
@@ -93,6 +97,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasDebugInternalGhost
+      x-operation-id-source: derived
   /api/v3/dbaas/debug/internal/info:
     get:
       summary: V3. Get overall status
@@ -115,6 +121,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasDebugInternalInfo
+      x-operation-id-source: derived
   /api/v3/dbaas/debug/internal/lost:
     get:
       summary: V3. Get lost databases
@@ -139,97 +147,10 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasDebugInternalLost
+      x-operation-id-source: derived
 components:
   schemas:
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    DumpResponseV3:
-      type: object
-      properties:
-        rules:
-          type: array
-          items: {}
-        logicalDatabases:
-          type: array
-          items: {}
-        physicalDatabases:
-          type: array
-          items: {}
-        declarativeConfigurations:
-          type: array
-          items: {}
-        blueGreenDomains:
-          type: array
-          items: {}
-        backups:
-          type: array
-          items: {}
-        restores:
-          type: array
-          items: {}
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    DbResource:
-      type: object
-      required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
-    GhostDatabasesResponse:
-      type: object
-      required:
-      - physicalDatabaseId
-      - dbNames
-      properties:
-        physicalDatabaseId:
-          type: string
-          description: Physical database identificator.
-        dbNames:
-          type: array
-          items:
-            type: string
-          description: Ghost databases names related to adapter with this physical databases id.
-        errorMessage:
-          type: string
-          description: Error message from adapter.
-    DebugLogicalDatabaseV3:
-      type: object
-      properties:
-        namespace:
-          type: string
-        microservice:
-          type: string
-        tenantId:
-          type: string
-        logicalDbName:
-          type: string
-        bgVersion:
-          type: string
-        type:
-          type: string
-        roles:
-          type: array
-          items:
-            type: string
-        name:
-          type: string
-        physicalDbId:
-          type: string
-        physicalDbAdapterUrl:
-          type: string
-        declaration:
-          $ref: '#/components/schemas/DebugDatabaseDeclarativeConfigV3'
     DatabaseResponseV3ListCP:
       type: object
       required:
@@ -282,21 +203,80 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
-    OverallStatusResponse:
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    PhysicalDatabaseInfo:
       type: object
       properties:
-        overallHealthStatus:
+        physicalDatabaseId:
           type: string
-          description: Overall health status
-        overallLogicalDbNumber:
-          type: integer
-          format: int32
-          description: Number of logical databases
-        physicalDatabaseInfoList:
+          description: Physical database identifier
+        healthStatus:
+          type: string
+          description: Adapter health status
+        logicalDbNumber:
+          type: string
+          description: Number of logical databases related to this physical database
+    GhostDatabasesResponse:
+      type: object
+      required:
+      - physicalDatabaseId
+      - dbNames
+      properties:
+        physicalDatabaseId:
+          type: string
+          description: Physical database identificator.
+        dbNames:
           type: array
           items:
-            $ref: '#/components/schemas/PhysicalDatabaseInfo'
-          description: Information about physical databases
+            type: string
+          description: Ghost databases names related to adapter with this physical databases id.
+        errorMessage:
+          type: string
+          description: Error message from adapter.
+    DumpResponseV3:
+      type: object
+      properties:
+        rules:
+          type: array
+          items: {}
+        logicalDatabases:
+          type: array
+          items: {}
+        physicalDatabases:
+          type: array
+          items: {}
+        declarativeConfigurations:
+          type: array
+          items: {}
+        blueGreenDomains:
+          type: array
+          items: {}
+        backups:
+          type: array
+          items: {}
+        restores:
+          type: array
+          items: {}
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
     DebugDatabaseDeclarativeConfigV3:
       type: object
       properties:
@@ -322,18 +302,48 @@ components:
           type: string
         namespace:
           type: string
-    PhysicalDatabaseInfo:
+    DebugLogicalDatabaseV3:
       type: object
       properties:
-        physicalDatabaseId:
+        namespace:
           type: string
-          description: Physical database identifier
-        healthStatus:
+        microservice:
           type: string
-          description: Adapter health status
-        logicalDbNumber:
+        tenantId:
           type: string
-          description: Number of logical databases related to this physical database
+        logicalDbName:
+          type: string
+        bgVersion:
+          type: string
+        type:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        physicalDbId:
+          type: string
+        physicalDbAdapterUrl:
+          type: string
+        declaration:
+          $ref: '#/components/schemas/DebugDatabaseDeclarativeConfigV3'
+    OverallStatusResponse:
+      type: object
+      properties:
+        overallHealthStatus:
+          type: string
+          description: Overall health status
+        overallLogicalDbNumber:
+          type: integer
+          format: int32
+          description: Number of logical databases
+        physicalDatabaseInfoList:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhysicalDatabaseInfo'
+          description: Information about physical databases
   securitySchemes:
     SecurityScheme:
       type: http

@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Backups administration API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Backups administration
   description: Allows to get list of available backups, trigger backup collector and restore some specific backup. All backup management is per namespace.
@@ -42,6 +42,8 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiV3DbaasBackupsByBackupIdRestorationsByRestorationId
+      x-operation-id-source: derived
   /api/v3/dbaas/backups/{backupId}/{parameter}:
     post:
       summary: V3. Restore database
@@ -79,6 +81,8 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: postApiV3DbaasBackupsByBackupIdByParameter
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/backups:
     get:
       summary: V3. Get all backups of namespace
@@ -104,6 +108,8 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiV3DbaasByNamespaceBackups
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/backups/collect:
     post:
       summary: V3. Backup namespace
@@ -155,6 +161,8 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: postApiV3DbaasByNamespaceBackupsCollect
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/backups/{backupId}:
     get:
       summary: V3. Get backup info
@@ -190,6 +198,8 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiV3DbaasByNamespaceBackupsByBackupId
+      x-operation-id-source: derived
     delete:
       summary: V3. Delete backup
       description: Start delete backup process for specified namespace
@@ -238,6 +248,8 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: deleteApiV3DbaasByNamespaceBackupsByBackupId
+      x-operation-id-source: derived
     put:
       summary: V3. Add new backup info
       description: Adds new backup info to specified backup id
@@ -277,6 +289,8 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: putApiV3DbaasByNamespaceBackupsByBackupId
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/backups/{backupId}/restorations/{restorationId}:
     get:
       summary: V3. Get restoration info
@@ -318,6 +332,8 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiV3DbaasByNamespaceBackupsByBackupIdRestorationsByRestorationId
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/backups/{backupId}/validate:
     get:
       summary: V3. Validate backup
@@ -354,6 +370,8 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiV3DbaasByNamespaceBackupsByBackupIdValidate
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/backups/{backupId}/{parameter}:
     post:
       summary: V3. Restore namespace
@@ -397,192 +415,10 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: postApiV3DbaasByNamespaceBackupsByBackupIdByParameter
+      x-operation-id-source: derived
 components:
   schemas:
-    NamespaceRestoration:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        restoreResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestoreResult'
-        failReasons:
-          type: array
-          items:
-            type: string
-        status:
-          $ref: '#/components/schemas/Status1'
-    DatabaseStateStatus:
-      type: string
-      enum:
-      - PROCESSING
-      - CREATED
-      - DELETING
-      - DELETING_FAILED
-      - ARCHIVED
-      - ORPHAN
-    Status1:
-      type: string
-      enum:
-      - SUCCESS
-      - PROCEEDING
-      - FAIL
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    DatabasesBackup:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        status:
-          $ref: '#/components/schemas/Status1'
-          type: string
-          description: This field contains the status of backup process of the specific adapter.
-        adapterId:
-          type: string
-          description: This field contains the adapter id.
-        localId:
-          type: string
-          description: Identifier of an adapter associated with backup process
-        trackId:
-          type: string
-          description: Identifier for polling process specific adapter.
-        trackPath:
-          type: string
-          description: Priority path for polling process.
-        databases:
-          type: array
-          items:
-            type: string
-          description: List of databases' names
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    FieldTypeEnum:
-      type: string
-      enum:
-      - PASSWORD
-    DbResource:
-      type: object
-      required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
-    NamespaceBackupDeletion:
-      type: object
-      properties:
-        deleteResults:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeleteResult'
-        failReasons:
-          type: array
-          items:
-            type: string
-        status:
-          $ref: '#/components/schemas/Status1'
-    ConnectionDescription:
-      type: object
-      properties:
-        fields:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/FieldDescription'
-    DatabaseRegistry:
-      type: object
-      required:
-      - classifier
-      - namespace
-      - type
-      - database
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-          type: string
-          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
-        timeDbCreation:
-          $ref: '#/components/schemas/Date'
-          type: string
-          description: Time to create a database
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
-        namespace:
-          type: string
-          description: Namespace where database is placed
-        type:
-          type: string
-          description: Type of database, for example postgresql or mongodb
-        database:
-          $ref: '#/components/schemas/Database'
-          description: It lists of database classifiers
-        dbState:
-          $ref: '#/components/schemas/DbState'
-        databaseRegistry:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseRegistry'
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/DbResource'
-        oldClassifier:
-          type: object
-          additionalProperties: {}
-        connectionProperties:
-          type: array
-          items:
-            type: object
-            additionalProperties: {}
-        adapterId:
-          type: string
-        name:
-          type: string
-        markedForDrop:
-          type: boolean
-        backupDisabled:
-          type: boolean
-        dbOwnerRoles:
-          type: array
-          items:
-            type: string
-        settings:
-          type: object
-          additionalProperties: {}
-        connectionDescription:
-          $ref: '#/components/schemas/ConnectionDescription'
-        warnings:
-          type: array
-          items:
-            type: string
-        externallyManageable:
-          type: boolean
-        bgVersion:
-          type: string
-        physicalDatabaseId:
-          type: string
-    Status:
-      type: string
-      enum:
-      - FAIL
-      - ACTIVE
-      - PROCEEDING
-      - RESTORING
-      - INVALIDATED
-      - DELETION_FAILED
     RestoreResult:
       type: object
       properties:
@@ -603,21 +439,36 @@ components:
           additionalProperties:
             type: string
           description: 'This associative array contain database names, where key: "old db name", value: "new db name". This array will not be empty if the targetNamespace parameter will be passed and it will be filled during restore to another namespace.'
-    DbState:
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    DeleteResult:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        state:
-          $ref: '#/components/schemas/DatabaseStateStatus'
+        databasesBackup:
+          $ref: '#/components/schemas/DatabasesBackup'
+        status:
+          $ref: '#/components/schemas/Status1'
+        adapterId:
           type: string
-          deprecated: true
-        databaseState:
-          $ref: '#/components/schemas/DatabaseStateStatus'
-        description:
+        message:
           type: string
-        podName:
-          type: string
+    FieldTypeEnum:
+      type: string
+      enum:
+      - PASSWORD
+    Status1:
+      type: string
+      enum:
+      - SUCCESS
+      - PROCEEDING
+      - FAIL
     NamespaceBackup:
       type: object
       required:
@@ -666,6 +517,45 @@ components:
           $ref: '#/components/schemas/Status'
           type: string
           description: 'Status of backup process. This field may contain: FAIL, ACTIVE, PROCEEDING, RESTORING, INVALIDATED, DELETION_FAILED'
+    NamespaceBackupDeletion:
+      type: object
+      properties:
+        deleteResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/DeleteResult'
+        failReasons:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/Status1'
+    DatabasesBackup:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        status:
+          $ref: '#/components/schemas/Status1'
+          type: string
+          description: This field contains the status of backup process of the specific adapter.
+        adapterId:
+          type: string
+          description: This field contains the adapter id.
+        localId:
+          type: string
+          description: Identifier of an adapter associated with backup process
+        trackId:
+          type: string
+          description: Identifier for polling process specific adapter.
+        trackPath:
+          type: string
+          description: Priority path for polling process.
+        databases:
+          type: array
+          items:
+            type: string
+          description: List of databases' names
     Database:
       type: object
       required:
@@ -756,11 +646,24 @@ components:
           description: It lists resource which will be deleted when sending the request for delete a database
         dbState:
           $ref: '#/components/schemas/DbState'
-    FieldDescription:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/FieldTypeEnum'
+    DatabaseStateStatus:
+      type: string
+      enum:
+      - PROCESSING
+      - CREATED
+      - DELETING
+      - DELETING_FAILED
+      - ARCHIVED
+      - ORPHAN
+    Status:
+      type: string
+      enum:
+      - FAIL
+      - ACTIVE
+      - PROCEEDING
+      - RESTORING
+      - INVALIDATED
+      - DELETION_FAILED
     NamespaceBackupDTO:
       type: object
       properties:
@@ -792,17 +695,134 @@ components:
           $ref: '#/components/schemas/Date'
         status:
           $ref: '#/components/schemas/Status'
-    DeleteResult:
+    NamespaceRestoration:
       type: object
       properties:
-        databasesBackup:
-          $ref: '#/components/schemas/DatabasesBackup'
+        id:
+          $ref: '#/components/schemas/UUID'
+        restoreResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestoreResult'
+        failReasons:
+          type: array
+          items:
+            type: string
         status:
           $ref: '#/components/schemas/Status1'
+    FieldDescription:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/FieldTypeEnum'
+    DbState:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        state:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+          type: string
+          deprecated: true
+        databaseState:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+        description:
+          type: string
+        podName:
+          type: string
+    ConnectionDescription:
+      type: object
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldDescription'
+    DatabaseRegistry:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - database
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed
+        type:
+          type: string
+          description: Type of database, for example postgresql or mongodb
+        database:
+          $ref: '#/components/schemas/Database'
+          description: It lists of database classifiers
+        dbState:
+          $ref: '#/components/schemas/DbState'
+        databaseRegistry:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+        oldClassifier:
+          type: object
+          additionalProperties: {}
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
         adapterId:
           type: string
-        message:
+        name:
           type: string
+        markedForDrop:
+          type: boolean
+        backupDisabled:
+          type: boolean
+        dbOwnerRoles:
+          type: array
+          items:
+            type: string
+        settings:
+          type: object
+          additionalProperties: {}
+        connectionDescription:
+          $ref: '#/components/schemas/ConnectionDescription'
+        warnings:
+          type: array
+          items:
+            type: string
+        externallyManageable:
+          type: boolean
+        bgVersion:
+          type: string
+        physicalDatabaseId:
+          type: string
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
   securitySchemes:
     SecurityScheme:
       type: http

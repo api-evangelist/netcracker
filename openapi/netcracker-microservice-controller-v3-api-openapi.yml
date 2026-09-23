@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Microservice controller v3 API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Microservice controller v3
   description: This controller contains APIs based on microservice value.
@@ -46,14 +46,18 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasNamespacesByNamespaceServicesByServiceNameAccessGrants
+      x-operation-id-source: derived
 components:
   schemas:
-    ServiceRole:
+    PolicyRole:
       type: object
       properties:
-        name:
+        type:
           type: string
-        roles:
+        defaultRole:
+          type: string
+        additionalRole:
           type: array
           items:
             type: string
@@ -73,14 +77,12 @@ components:
         disableGlobalPermissions:
           type: boolean
           description: Is global permissions disabled
-    PolicyRole:
+    ServiceRole:
       type: object
       properties:
-        type:
+        name:
           type: string
-        defaultRole:
-          type: string
-        additionalRole:
+        roles:
           type: array
           items:
             type: string

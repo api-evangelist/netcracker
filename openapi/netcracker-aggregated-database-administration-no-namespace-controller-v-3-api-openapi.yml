@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: DBaaS Aggregator Aggregated Database Administration No Namespace Controller V 3 API
+  title: DBaaS Aggregator Aggregated Database Administration No…
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Aggregated Database Administration No Namespace Controller V 3
 paths:
@@ -54,6 +54,8 @@ paths:
       security:
       - SecurityScheme:
         - CLUSTER_OPERATOR
+      operationId: getApiV3DbaasDatabasesChanged
+      x-operation-id-source: derived
   /api/v3/dbaas/databases/find-by-name/{dbname}:
     get:
       summary: V3. Get database by name
@@ -93,6 +95,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasDatabasesFindByNameByDbname
+      x-operation-id-source: derived
   /api/v3/dbaas/databases/marked-for-drop:
     post:
       summary: Get list of marked for drop databases
@@ -139,6 +143,8 @@ paths:
       security:
       - SecurityScheme:
         - NAMESPACE_CLEANER
+      operationId: postApiV3DbaasDatabasesMarkedForDrop
+      x-operation-id-source: derived
     delete:
       summary: Cleanup marked for drop databases
       description: Housekeeping operation which drops all databases with marked for drop state (orphan databases are also included)
@@ -194,136 +200,10 @@ paths:
       security:
       - SecurityScheme:
         - NAMESPACE_CLEANER
+      operationId: deleteApiV3DbaasDatabasesMarkedForDrop
+      x-operation-id-source: derived
 components:
   schemas:
-    TmfErrorResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmfError'
-        '@type':
-          type: string
-        '@schemaLocation':
-          type: string
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    ChangedDatabasesResponse:
-      type: object
-      description: Page of databases whose credentials changed since the requested keyset cursor, plus the current high-water mark used to seed the cursor.
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChangedDatabaseResponse'
-          description: Databases changed after the requested cursor, ordered by (lastRotatedAt, id) ascending. Advance the cursor from the last item.
-        highWaterMark:
-          $ref: '#/components/schemas/ChangedDatabasesCursor'
-          type: object
-          description: Latest (lastRotatedAt, id) currently known across all databases. Use it only to SEED the cursor on the first (since-less) call; null when nothing has rotated yet.
-    ChangedDatabasesCursor:
-      type: object
-      description: Keyset cursor (lastRotatedAt, id) for the changed-databases feed. Seed the poll cursor from the high-water mark on the first (since-less) call; thereafter advance the cursor from the returned items.
-      properties:
-        lastRotatedAt:
-          $ref: '#/components/schemas/OffsetDateTime'
-          type: string
-          description: lastRotatedAt component of the cursor.
-        id:
-          type: string
-          description: Registry id component of the cursor (tie-breaker for equal timestamps).
-    TmfError:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    CleanupMarkedForDropRequest:
-      type: object
-      required:
-      - namespaces
-      properties:
-        namespaces:
-          type: array
-          items:
-            type: string
-          description: A list of namespaces where the marked for drop databases should be cleaned
-        delete:
-          type: boolean
-          description: Confirmation parameter. If this is not passed or 'false' then marked for drop databases will not be deleted and response will contain marked for drop databases that are registered in DBaaS for the specified namespaces
-        force:
-          type: boolean
-          description: If this parameter is 'true', then deletion errors from physical adapters will be ignored
-    DbResource:
-      type: object
-      required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
-    ChangedDatabaseResponse:
-      type: object
-      description: A database whose credentials changed (password rotation or restore). Carries only the identity needed to locate the consumer; connection properties are fetched separately.
-      properties:
-        id:
-          type: string
-          description: Registry id. Together with lastRotatedAt it forms the keyset cursor the caller echoes back as sinceId to page deterministically through rows that share a timestamp.
-        namespace:
-          type: string
-          description: Namespace where the database is placed.
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier identifying the database within the namespace.
-        type:
-          type: string
-          description: Type of database (e.g. postgresql, mongodb).
-        lastRotatedAt:
-          $ref: '#/components/schemas/OffsetDateTime'
-          type: string
-          description: Timestamp of the credential change; also serves as the poll cursor.
     DatabaseResponseV3ListCP:
       type: object
       required:
@@ -376,11 +256,139 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    TmfErrorResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/TmfError'
+        '@type':
+          type: string
+        '@schemaLocation':
+          type: string
+    TmfError:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+    ChangedDatabaseResponse:
+      type: object
+      description: A database whose credentials changed (password rotation or restore). Carries only the identity needed to locate the consumer; connection properties are fetched separately.
+      properties:
+        id:
+          type: string
+          description: Registry id. Together with lastRotatedAt it forms the keyset cursor the caller echoes back as sinceId to page deterministically through rows that share a timestamp.
+        namespace:
+          type: string
+          description: Namespace where the database is placed.
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier identifying the database within the namespace.
+        type:
+          type: string
+          description: Type of database (e.g. postgresql, mongodb).
+        lastRotatedAt:
+          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          description: Timestamp of the credential change; also serves as the poll cursor.
+    ChangedDatabasesCursor:
+      type: object
+      description: Keyset cursor (lastRotatedAt, id) for the changed-databases feed. Seed the poll cursor from the high-water mark on the first (since-less) call; thereafter advance the cursor from the returned items.
+      properties:
+        lastRotatedAt:
+          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          description: lastRotatedAt component of the cursor.
+        id:
+          type: string
+          description: Registry id component of the cursor (tie-breaker for equal timestamps).
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    ChangedDatabasesResponse:
+      type: object
+      description: Page of databases whose credentials changed since the requested keyset cursor, plus the current high-water mark used to seed the cursor.
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChangedDatabaseResponse'
+          description: Databases changed after the requested cursor, ordered by (lastRotatedAt, id) ascending. Advance the cursor from the last item.
+        highWaterMark:
+          $ref: '#/components/schemas/ChangedDatabasesCursor'
+          type: object
+          description: Latest (lastRotatedAt, id) currently known across all databases. Use it only to SEED the cursor on the first (since-less) call; null when nothing has rotated yet.
     OffsetDateTime:
       type: string
       format: date-time
       examples:
       - '2022-03-10T12:15:50-04:00'
+    CleanupMarkedForDropRequest:
+      type: object
+      required:
+      - namespaces
+      properties:
+        namespaces:
+          type: array
+          items:
+            type: string
+          description: A list of namespaces where the marked for drop databases should be cleaned
+        delete:
+          type: boolean
+          description: Confirmation parameter. If this is not passed or 'false' then marked for drop databases will not be deleted and response will contain marked for drop databases that are registered in DBaaS for the specified namespaces
+        force:
+          type: boolean
+          description: If this parameter is 'true', then deletion errors from physical adapters will be ignored
   securitySchemes:
     SecurityScheme:
       type: http

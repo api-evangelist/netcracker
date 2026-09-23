@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Blue Green Controller V 1 API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Blue Green Controller V 1
 paths:
@@ -37,6 +37,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiBluegreenV1OperationCommit
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/destroy-domain:
     delete:
       summary: Delete Blue-Green domain
@@ -70,6 +72,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: deleteApiBluegreenV1OperationDestroyDomain
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/get-domains:
     get:
       summary: Get all Blue-Green domains
@@ -91,6 +95,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiBluegreenV1OperationGetDomains
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/get-domains/{namespace}:
     get:
       summary: Get specific Blue-Green domain
@@ -118,6 +124,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiBluegreenV1OperationGetDomainsByNamespace
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/init-domain:
     post:
       summary: Init Blue-Green Domain
@@ -149,6 +157,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiBluegreenV1OperationInitDomain
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/list-domains:
     get:
       summary: List all Blue-Green domains
@@ -170,6 +180,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiBluegreenV1OperationListDomains
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/orphans:
     post:
       summary: Get list of orphan databases
@@ -201,6 +213,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiBluegreenV1OperationOrphans
+      x-operation-id-source: derived
     delete:
       summary: Cleanup orphan databases
       description: Housekeeping operation which drops all databases with ORPHAN state.WARNING! If delete=true this operation will drop databases even when DBaaS is in PROD mode
@@ -229,6 +243,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: deleteApiBluegreenV1OperationOrphans
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/promote:
     post:
       summary: Promote
@@ -259,6 +275,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiBluegreenV1OperationPromote
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/rollback:
     post:
       summary: rollback
@@ -289,6 +307,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiBluegreenV1OperationRollback
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/warmup:
     post:
       summary: Warmup namespace
@@ -322,6 +342,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiBluegreenV1OperationWarmup
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/{trackingId}/status:
     get:
       summary: Operation status
@@ -350,6 +372,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiBluegreenV1OperationByTrackingIdStatus
+      x-operation-id-source: derived
   /api/bluegreen/v1/operation/{trackingId}/terminate:
     post:
       summary: Terminate operation
@@ -378,37 +402,10 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiBluegreenV1OperationByTrackingIdTerminate
+      x-operation-id-source: derived
 components:
   schemas:
-    BgStateRequest:
-      type: object
-      properties:
-        BGState:
-          $ref: '#/components/schemas/BGState'
-    BGState:
-      type: object
-      properties:
-        controllerNamespace:
-          type: string
-        originNamespace:
-          $ref: '#/components/schemas/BGStateNamespace'
-        peerNamespace:
-          $ref: '#/components/schemas/BGStateNamespace'
-        updateTime:
-          $ref: '#/components/schemas/Date'
-    DeleteOrphansRequest:
-      type: object
-      required:
-      - namespaces
-      properties:
-        namespaces:
-          type: array
-          items:
-            type: string
-          description: List of namespaces orhan databases of which is needed to delete
-        delete:
-          type: boolean
-          description: confirmation parameter. If this is not passed or false then orhan database will not be deleted and response will contain orhan databases that are registered in DBaaS
     BgNamespaceRequest:
       type: object
       properties:
@@ -432,6 +429,35 @@ components:
           type: string
         version:
           type: string
+    DeleteOrphansRequest:
+      type: object
+      required:
+      - namespaces
+      properties:
+        namespaces:
+          type: array
+          items:
+            type: string
+          description: List of namespaces orhan databases of which is needed to delete
+        delete:
+          type: boolean
+          description: confirmation parameter. If this is not passed or false then orhan database will not be deleted and response will contain orhan databases that are registered in DBaaS
+    BgStateRequest:
+      type: object
+      properties:
+        BGState:
+          $ref: '#/components/schemas/BGState'
+    BGState:
+      type: object
+      properties:
+        controllerNamespace:
+          type: string
+        originNamespace:
+          $ref: '#/components/schemas/BGStateNamespace'
+        peerNamespace:
+          $ref: '#/components/schemas/BGStateNamespace'
+        updateTime:
+          $ref: '#/components/schemas/Date'
   securitySchemes:
     SecurityScheme:
       type: http

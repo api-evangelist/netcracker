@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: DBaaS Aggregator Physical databases registration controller API
+  title: DBaaS Aggregator Physical databases registration controller…
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Physical databases registration controller
   description: Provides API to register new physical databases
@@ -36,6 +36,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasByTypePhysicalDatabases
+      x-operation-id-source: derived
   /api/v3/dbaas/{type}/physical_databases/{phydbid}:
     put:
       summary: V3. Register new physical database
@@ -93,6 +95,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: putApiV3DbaasByTypePhysicalDatabasesByPhydbid
+      x-operation-id-source: derived
     delete:
       summary: V3. Delete physical database
       description: Deletes physical database by database type and physical database id
@@ -130,6 +134,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: deleteApiV3DbaasByTypePhysicalDatabasesByPhydbid
+      x-operation-id-source: derived
   /api/v3/dbaas/{type}/physical_databases/{phydbid}/global:
     put:
       summary: V3. Change default physical database
@@ -164,6 +170,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: putApiV3DbaasByTypePhysicalDatabasesByPhydbidGlobal
+      x-operation-id-source: derived
 components:
   schemas:
     RegisteredPhysicalDatabasesDTO:
@@ -174,73 +182,6 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
           description: List of registered physical databases with with a known identifier
-    Spec:
-      type: object
-      properties:
-        specRootUrl:
-          type: string
-          description: The root URL part for that API version
-        major:
-          type: integer
-          format: int32
-          description: The last adapter API major version
-        minor:
-          type: integer
-          format: int32
-          description: The last adapter API minor version
-        supportedMajors:
-          type: array
-          items:
-            type: integer
-            format: int32
-          description: Contains a list of supported adapter API major versions
-    Metadata:
-      type: object
-      required:
-      - apiVersion
-      - supportedRoles
-      - features
-      properties:
-        apiVersion:
-          type: string
-          description: Adapter API version
-        apiVersions:
-          $ref: '#/components/schemas/ApiVersion'
-          type: object
-          description: Adapter API version
-        supportedRoles:
-          type: array
-          items:
-            type: string
-          description: list of supported roles
-        features:
-          type: object
-          additionalProperties:
-            type: boolean
-          description: Prohibition or permission of features
-        roHost:
-          type: string
-          description: Host of RO pod
-    HttpBasicCredentials:
-      type: object
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-          description: Basic authentication username.
-        password:
-          type: string
-          description: Basic authentication password.
-    ApiVersion:
-      type: object
-      properties:
-        specs:
-          type: array
-          items:
-            $ref: '#/components/schemas/Spec'
-          description: The root URL part for that API version
     PhysicalDatabaseRegistryRequestV3:
       type: object
       required:
@@ -311,6 +252,73 @@ components:
           type: array
           items:
             type: string
+    HttpBasicCredentials:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          description: Basic authentication username.
+        password:
+          type: string
+          description: Basic authentication password.
+    Spec:
+      type: object
+      properties:
+        specRootUrl:
+          type: string
+          description: The root URL part for that API version
+        major:
+          type: integer
+          format: int32
+          description: The last adapter API major version
+        minor:
+          type: integer
+          format: int32
+          description: The last adapter API minor version
+        supportedMajors:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Contains a list of supported adapter API major versions
+    Metadata:
+      type: object
+      required:
+      - apiVersion
+      - supportedRoles
+      - features
+      properties:
+        apiVersion:
+          type: string
+          description: Adapter API version
+        apiVersions:
+          $ref: '#/components/schemas/ApiVersion'
+          type: object
+          description: Adapter API version
+        supportedRoles:
+          type: array
+          items:
+            type: string
+          description: list of supported roles
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+          description: Prohibition or permission of features
+        roHost:
+          type: string
+          description: Host of RO pod
+    ApiVersion:
+      type: object
+      properties:
+        specs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Spec'
+          description: The root URL part for that API version
   securitySchemes:
     SecurityScheme:
       type: http

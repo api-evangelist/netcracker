@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: APIHUB Registry – External Operation groups API
-  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
-
-    '
+  description: Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
   contact:
     name: Netcracker Opensource Group
     email: opensourcegroup@netcracker.com
@@ -76,9 +74,7 @@ paths:
         * **200 Documents transformation completed successfully** if documents were already transformed.
 
 
-        * **202 Accepted** will be returned after starting process for documents transformation.
-
-        '
+        * **202 Accepted** will be returned after starting process for documents transformation.'
       operationId: postGenerateDocumentV3
       parameters:
       - name: clientBuild
@@ -268,9 +264,7 @@ paths:
       tags:
       - Operation groups
       summary: Export operations group as OpenAPI documents
-      description: 'Export all operations from an operations group (with apiType = REST API) as OpenAPI specification(s).
-
-        '
+      description: Export all operations from an operations group (with apiType = REST API) as OpenAPI specification(s).
       operationId: getPackagesIdVersionsIdExportGroupNameV3
       parameters:
       - name: format
@@ -364,9 +358,7 @@ paths:
       summary: Create manual operation group
       description: 'Create manual operation group.\
 
-        Manual groups can be created for both packages and dashboards. One group can contain operations of one API type only.
-
-        '
+        Manual groups can be created for both packages and dashboards. One group can contain operations of one API type only.'
       operationId: PostPackageIdVersionApiTypeGroupsV3
       parameters:
       - $ref: '#/components/parameters/packageId'
@@ -449,9 +441,7 @@ paths:
       - Operation groups
       summary: Get list of operations for operation group
       operationId: getPackagesIdVersionsIdApiTypeGroupsGroupName
-      description: 'Get list of operations from operation group. The result list depends on the API type.
-
-        '
+      description: Get list of operations from operation group. The result list depends on the API type.
       parameters:
       - $ref: '#/components/parameters/apiType'
       - $ref: '#/components/parameters/packageId'
@@ -628,9 +618,7 @@ paths:
       tags:
       - Operation groups
       summary: Delete operation group
-      description: 'Delete version group.
-
-        '
+      description: Delete version group.
       operationId: getPackagesIdVersionsIdApiTypeGroups
       parameters:
       - $ref: '#/components/parameters/apiType'
@@ -687,9 +675,7 @@ paths:
       tags:
       - Operation groups
       summary: Update parameters of operation group
-      description: 'Update parameters of operations group.
-
-        '
+      description: Update parameters of operations group.
       operationId: patchPackageIdVersionApiTypeGroupName
       parameters:
       - name: groupName
@@ -815,9 +801,7 @@ paths:
       summary: Get export template of operation group
       description: 'Export OpenAPI specification template from an operation group (manual or rest path prefix).
 
-        This feature is supported only for apiType = rest.
-
-        '
+        This feature is supported only for apiType = rest.'
       operationId: getPackageIdVersionApiTypeGroupNameTemplate
       parameters:
       - $ref: '#/components/parameters/apiType'
@@ -907,9 +891,7 @@ paths:
       summary: Start operation group publication
       description: 'Start operation group publish process.\
 
-        In this process all operations from operation group will be published to the selected package version.
-
-        '
+        In this process all operations from operation group will be published to the selected package version.'
       operationId: postOperationGroupPublish
       requestBody:
         content:
@@ -1036,9 +1018,7 @@ paths:
       tags:
       - Operation groups
       summary: Get operation group publication status
-      description: 'Get operation group publish status.
-
-        '
+      description: Get operation group publish status.
       operationId: getOperationGroupPublishStatus
       responses:
         '200':
@@ -1092,14 +1072,156 @@ paths:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
 components:
+  parameters:
+    asyncapiChannel:
+      name: asyncapiChannel
+      in: query
+      description: 'Filter operations by AsyncAPI channel identifier (comma-separated).
+
+        Applicable only when apiType = asyncapi; ignored for other API types.
+
+        '
+      schema:
+        type: string
+        example: userSignup,orderCreated
+    apiAudience:
+      name: apiAudience
+      in: query
+      description: 'Filter operations by apiAudience.
+
+        * internal - APIs are available for integration within product application.
+
+        * external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.
+
+        * unknown - If any value other than internal or external is used, the API is considered as unknown.
+
+        '
+      schema:
+        type: string
+        enum:
+        - all
+        - internal
+        - external
+        - unknown
+        default: all
+    asyncapiProtocol:
+      name: asyncapiProtocol
+      in: query
+      description: 'Filter operations by communication protocol.
+
+        Applicable only when apiType = asyncapi; ignored for other API types.
+
+        The value is the protocol string from the channel''s server (e.g. kafka, amqp).
+
+        Use "Unknown" for operations where the protocol could not be resolved.
+
+        '
+      schema:
+        type: string
+        example: kafka
+    packageId:
+      name: packageId
+      in: path
+      description: Package unique identifier (full alias)
+      required: true
+      schema:
+        type: string
+        example: QS.CloudQSS.CPQ.Q-TMF
+    limit:
+      name: limit
+      in: query
+      description: Requested number of resources to be provided in response.
+      schema:
+        type: number
+        default: 100
+        maximum: 100
+        minimum: 1
+    version:
+      name: version
+      in: path
+      description: Package version
+      required: true
+      schema:
+        type: string
+        example: '2022.3'
+    groupName:
+      name: groupName
+      in: path
+      description: Version Group
+      required: true
+      schema:
+        type: string
+    apiType:
+      name: apiType
+      description: Type of the API.
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - rest
+        - graphql
+        - protobuf
+        - asyncapi
+    page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: number
+        default: 0
   schemas:
-    VersionStatusEnum:
-      description: Package version status
-      type: string
-      enum:
-      - draft
-      - release
-      - archived
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+    GraphQLOperationMeta:
+      description: Specific parameters for GraphQL operation.
+      title: GraphQLOperationMeta
+      required:
+      - type
+      - method
+      type: object
+      properties:
+        type:
+          description: Operation type
+          type: string
+          enum:
+          - query
+          - mutation
+          - subscription
+        method:
+          description: GraphQL operation method.
+          type: string
+          example: getPaymentMethodSpecificationCore
+        title:
+          description: Operation summary/title.
+          type: string
+        customTags:
+          description: Custom tags.
+          type: object
     Operation:
       description: Operation object
       title: Operation
@@ -1211,6 +1333,95 @@ components:
           type: string
           pattern: ^[a-z0-9-]
           example: qitmf-v5-11-ref-resolved-json
+    AsyncAPIOperation:
+      description: AsyncAPI operation object.
+      title: AsyncAPIOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
+    ProtobufOperationMeta:
+      description: Specific parameters for Protobuf operation.
+      title: GraphQLOperationMeta
+      required:
+      - type
+      - method
+      type: object
+      properties:
+        type:
+          description: Operation type
+          type: string
+          enum:
+          - unary
+          - serverStreaming
+          - clientStreaming
+          - bidirectionalStreaming
+        method:
+          description: Protobuf method name.
+          type: string
+          example: ListActionLogItems
+        title:
+          description: Operation title (same as method name but with adding spaces between capital letters)
+          type: string
+          example: List Action Log Items
+        customTags:
+          description: Custom tags.
+          type: object
+    VersionStatusEnum:
+      description: Package version status
+      type: string
+      enum:
+      - draft
+      - release
+      - archived
+    RestOperation:
+      description: REST operation object.
+      title: RestOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/RestOperationMeta'
+    RestOperationMeta:
+      description: Specific parameters for REST operation.
+      title: RestOperationMeta
+      required:
+      - path
+      - method
+      type: object
+      properties:
+        path:
+          description: Operation endpoint path.
+          type: string
+          example: /quoteManagement/v5/quote
+        method:
+          description: Operation method.
+          type: string
+          enum:
+          - post
+          - get
+          - put
+          - patch
+          - delete
+          - head
+          - options
+          - connect
+          - trace
+        title:
+          description: Operation summary/title.
+          type: string
+        customTags:
+          description: Custom tags.
+          type: object
+    GraphQLOperation:
+      description: GraphQL operation object.
+      title: GraphQLOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/GraphQLOperationMeta'
+    ProtobufOperation:
+      description: Protobuf operation object.
+      title: ProtobufOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/ProtobufOperationMeta'
     ApiType:
       title: apiType
       type: string
@@ -1244,150 +1455,6 @@ components:
           deletedAt: '2023-05-30T17:17:11.755146Z'
           deletedBy: user1221
           notLatestRevision: true
-    ProtobufOperation:
-      description: Protobuf operation object.
-      title: ProtobufOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/ProtobufOperationMeta'
-    ErrorResponse:
-      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
-      type: object
-      properties:
-        status:
-          description: HTTP status code as an integer; expected to match the actual HTTP response status.
-          type: number
-        code:
-          description: Internal string error code. Mandatory in response.
-          type: string
-        message:
-          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
-          type: string
-        params:
-          type: object
-          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
-          example:
-            id: 12345
-            type: string
-        debug:
-          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
-          type: string
-      required:
-      - status
-      - code
-      - message
-    RestOperationMeta:
-      description: Specific parameters for REST operation.
-      title: RestOperationMeta
-      required:
-      - path
-      - method
-      type: object
-      properties:
-        path:
-          description: Operation endpoint path.
-          type: string
-          example: /quoteManagement/v5/quote
-        method:
-          description: Operation method.
-          type: string
-          enum:
-          - post
-          - get
-          - put
-          - patch
-          - delete
-          - head
-          - options
-          - connect
-          - trace
-        title:
-          description: Operation summary/title.
-          type: string
-        customTags:
-          description: Custom tags.
-          type: object
-    PackageVersionRef:
-      description: Package version reference
-      type: object
-      title: Referenced package version
-      required:
-      - refId
-      - kind
-      - name
-      - version
-      - status
-      properties:
-        refId:
-          description: Referenced package Id.
-          type: string
-          example: QS.CloudQSS.CPQ.CORE
-        kind:
-          description: Package kind
-          type: string
-          enum:
-          - package
-          - dashboard
-        name:
-          description: Name of the referenced package
-          type: string
-          example: Quote Management TMF648
-        version:
-          description: Referenced package version number. The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2022.2@5
-        status:
-          $ref: '#/components/schemas/VersionStatusEnum'
-        parentPackages:
-          description: Array of parent package names
-          type: array
-          items:
-            type: string
-        deletedAt:
-          description: date when package version was deleted package version
-          type: string
-          format: date-type
-          example: '2023-05-30T17:17:11.755146Z'
-        deletedBy:
-          description: user who deleted package version
-          type: string
-          example: user1221
-        notLatestRevision:
-          type: boolean
-          default: false
-    GraphQLOperation:
-      description: GraphQL operation object.
-      title: GraphQLOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/GraphQLOperationMeta'
-    ProtobufOperationMeta:
-      description: Specific parameters for Protobuf operation.
-      title: GraphQLOperationMeta
-      required:
-      - type
-      - method
-      type: object
-      properties:
-        type:
-          description: Operation type
-          type: string
-          enum:
-          - unary
-          - serverStreaming
-          - clientStreaming
-          - bidirectionalStreaming
-        method:
-          description: Protobuf method name.
-          type: string
-          example: ListActionLogItems
-        title:
-          description: Operation title (same as method name but with adding spaces between capital letters)
-          type: string
-          example: List Action Log Items
-        customTags:
-          description: Custom tags.
-          type: object
     AsyncAPIOperationMeta:
       description: 'Specific parameters for AsyncAPI 3.0 operation.
 
@@ -1446,141 +1513,54 @@ components:
         customTags:
           description: Custom tags.
           type: object
-    GraphQLOperationMeta:
-      description: Specific parameters for GraphQL operation.
-      title: GraphQLOperationMeta
-      required:
-      - type
-      - method
+    PackageVersionRef:
+      description: Package version reference
       type: object
+      title: Referenced package version
+      required:
+      - refId
+      - kind
+      - name
+      - version
+      - status
       properties:
-        type:
-          description: Operation type
+        refId:
+          description: Referenced package Id.
+          type: string
+          example: QS.CloudQSS.CPQ.CORE
+        kind:
+          description: Package kind
           type: string
           enum:
-          - query
-          - mutation
-          - subscription
-        method:
-          description: GraphQL operation method.
+          - package
+          - dashboard
+        name:
+          description: Name of the referenced package
           type: string
-          example: getPaymentMethodSpecificationCore
-        title:
-          description: Operation summary/title.
+          example: Quote Management TMF648
+        version:
+          description: Referenced package version number. The <version>@<revision> mask is used to return the revision number.
           type: string
-        customTags:
-          description: Custom tags.
-          type: object
-    RestOperation:
-      description: REST operation object.
-      title: RestOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/RestOperationMeta'
-    AsyncAPIOperation:
-      description: AsyncAPI operation object.
-      title: AsyncAPIOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
-  parameters:
-    packageId:
-      name: packageId
-      in: path
-      description: Package unique identifier (full alias)
-      required: true
-      schema:
-        type: string
-        example: QS.CloudQSS.CPQ.Q-TMF
-    apiType:
-      name: apiType
-      description: Type of the API.
-      in: path
-      required: true
-      schema:
-        type: string
-        enum:
-        - rest
-        - graphql
-        - protobuf
-        - asyncapi
-    version:
-      name: version
-      in: path
-      description: Package version
-      required: true
-      schema:
-        type: string
-        example: '2022.3'
-    asyncapiProtocol:
-      name: asyncapiProtocol
-      in: query
-      description: 'Filter operations by communication protocol.
-
-        Applicable only when apiType = asyncapi; ignored for other API types.
-
-        The value is the protocol string from the channel''s server (e.g. kafka, amqp).
-
-        Use "Unknown" for operations where the protocol could not be resolved.
-
-        '
-      schema:
-        type: string
-        example: kafka
-    apiAudience:
-      name: apiAudience
-      in: query
-      description: 'Filter operations by apiAudience.
-
-        * internal - APIs are available for integration within product application.
-
-        * external - APIs exposed outside the boundary of the product application: solution delivery integrations, 3rd party integrations, customer integrations.
-
-        * unknown - If any value other than internal or external is used, the API is considered as unknown.
-
-        '
-      schema:
-        type: string
-        enum:
-        - all
-        - internal
-        - external
-        - unknown
-        default: all
-    page:
-      name: page
-      in: query
-      description: Page number
-      schema:
-        type: number
-        default: 0
-    limit:
-      name: limit
-      in: query
-      description: Requested number of resources to be provided in response.
-      schema:
-        type: number
-        default: 100
-        maximum: 100
-        minimum: 1
-    asyncapiChannel:
-      name: asyncapiChannel
-      in: query
-      description: 'Filter operations by AsyncAPI channel identifier (comma-separated).
-
-        Applicable only when apiType = asyncapi; ignored for other API types.
-
-        '
-      schema:
-        type: string
-        example: userSignup,orderCreated
-    groupName:
-      name: groupName
-      in: path
-      description: Version Group
-      required: true
-      schema:
-        type: string
+          example: 2022.2@5
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        parentPackages:
+          description: Array of parent package names
+          type: array
+          items:
+            type: string
+        deletedAt:
+          description: date when package version was deleted package version
+          type: string
+          format: date-type
+          example: '2023-05-30T17:17:11.755146Z'
+        deletedBy:
+          description: user who deleted package version
+          type: string
+          example: user1221
+        notLatestRevision:
+          type: boolean
+          default: false
   examples:
     VersionReferencedAsPreviousByRelease:
       description: Version cannot be changed to 'draft' because a released version uses it as its previous version
@@ -1592,13 +1572,6 @@ components:
           version: '2024.1'
           packageId: QS.group.my-package
           releaseVersions: QS.group.other-package|2024.2@1
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
     PreviousVersionNotRelease:
       description: A release version cannot reference a draft previous version
       value:
@@ -1610,6 +1583,13 @@ components:
           packageId: QS.group.my-package
           previousVersion: '2024.1'
           previousVersionPackageId: QS.group.previous-package
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
     PackageNotFound:
       description: Package not found by ID. Response for the 404 error
       value:

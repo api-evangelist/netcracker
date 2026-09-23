@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: APIHUB Registry – External Custom API
-  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
-
-    '
+  description: Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
   contact:
     name: Netcracker Opensource Group
     email: opensourcegroup@netcracker.com
@@ -36,7 +34,7 @@ paths:
     get:
       tags:
       - Custom
-      summary: Get system info.
+      summary: Get system info
       description: Get system info.
       operationId: getInfo
       parameters: []

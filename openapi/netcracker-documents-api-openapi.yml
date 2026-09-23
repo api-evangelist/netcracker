@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: APIHUB Registry – External Documents API
-  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
-
-    '
+  description: Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
   contact:
     name: Netcracker Opensource Group
     email: opensourcegroup@netcracker.com
@@ -40,7 +38,13 @@ paths:
       tags:
       - Documents
       summary: Get version documents
-      description: "Get list of documents in a version. The result depend on the package.kind:\n* For package.kind: package - return the list of version documents.\n* For package.kind: dashboard - return the list of all referenced dashboards and their referenced packages in recursion.\n  The returned list will contain only leaves - referenced packages of the lowest level with their published documents.\n"
+      description: 'Get list of documents in a version. The result depend on the package.kind:
+
+        * For package.kind: package - return the list of version documents.
+
+        * For package.kind: dashboard - return the list of all referenced dashboards and their referenced packages in recursion.
+
+        The returned list will contain only leaves - referenced packages of the lowest level with their published documents.'
       operationId: getPackagesIdVersionsIdDocuments
       parameters:
       - $ref: '#/components/parameters/limit'
@@ -269,9 +273,7 @@ paths:
       summary: Bulk update document shareability
       description: 'Upload a shareability report xlsx file to bulk-update shareability statuses for all documents with changed values.
 
-        `document_shareability_management` is required for all packages listed in the report.
-
-        '
+        `document_shareability_management` is required for all packages listed in the report.'
       operationId: bulkUpdateDocumentShareability
       requestBody:
         required: true
@@ -334,10 +336,8 @@ paths:
     get:
       tags:
       - Documents
-      summary: Get documents of operations from operation group.
-      description: 'Get list of package version documents of operations from operation group.
-
-        '
+      summary: Get documents of operations from operation group
+      description: Get list of package version documents of operations from operation group.
       operationId: getPackagesIdVersionsIdTransformationDocumentsV3
       parameters:
       - $ref: '#/components/parameters/limit'
@@ -413,9 +413,7 @@ paths:
       tags:
       - Documents
       summary: Get version references
-      description: 'Get flat list of all version references
-
-        '
+      description: Get flat list of all version references
       operationId: getPackagesIdVersionsIdReferencesv3
       responses:
         '200':
@@ -490,83 +488,125 @@ paths:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
 components:
-  parameters:
-    slug:
-      name: slug
-      in: path
-      description: File unique string identifier
-      required: true
-      schema:
-        type: string
-        pattern: ^[a-z0-9-]
-        example: qitmf-v5-11-json
-    packageId:
-      name: packageId
-      in: path
-      description: Package unique identifier (full alias)
-      required: true
-      schema:
-        type: string
-        example: QS.CloudQSS.CPQ.Q-TMF
-    apiType:
-      name: apiType
-      description: Type of the API.
-      in: path
-      required: true
-      schema:
-        type: string
-        enum:
-        - rest
-        - graphql
-        - protobuf
-        - asyncapi
-    apiTypeQueryParam:
-      name: apiType
-      in: query
-      description: 'Filter documents by type of the API.
-
-        Mutually exclusive with `contractType`: specify at most one of `apiType` / `contractType` (if both are specified then 400 will be returned).
-
-        '
-      schema:
-        type: string
-        enum:
-        - rest
-        - graphql
-        - protobuf
-        - asyncapi
-    version:
-      name: version
-      in: path
-      description: Package version
-      required: true
-      schema:
-        type: string
-        example: '2022.3'
-    page:
-      name: page
-      in: query
-      description: Page number
-      schema:
-        type: number
-        default: 0
-    limit:
-      name: limit
-      in: query
-      description: Requested number of resources to be provided in response.
-      schema:
-        type: number
-        default: 100
-        maximum: 100
-        minimum: 1
   schemas:
-    VersionStatusEnum:
-      description: Package version status
-      type: string
-      enum:
-      - draft
-      - release
-      - archived
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+    GraphQLOperationMeta:
+      description: Specific parameters for GraphQL operation.
+      title: GraphQLOperationMeta
+      required:
+      - type
+      - method
+      type: object
+      properties:
+        type:
+          description: Operation type
+          type: string
+          enum:
+          - query
+          - mutation
+          - subscription
+        method:
+          description: GraphQL operation method.
+          type: string
+          example: getPaymentMethodSpecificationCore
+        title:
+          description: Operation summary/title.
+          type: string
+        customTags:
+          description: Custom tags.
+          type: object
+    PackageTransformationFile:
+      description: Parameters of published file in package version
+      type: object
+      title: Package version file
+      required:
+      - fileId
+      - filename
+      - slug
+      - type
+      - format
+      - title
+      properties:
+        fileId:
+          type: string
+          description: File name.
+          example: qitmf-v5.11.json
+        filename:
+          type: string
+          description: File name (slug+extension).
+          example: qitmf-v5.11.json
+        slug:
+          description: Published file slug
+          type: string
+          pattern: ^[a-z0-9-]
+          example: qitmf-v5-11-json
+        type:
+          $ref: '#/components/schemas/SpecificationType'
+        format:
+          $ref: '#/components/schemas/DocumentFormat'
+        title:
+          description: Name/title of the document.
+          type: string
+          example: Quote Integration TMForum Service
+        version:
+          description: Document version
+          type: string
+          example: 1.0.1
+        labels:
+          description: List of file labels.
+          type: array
+          items:
+            type: string
+          example:
+          - TMF
+        description:
+          description: Document description
+          type: string
+        includedOperationIds:
+          description: List of operation IDs included to specified operation group
+          type: array
+          items:
+            type: string
+          example:
+          - get-quoteManagement-v5-quote
+          - post-quoteManagement-v5-quote
+        data:
+          description: Content of the operation as a JSON object
+          type: object
+        shareabilityStatus:
+          description: Document shareability status
+          type: string
+          enum:
+          - shareable
+          - non-shareable
+          - unknown
+          default: unknown
+          example: unknown
     Operation:
       description: Operation object
       title: Operation
@@ -678,6 +718,149 @@ components:
           type: string
           pattern: ^[a-z0-9-]
           example: qitmf-v5-11-ref-resolved-json
+    DocumentFormat:
+      title: format
+      description: Format of the specification document.
+      type: string
+      enum:
+      - json
+      - yaml
+      - md
+      - graphql
+      - gql
+      - proto
+      - sql
+      - unknown
+    AsyncAPIOperation:
+      description: AsyncAPI operation object.
+      title: AsyncAPIOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
+    ProtobufOperationMeta:
+      description: Specific parameters for Protobuf operation.
+      title: GraphQLOperationMeta
+      required:
+      - type
+      - method
+      type: object
+      properties:
+        type:
+          description: Operation type
+          type: string
+          enum:
+          - unary
+          - serverStreaming
+          - clientStreaming
+          - bidirectionalStreaming
+        method:
+          description: Protobuf method name.
+          type: string
+          example: ListActionLogItems
+        title:
+          description: Operation title (same as method name but with adding spaces between capital letters)
+          type: string
+          example: List Action Log Items
+        customTags:
+          description: Custom tags.
+          type: object
+    VersionStatusEnum:
+      description: Package version status
+      type: string
+      enum:
+      - draft
+      - release
+      - archived
+    RestOperation:
+      description: REST operation object.
+      title: RestOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/RestOperationMeta'
+    PackageVersionFile:
+      description: Parameters of published file in package version
+      type: object
+      title: Package version file
+      required:
+      - fileId
+      - filename
+      - slug
+      - type
+      - format
+      - title
+      properties:
+        fileId:
+          type: string
+          description: File name.
+          example: qitmf-v5.11.json
+        filename:
+          type: string
+          description: File name (slug+extension).
+          example: qitmf-v5.11.json
+        slug:
+          description: Published file slug
+          type: string
+          pattern: ^[a-z0-9-]
+          example: qitmf-v5-11-json
+        type:
+          $ref: '#/components/schemas/SpecificationType'
+        format:
+          $ref: '#/components/schemas/DocumentFormat'
+        title:
+          description: Name/title of the document.
+          type: string
+          example: Quote Integration TMForum Service
+        version:
+          description: Document version
+          type: string
+          example: 1.0.1
+        labels:
+          description: List of file labels.
+          type: array
+          items:
+            type: string
+          example:
+          - TMF
+        shareabilityStatus:
+          description: Document shareability status
+          type: string
+          enum:
+          - shareable
+          - non-shareable
+          - unknown
+          default: unknown
+          example: unknown
+    RestOperationMeta:
+      description: Specific parameters for REST operation.
+      title: RestOperationMeta
+      required:
+      - path
+      - method
+      type: object
+      properties:
+        path:
+          description: Operation endpoint path.
+          type: string
+          example: /quoteManagement/v5/quote
+        method:
+          description: Operation method.
+          type: string
+          enum:
+          - post
+          - get
+          - put
+          - patch
+          - delete
+          - head
+          - options
+          - connect
+          - trace
+        title:
+          description: Operation summary/title.
+          type: string
+        customTags:
+          description: Custom tags.
+          type: object
     SpecificationType:
       title: type
       description: Type of the specification notation.
@@ -696,6 +879,18 @@ components:
       - ddl
       - mcp
       - unknown
+    GraphQLOperation:
+      description: GraphQL operation object.
+      title: GraphQLOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/GraphQLOperationMeta'
+    ProtobufOperation:
+      description: Protobuf operation object.
+      title: ProtobufOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/ProtobufOperationMeta'
     ApiType:
       title: apiType
       type: string
@@ -729,150 +924,6 @@ components:
           deletedAt: '2023-05-30T17:17:11.755146Z'
           deletedBy: user1221
           notLatestRevision: true
-    ProtobufOperation:
-      description: Protobuf operation object.
-      title: ProtobufOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/ProtobufOperationMeta'
-    ErrorResponse:
-      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
-      type: object
-      properties:
-        status:
-          description: HTTP status code as an integer; expected to match the actual HTTP response status.
-          type: number
-        code:
-          description: Internal string error code. Mandatory in response.
-          type: string
-        message:
-          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
-          type: string
-        params:
-          type: object
-          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
-          example:
-            id: 12345
-            type: string
-        debug:
-          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
-          type: string
-      required:
-      - status
-      - code
-      - message
-    PackageVersionRef:
-      description: Package version reference
-      type: object
-      title: Referenced package version
-      required:
-      - refId
-      - kind
-      - name
-      - version
-      - status
-      properties:
-        refId:
-          description: Referenced package Id.
-          type: string
-          example: QS.CloudQSS.CPQ.CORE
-        kind:
-          description: Package kind
-          type: string
-          enum:
-          - package
-          - dashboard
-        name:
-          description: Name of the referenced package
-          type: string
-          example: Quote Management TMF648
-        version:
-          description: Referenced package version number. The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2022.2@5
-        status:
-          $ref: '#/components/schemas/VersionStatusEnum'
-        parentPackages:
-          description: Array of parent package names
-          type: array
-          items:
-            type: string
-        deletedAt:
-          description: date when package version was deleted package version
-          type: string
-          format: date-type
-          example: '2023-05-30T17:17:11.755146Z'
-        deletedBy:
-          description: user who deleted package version
-          type: string
-          example: user1221
-        notLatestRevision:
-          type: boolean
-          default: false
-    RestOperationMeta:
-      description: Specific parameters for REST operation.
-      title: RestOperationMeta
-      required:
-      - path
-      - method
-      type: object
-      properties:
-        path:
-          description: Operation endpoint path.
-          type: string
-          example: /quoteManagement/v5/quote
-        method:
-          description: Operation method.
-          type: string
-          enum:
-          - post
-          - get
-          - put
-          - patch
-          - delete
-          - head
-          - options
-          - connect
-          - trace
-        title:
-          description: Operation summary/title.
-          type: string
-        customTags:
-          description: Custom tags.
-          type: object
-    GraphQLOperation:
-      description: GraphQL operation object.
-      title: GraphQLOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/GraphQLOperationMeta'
-    ProtobufOperationMeta:
-      description: Specific parameters for Protobuf operation.
-      title: GraphQLOperationMeta
-      required:
-      - type
-      - method
-      type: object
-      properties:
-        type:
-          description: Operation type
-          type: string
-          enum:
-          - unary
-          - serverStreaming
-          - clientStreaming
-          - bidirectionalStreaming
-        method:
-          description: Protobuf method name.
-          type: string
-          example: ListActionLogItems
-        title:
-          description: Operation title (same as method name but with adding spaces between capital letters)
-          type: string
-          example: List Action Log Items
-        customTags:
-          description: Custom tags.
-          type: object
     AsyncAPIOperationMeta:
       description: 'Specific parameters for AsyncAPI 3.0 operation.
 
@@ -931,176 +982,123 @@ components:
         customTags:
           description: Custom tags.
           type: object
-    PackageTransformationFile:
-      description: Parameters of published file in package version
+    PackageVersionRef:
+      description: Package version reference
       type: object
-      title: Package version file
+      title: Referenced package version
       required:
-      - fileId
-      - filename
-      - slug
-      - type
-      - format
-      - title
+      - refId
+      - kind
+      - name
+      - version
+      - status
       properties:
-        fileId:
+        refId:
+          description: Referenced package Id.
           type: string
-          description: File name.
-          example: qitmf-v5.11.json
-        filename:
+          example: QS.CloudQSS.CPQ.CORE
+        kind:
+          description: Package kind
           type: string
-          description: File name (slug+extension).
-          example: qitmf-v5.11.json
-        slug:
-          description: Published file slug
+          enum:
+          - package
+          - dashboard
+        name:
+          description: Name of the referenced package
           type: string
-          pattern: ^[a-z0-9-]
-          example: qitmf-v5-11-json
-        type:
-          $ref: '#/components/schemas/SpecificationType'
-        format:
-          $ref: '#/components/schemas/DocumentFormat'
-        title:
-          description: Name/title of the document.
-          type: string
-          example: Quote Integration TMForum Service
+          example: Quote Management TMF648
         version:
-          description: Document version
+          description: Referenced package version number. The <version>@<revision> mask is used to return the revision number.
           type: string
-          example: 1.0.1
-        labels:
-          description: List of file labels.
+          example: 2022.2@5
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        parentPackages:
+          description: Array of parent package names
           type: array
           items:
             type: string
-          example:
-          - TMF
-        description:
-          description: Document description
+        deletedAt:
+          description: date when package version was deleted package version
           type: string
-        includedOperationIds:
-          description: List of operation IDs included to specified operation group
-          type: array
-          items:
-            type: string
-          example:
-          - get-quoteManagement-v5-quote
-          - post-quoteManagement-v5-quote
-        data:
-          description: Content of the operation as a JSON object
-          type: object
-        shareabilityStatus:
-          description: Document shareability status
+          format: date-type
+          example: '2023-05-30T17:17:11.755146Z'
+        deletedBy:
+          description: user who deleted package version
           type: string
-          enum:
-          - shareable
-          - non-shareable
-          - unknown
-          default: unknown
-          example: unknown
-    DocumentFormat:
-      title: format
-      description: Format of the specification document.
-      type: string
-      enum:
-      - json
-      - yaml
-      - md
-      - graphql
-      - gql
-      - proto
-      - sql
-      - unknown
-    PackageVersionFile:
-      description: Parameters of published file in package version
-      type: object
-      title: Package version file
-      required:
-      - fileId
-      - filename
-      - slug
-      - type
-      - format
-      - title
-      properties:
-        fileId:
-          type: string
-          description: File name.
-          example: qitmf-v5.11.json
-        filename:
-          type: string
-          description: File name (slug+extension).
-          example: qitmf-v5.11.json
-        slug:
-          description: Published file slug
-          type: string
-          pattern: ^[a-z0-9-]
-          example: qitmf-v5-11-json
-        type:
-          $ref: '#/components/schemas/SpecificationType'
-        format:
-          $ref: '#/components/schemas/DocumentFormat'
-        title:
-          description: Name/title of the document.
-          type: string
-          example: Quote Integration TMForum Service
-        version:
-          description: Document version
-          type: string
-          example: 1.0.1
-        labels:
-          description: List of file labels.
-          type: array
-          items:
-            type: string
-          example:
-          - TMF
-        shareabilityStatus:
-          description: Document shareability status
-          type: string
-          enum:
-          - shareable
-          - non-shareable
-          - unknown
-          default: unknown
-          example: unknown
-    GraphQLOperationMeta:
-      description: Specific parameters for GraphQL operation.
-      title: GraphQLOperationMeta
-      required:
-      - type
-      - method
-      type: object
-      properties:
-        type:
-          description: Operation type
-          type: string
-          enum:
-          - query
-          - mutation
-          - subscription
-        method:
-          description: GraphQL operation method.
-          type: string
-          example: getPaymentMethodSpecificationCore
-        title:
-          description: Operation summary/title.
-          type: string
-        customTags:
-          description: Custom tags.
-          type: object
-    RestOperation:
-      description: REST operation object.
-      title: RestOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/RestOperationMeta'
-    AsyncAPIOperation:
-      description: AsyncAPI operation object.
-      title: AsyncAPIOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
+          example: user1221
+        notLatestRevision:
+          type: boolean
+          default: false
+  parameters:
+    packageId:
+      name: packageId
+      in: path
+      description: Package unique identifier (full alias)
+      required: true
+      schema:
+        type: string
+        example: QS.CloudQSS.CPQ.Q-TMF
+    limit:
+      name: limit
+      in: query
+      description: Requested number of resources to be provided in response.
+      schema:
+        type: number
+        default: 100
+        maximum: 100
+        minimum: 1
+    version:
+      name: version
+      in: path
+      description: Package version
+      required: true
+      schema:
+        type: string
+        example: '2022.3'
+    apiType:
+      name: apiType
+      description: Type of the API.
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - rest
+        - graphql
+        - protobuf
+        - asyncapi
+    page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: number
+        default: 0
+    slug:
+      name: slug
+      in: path
+      description: File unique string identifier
+      required: true
+      schema:
+        type: string
+        pattern: ^[a-z0-9-]
+        example: qitmf-v5-11-json
+    apiTypeQueryParam:
+      name: apiType
+      in: query
+      description: 'Filter documents by type of the API.
+
+        Mutually exclusive with `contractType`: specify at most one of `apiType` / `contractType` (if both are specified then 400 will be returned).
+
+        '
+      schema:
+        type: string
+        enum:
+        - rest
+        - graphql
+        - protobuf
+        - asyncapi
   examples:
     InternalServerError:
       description: 'Example: default internal server error response'

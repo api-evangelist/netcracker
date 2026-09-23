@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Config Controller V 1 API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Config Controller V 1
 paths:
@@ -42,6 +42,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiDeclarationsV1Apply
+      x-operation-id-source: derived
   /api/declarations/v1/operation/{trackingId}/extendedTroubleshootingInfo:
     get:
       summary: Operation status
@@ -73,6 +75,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiDeclarationsV1OperationByTrackingIdExtendedTroubleshootingInfo
+      x-operation-id-source: derived
   /api/declarations/v1/operation/{trackingId}/status:
     get:
       summary: Operation status
@@ -104,6 +108,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiDeclarationsV1OperationByTrackingIdStatus
+      x-operation-id-source: derived
   /api/declarations/v1/operation/{trackingId}/terminate:
     post:
       summary: Terminate operation
@@ -131,23 +137,17 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiDeclarationsV1OperationByTrackingIdTerminate
+      x-operation-id-source: derived
 components:
   schemas:
-    Condition:
+    OperationState:
       type: object
       properties:
-        type:
+        status:
           type: string
-        state:
+        description:
           type: string
-        reason:
-          type:
-          - string
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
     OperationStatusExtendedResponse:
       type: object
       properties:
@@ -158,33 +158,6 @@ components:
           type: string
         operationDetails:
           $ref: '#/components/schemas/OperationDetails'
-    DeclarativeResponse:
-      type: object
-      properties:
-        status:
-          type: string
-        trackingId:
-          type:
-          - string
-          - 'null'
-        conditions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Condition'
-    OperationState:
-      type: object
-      properties:
-        status:
-          type: string
-        description:
-          type: string
-    OperationDetails:
-      type: object
-      properties:
-        tasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaskDetails'
     TaskDetails:
       type: object
       properties:
@@ -203,6 +176,41 @@ components:
           type: string
         restoreId:
           type: string
+    Condition:
+      type: object
+      properties:
+        type:
+          type: string
+        state:
+          type: string
+        reason:
+          type:
+          - string
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
+    OperationDetails:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDetails'
+    DeclarativeResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        trackingId:
+          type:
+          - string
+          - 'null'
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Condition'
   securitySchemes:
     SecurityScheme:
       type: http

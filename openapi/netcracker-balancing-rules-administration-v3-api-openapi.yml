@@ -2,10 +2,10 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Balancing Rules Administration V3 API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Balancing Rules Administration V3
-  description: 'Allows to configure a logic of balancing logical databases over physical. '
+  description: Allows to configure a logic of balancing logical databases over physical.
 paths:
   /api/v3/dbaas/balancing/rules/permanent:
     get:
@@ -36,9 +36,11 @@ paths:
       - SecurityScheme:
         - DB_CLIENT
         - DBAAS_DB_EDITOR
+      operationId: getApiV3DbaasBalancingRulesPermanent
+      x-operation-id-source: derived
     delete:
       summary: V3. Delete permanent namespace balancing rule
-      description: 'Delete all permanent balancing rules on namespace. '
+      description: Delete all permanent balancing rules on namespace.
       tags:
       - Balancing Rules Administration V3
       requestBody:
@@ -63,9 +65,15 @@ paths:
       - SecurityScheme:
         - DB_CLIENT
         - DBAAS_DB_EDITOR
+      operationId: deleteApiV3DbaasBalancingRulesPermanent
+      x-operation-id-source: derived
     put:
       summary: V3. Add permanent namespace balancing rule
-      description: "Allows adding new permanent namespace balancing rule. Balancing rules are intended to define in which physical database new logical database should be created. This API allows add such rule for a namespace: it means that all logical databases for microservices in this namespace will be placed in specific physical database according to rule. Such rule is permanent and it won't be deleted during physical database deletion. \n + *WARNING! Rules can be overridden. Rule's integrity and validity is the responsibility of project(applies) side.* \n It means that rule doesn't merge and there can be only one version of rule. If you change configuration of previous rule and send it, then logical databases will be created by the new changed rule. Therefore, be careful before deleting or modifying the rule."
+      description: 'Allows adding new permanent namespace balancing rule. Balancing rules are intended to define in which physical database new logical database should be created. This API allows add such rule for a namespace: it means that all logical databases for microservices in this namespace will be placed in specific physical database according to rule. Such rule is permanent and it won''t be deleted during physical database deletion.
+
+        + *WARNING! Rules can be overridden. Rule''s integrity and validity is the responsibility of project(applies) side.*
+
+        It means that rule doesn''t merge and there can be only one version of rule. If you change configuration of previous rule and send it, then logical databases will be created by the new changed rule. Therefore, be careful before deleting or modifying the rule.'
       tags:
       - Balancing Rules Administration V3
       requestBody:
@@ -92,6 +100,8 @@ paths:
       - SecurityScheme:
         - DB_CLIENT
         - DBAAS_DB_EDITOR
+      operationId: putApiV3DbaasBalancingRulesPermanent
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/physical_databases/balancing/rules/{ruleName}:
     delete:
       summary: V3. Delete on namespace physDb balancing rule
@@ -123,6 +133,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: deleteApiV3DbaasByNamespacePhysicalDatabasesBalancingRulesByRuleName
+      x-operation-id-source: derived
     put:
       summary: V3. On namespace physDb balancing rule
       description: There are no changes in comparison with version 1. Auto balancing rules allows configure behavior of DBaaS when a physical database of some specific type is choosen for new logical database. This rule currently works for new databases only, no migration of logical databases between physical databases is supported yet.
@@ -166,9 +178,11 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: putApiV3DbaasByNamespacePhysicalDatabasesBalancingRulesByRuleName
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/physical_databases/rules/debug:
     post:
-      summary: Debug for microservices' balancing rules.
+      summary: Debug for microservices' balancing rules
       description: This API receives JSON-configs with rules and list of microservices to check and returns in response a mapping what physical database is going to be assigned to each microservice from the request based on the balancing rules from the request and the existing rules in DBaaS. Response will also contain a list of labels for the assigned physical database to help analyze which rule was applied.
       tags:
       - Balancing Rules Administration V3
@@ -202,9 +216,11 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiV3DbaasByNamespacePhysicalDatabasesRulesDebug
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/physical_databases/rules/onMicroservices:
     get:
-      summary: V3. Get on microservice physical database balancing rules.
+      summary: V3. Get on microservice physical database balancing rules
       description: Allows getting physical database balancing rules for microservices.
       tags:
       - Balancing Rules Administration V3
@@ -232,9 +248,15 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasByNamespacePhysicalDatabasesRulesOnMicroservices
+      x-operation-id-source: derived
     put:
-      summary: V3. On microservice physDb balancing rule.
-      description: "Allows adding balancing rules for microservices.  Balancing rules are intended to define in which physical database new logical database should be created. This API allows adding such rules for each microservice, or for group of microservices separately. \n *WARNING! Rules can be overridden. Rule's integrity and validity is the responsibility of project(applies) side.* \n It means that rule doesn't merge and there can be only one version of rule. If you change configuration of previous rule and send it, then logical databases will be created by the new changed rule. Therefore, be careful before deleting or modifying the rule."
+      summary: V3. On microservice physDb balancing rule
+      description: 'Allows adding balancing rules for microservices. Balancing rules are intended to define in which physical database new logical database should be created. This API allows adding such rules for each microservice, or for group of microservices separately.
+
+        *WARNING! Rules can be overridden. Rule''s integrity and validity is the responsibility of project(applies) side.*
+
+        It means that rule doesn''t merge and there can be only one version of rule. If you change configuration of previous rule and send it, then logical databases will be created by the new changed rule. Therefore, be careful before deleting or modifying the rule.'
       tags:
       - Balancing Rules Administration V3
       parameters:
@@ -264,9 +286,11 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: putApiV3DbaasByNamespacePhysicalDatabasesRulesOnMicroservices
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/physical_databases/rules/onMicroservices/validation:
     put:
-      summary: Validation for microservices' balancing rules.
+      summary: Validation for microservices' balancing rules
       description: This API receives JSON-configs with rules for microservices and returns in response mapping label to physical db (whether all mentioned lables exist), indicates errors if any. Response also contains information about default physical databases for each db type.
       tags:
       - Balancing Rules Administration V3
@@ -300,43 +324,15 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: putApiV3DbaasByNamespacePhysicalDatabasesRulesOnMicroservicesValidation
+      x-operation-id-source: derived
 components:
   schemas:
-    PermanentPerNamespaceRuleDTO:
-      type: object
-      required:
-      - dbType
-      - physicalDatabaseId
-      - namespaces
-      description: Rule allows to define in which physical database new logical databases should be created
-      properties:
-        dbType:
-          type: string
-          description: Physical db type (ex. postgresql, mongodb, etc), for which rule should be applied.
-        physicalDatabaseId:
-          type: string
-          description: Identifier of physical database where newly created logical databases should be placed.
-        namespaces:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-          description: Namespaces for which rules should be applied
-    RuleBody:
-      type: object
-      required:
-      - type
-      - config
-      description: Rule allows to define physical database for new logical databases
-      properties:
-        type:
-          $ref: '#/components/schemas/RuleType'
-          type: string
-          description: Type of rule is required, it defines what logic would be used when rule is applying.
-        config:
-          type: object
-          additionalProperties: {}
-          description: "Configuration contains rule-specific information: \n - perNamespace rule only expects phydbid (physical database identifier) to be specified in rule."
+    RuleType:
+      type: string
+      enum:
+      - perNamespace
+      description: "Rule type specified what configuration applies to which logic. \n - perNamespace rule would just use specified physical database for any new logical database in namespace, where rule works"
     RuleRegistrationRequest:
       type: object
       required:
@@ -352,15 +348,20 @@ components:
           description: Type of database required. The rule would only work on logical databases of the specified type.
         rule:
           $ref: '#/components/schemas/RuleBody'
-    RuleOnMicroservice:
+    PermanentPerNamespaceRuleDeleteDTO:
       type: object
       required:
-      - label
-      description: Rule allows to define physical database for new logical databases on microservice
+      - namespaces
       properties:
-        label:
+        dbType:
           type: string
-          description: Label uses to find physical DB which contains this label
+          description: Db type for which rules should be deleted. If omitted all rules for specified namespaces will be deleted.
+        namespaces:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+          description: Namespaces for which rules should be deleted
     DebugRulesRequest:
       type: object
       required:
@@ -378,25 +379,6 @@ components:
           items:
             $ref: '#/components/schemas/OnMicroserviceRuleRequest'
           description: List of rules
-    PermanentPerNamespaceRuleDeleteDTO:
-      type: object
-      required:
-      - namespaces
-      properties:
-        dbType:
-          type: string
-          description: Db type for which rules should be deleted. If omitted all rules for specified namespaces will be deleted.
-        namespaces:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-          description: Namespaces for which rules should be deleted
-    RuleType:
-      type: string
-      enum:
-      - perNamespace
-      description: "Rule type specified what configuration applies to which logic. \n - perNamespace rule would just use specified physical database for any new logical database in namespace, where rule works"
     OnMicroserviceRuleRequest:
       type: object
       required:
@@ -417,6 +399,50 @@ components:
           items:
             type: string
           description: List of microservice names to which the specified rule has a place to be
+    RuleBody:
+      type: object
+      required:
+      - type
+      - config
+      description: Rule allows to define physical database for new logical databases
+      properties:
+        type:
+          $ref: '#/components/schemas/RuleType'
+          type: string
+          description: Type of rule is required, it defines what logic would be used when rule is applying.
+        config:
+          type: object
+          additionalProperties: {}
+          description: "Configuration contains rule-specific information: \n - perNamespace rule only expects phydbid (physical database identifier) to be specified in rule."
+    PermanentPerNamespaceRuleDTO:
+      type: object
+      required:
+      - dbType
+      - physicalDatabaseId
+      - namespaces
+      description: Rule allows to define in which physical database new logical databases should be created
+      properties:
+        dbType:
+          type: string
+          description: Physical db type (ex. postgresql, mongodb, etc), for which rule should be applied.
+        physicalDatabaseId:
+          type: string
+          description: Identifier of physical database where newly created logical databases should be placed.
+        namespaces:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+          description: Namespaces for which rules should be applied
+    RuleOnMicroservice:
+      type: object
+      required:
+      - label
+      description: Rule allows to define physical database for new logical databases on microservice
+      properties:
+        label:
+          type: string
+          description: Label uses to find physical DB which contains this label
   securitySchemes:
     SecurityScheme:
       type: http

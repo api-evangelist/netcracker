@@ -4,7 +4,7 @@ info:
   description: API for Maas Service.
   title: Maas Service V1 API
 tags:
-- name: V1
+- name: v1
 paths:
   /api/composite/v1/structure:
     post:
@@ -34,7 +34,7 @@ paths:
         - agent
       summary: Create Composite Registration
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -44,7 +44,6 @@ paths:
         required: true
   /api/composite/v1/structure/{id}:
     delete:
-      description: Destroy Composite Registrations
       operationId: DeleteById
       parameters:
       - description: Registration ID
@@ -71,7 +70,7 @@ paths:
         - agent
       summary: Destroy Composite Registrations
       tags:
-      - V1
+      - v1
     get:
       description: Get Composite Registration By Baseline ID
       operationId: GetById
@@ -104,10 +103,9 @@ paths:
         - agent
       summary: Get Composite Registration By ID
       tags:
-      - V1
+      - v1
   /api/composite/v1/structures:
     get:
-      description: Get All Composite Registrations
       operationId: GetAll
       responses:
         '200':
@@ -131,7 +129,7 @@ paths:
         - agent
       summary: Get All Composite Registrations
       tags:
-      - V1
+      - v1
   /api/v1/auth/account/client:
     delete:
       description: Delete Client Account
@@ -160,7 +158,7 @@ paths:
         - manager
       summary: Delete Client Account using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -207,7 +205,7 @@ paths:
         - manager
       summary: Create Account
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -263,7 +261,7 @@ paths:
         - manager
       summary: Save Manager Account using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -305,7 +303,7 @@ paths:
         - manager
       summary: Get All Accounts using Manager Role
       tags:
-      - V1
+      - v1
   /api/v1/bg-status:
     get:
       description: Get Bg Status By Namespace
@@ -338,7 +336,7 @@ paths:
         - agent
       summary: Get Bg Status By Namespace using Agent Role
       tags:
-      - V1
+      - v1
     post:
       description: Apply Bg Status
       operationId: ApplyBgStatus
@@ -373,7 +371,7 @@ paths:
         - agent
       summary: Apply Bg Status using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -421,7 +419,7 @@ paths:
       - ApiKeyAuth: []
       summary: Apply Config using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -477,7 +475,7 @@ paths:
         - manager
       summary: Unregister Kafka Instance using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -532,7 +530,7 @@ paths:
         - manager
       summary: Register New Kafka Instance using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -587,7 +585,7 @@ paths:
         - manager
       summary: Update New Kafka Instance using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -643,7 +641,7 @@ paths:
         - manager
       summary: Set Default Kafka Instance using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -677,7 +675,7 @@ paths:
         - manager
       summary: Get All Kafka Instances using Manager Role
       tags:
-      - V1
+      - v1
   /api/v1/kafka/topic:
     delete:
       description: Delete Topic
@@ -733,7 +731,7 @@ paths:
         - agent
       summary: Delete Topic using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -795,7 +793,7 @@ paths:
         - agent
       summary: Get Or Create Topic using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -858,7 +856,7 @@ paths:
         - agent
       summary: Get Topic By Classifier using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -908,7 +906,7 @@ paths:
         - agent
       summary: Search Topics using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -944,7 +942,7 @@ paths:
         - manager
       summary: Delete Namespace using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -1000,7 +998,7 @@ paths:
         - manager
       summary: Unregister Rabbit Instance using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -1055,7 +1053,7 @@ paths:
         - manager
       summary: Register New Rabbit Instance using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -1110,7 +1108,7 @@ paths:
         - manager
       summary: Update Rabbit Instance using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -1166,7 +1164,7 @@ paths:
         - manager
       summary: Set Default Rabbit Instance using Manager Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -1200,7 +1198,7 @@ paths:
         - manager
       summary: Get All Rabbit Instances using Manager Role
       tags:
-      - V1
+      - v1
   /api/v1/rabbit/vhost:
     delete:
       description: Delete VHost
@@ -1244,7 +1242,7 @@ paths:
         - agent
       summary: Delete VHost using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -1320,7 +1318,7 @@ paths:
         - agent
       summary: Get Or Create VHost using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -1383,7 +1381,7 @@ paths:
         - agent
       summary: Get VHost And Config By Classifier using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -1424,7 +1422,7 @@ paths:
         - agent
       summary: Sync Tenants using Agent Role
       tags:
-      - V1
+      - v1
       requestBody:
         content:
           application/json:
@@ -1475,9 +1473,165 @@ paths:
         - agent
       summary: Get Tenants By Namespace using Agent Role
       tags:
-      - V1
+      - v1
 components:
   schemas:
+    model.KafkaCredentials:
+      properties:
+        clientCert:
+          type: string
+        clientKey:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+        username:
+          type: string
+      type: object
+    v1.RegistrationResponse:
+      properties:
+        id:
+          type: string
+        namespaces:
+          items:
+            type: string
+          type: array
+      type: object
+    v1.RegistrationRequest:
+      properties:
+        id:
+          type: string
+        namespaces:
+          items:
+            type: string
+          type: array
+      required:
+      - id
+      - namespaces
+      type: object
+    model.SyncTenantsResp:
+      properties:
+        tenant:
+          $ref: '#/components/schemas/model.Tenant'
+        topics:
+          items:
+            $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+          type: array
+      type: object
+    model.RabbitInstance:
+      properties:
+        amqpUrl:
+          example: amqp://127.0.0.1:5672
+          type: string
+        apiUrl:
+          example: http://127.0.0.1:15672/api
+          type: string
+        default:
+          example: true
+          type: boolean
+        id:
+          example: fd02de58-da04-4842-a258-37ebe4e5ac1e
+          type: string
+        password:
+          example: guest
+          type: string
+        user:
+          example: guest
+          type: string
+      type: object
+    model.Classifier:
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        tenantId:
+          type: string
+      required:
+      - name
+      - namespace
+      type: object
+    model.SearchForm:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          type: string
+        namespace:
+          example: cloudbss311-platform-core-support-dev3
+          type: string
+        user:
+          type: string
+        vhost:
+          type: string
+      type: object
+    controller.VhostAndConfigResult:
+      properties:
+        entities:
+          $ref: '#/components/schemas/model.RabbitEntities'
+        vhost:
+          $ref: '#/components/schemas/model.VHostRegistrationResponse'
+      type: object
+    model.Namespace:
+      properties:
+        namespace:
+          example: <your namespace>
+          type: string
+      type: object
+    model.TopicSettings:
+      properties:
+        configs:
+          additionalProperties:
+            type: string
+          type: object
+        minNumPartitions:
+          example: 1
+          type: integer
+        numPartitions:
+          example: 1
+          type: integer
+        replicaAssignment:
+          additionalProperties:
+            items:
+              type: integer
+            type: array
+          type: object
+        replicationFactor:
+          example: 1
+          type: integer
+        versioned:
+          example: true
+          type: boolean
+      type: object
+    controller.Instance:
+      properties:
+        id:
+          example: maas-rabbitmq-code-dev
+          type: string
+      type: object
+    model.BgStatus:
+      properties:
+        active:
+          example: v2
+          type: string
+        candidates:
+          example:
+          - v2
+          - v3
+          items:
+            type: string
+          type: array
+        legacy:
+          example: v3
+          type: string
+        namespace:
+          example: namespace
+          type: string
+        timestamp:
+          example: '2021-08-18T17:29:06.82837Z'
+          type: string
+      type: object
     model.ClientAccountDto:
       properties:
         namespace:
@@ -1496,41 +1650,31 @@ components:
           example: client
           type: string
       type: object
-    model.TopicSearchRequest:
+    model.VHostRegistrationResponse:
       properties:
-        classifier:
-          $ref: '#/components/schemas/model.Classifier'
-        instance:
-          example: <id of kafka instance where topics are created>
+        apiUrl:
+          example: http://127.0.0.1:15672/api
           type: string
-        leaveRealTopicIntact:
-          type: boolean
-        namespace:
-          example: <namespace to which topics belong>
+        cnn:
+          example: amqp://127.0.0.1:5672/namespace.test12
           type: string
-        template:
-          type: integer
-        topic:
-          example: <exact topic name in kafka>
-          type: string
-        versioned:
-          type: boolean
-      type: object
-    controller.VhostAndConfigResult:
-      properties:
-        entities:
-          $ref: '#/components/schemas/model.RabbitEntities'
-        vhost:
-          $ref: '#/components/schemas/model.VHostRegistrationResponse'
-      type: object
-    model.ManagerAccountDto:
-      properties:
         password:
-          example: 24002eadbc
+          example: plain:504a449065924332b062c4a84e830cbe
           type: string
         username:
-          example: manager
+          example: 9757343a78a04057a07ee4215f1b1355
           type: string
+      type: object
+    model.TopicDeletionResp:
+      properties:
+        deletedSuccessfully:
+          items:
+            $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+          type: array
+        failedToDelete:
+          items:
+            $ref: '#/components/schemas/model.TopicDeletionError'
+          type: array
       type: object
     model.TopicRegistrationRespDto:
       properties:
@@ -1573,22 +1717,49 @@ components:
           example: false
           type: boolean
       type: object
-    model.Namespace:
+    model.TopicDeletionError:
       properties:
+        message:
+          example: <error message>
+          type: string
+        topic:
+          $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+      type: object
+    model.Tenant:
+      properties:
+        externalId:
+          example: '101'
+          type: string
         namespace:
-          example: <your namespace>
+          type: string
+        tenantPresentation:
+          additionalProperties: true
+          type: object
+      type: object
+    model.CpDeploymentVersion:
+      properties:
+        createdWhen:
+          example: '2021-08-18T16:33:15.142354459Z'
+          type: string
+        stage:
+          example: ACTIVE
+          type: string
+        updatedWhen:
+          example: '2021-08-18T16:33:15.14235456Z'
+          type: string
+        version:
+          example: v1
           type: string
       type: object
-    model.TopicDeletionResp:
+    model.VHostRegistrationReqDto:
       properties:
-        deletedSuccessfully:
-          items:
-            $ref: '#/components/schemas/model.TopicRegistrationRespDto'
-          type: array
-        failedToDelete:
-          items:
-            $ref: '#/components/schemas/model.TopicDeletionError'
-          type: array
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          example: <[optional] rabbitmq instance for virtual host. if not specified default instance will be used>
+          type: string
+      required:
+      - classifier
       type: object
     model.Account:
       properties:
@@ -1616,199 +1787,6 @@ components:
         username:
           example: manager
           type: string
-      type: object
-    model.VHostRegistrationResponse:
-      properties:
-        apiUrl:
-          example: http://127.0.0.1:15672/api
-          type: string
-        cnn:
-          example: amqp://127.0.0.1:5672/namespace.test12
-          type: string
-        password:
-          example: plain:504a449065924332b062c4a84e830cbe
-          type: string
-        username:
-          example: 9757343a78a04057a07ee4215f1b1355
-          type: string
-      type: object
-    model.TopicDeletionError:
-      properties:
-        message:
-          example: <error message>
-          type: string
-        topic:
-          $ref: '#/components/schemas/model.TopicRegistrationRespDto'
-      type: object
-    v1.RegistrationResponse:
-      properties:
-        id:
-          type: string
-        namespaces:
-          items:
-            type: string
-          type: array
-      type: object
-    model.KafkaCredentials:
-      properties:
-        clientCert:
-          type: string
-        clientKey:
-          type: string
-        password:
-          type: string
-        type:
-          type: string
-        username:
-          type: string
-      type: object
-    controller.Instance:
-      properties:
-        id:
-          example: maas-rabbitmq-code-dev
-          type: string
-      type: object
-    model.VHostRegistrationReqDto:
-      properties:
-        classifier:
-          $ref: '#/components/schemas/model.Classifier'
-        instance:
-          example: <[optional] rabbitmq instance for virtual host. if not specified default instance will be used>
-          type: string
-      required:
-      - classifier
-      type: object
-    model.SearchForm:
-      properties:
-        classifier:
-          $ref: '#/components/schemas/model.Classifier'
-        instance:
-          type: string
-        namespace:
-          example: cloudbss311-platform-core-support-dev3
-          type: string
-        user:
-          type: string
-        vhost:
-          type: string
-      type: object
-    model.BgStatus:
-      properties:
-        active:
-          example: v2
-          type: string
-        candidates:
-          example:
-          - v2
-          - v3
-          items:
-            type: string
-          type: array
-        legacy:
-          example: v3
-          type: string
-        namespace:
-          example: namespace
-          type: string
-        timestamp:
-          example: '2021-08-18T17:29:06.82837Z'
-          type: string
-      type: object
-    v1.RegistrationRequest:
-      properties:
-        id:
-          type: string
-        namespaces:
-          items:
-            type: string
-          type: array
-      required:
-      - id
-      - namespaces
-      type: object
-    model.RabbitInstance:
-      properties:
-        amqpUrl:
-          example: amqp://127.0.0.1:5672
-          type: string
-        apiUrl:
-          example: http://127.0.0.1:15672/api
-          type: string
-        default:
-          example: true
-          type: boolean
-        id:
-          example: fd02de58-da04-4842-a258-37ebe4e5ac1e
-          type: string
-        password:
-          example: guest
-          type: string
-        user:
-          example: guest
-          type: string
-      type: object
-    model.TopicSettings:
-      properties:
-        configs:
-          additionalProperties:
-            type: string
-          type: object
-        minNumPartitions:
-          example: 1
-          type: integer
-        numPartitions:
-          example: 1
-          type: integer
-        replicaAssignment:
-          additionalProperties:
-            items:
-              type: integer
-            type: array
-          type: object
-        replicationFactor:
-          example: 1
-          type: integer
-        versioned:
-          example: true
-          type: boolean
-      type: object
-    model.CpDeploymentVersion:
-      properties:
-        createdWhen:
-          example: '2021-08-18T16:33:15.142354459Z'
-          type: string
-        stage:
-          example: ACTIVE
-          type: string
-        updatedWhen:
-          example: '2021-08-18T16:33:15.14235456Z'
-          type: string
-        version:
-          example: v1
-          type: string
-      type: object
-    model.Tenant:
-      properties:
-        externalId:
-          example: '101'
-          type: string
-        namespace:
-          type: string
-        tenantPresentation:
-          additionalProperties: true
-          type: object
-      type: object
-    model.Classifier:
-      properties:
-        name:
-          type: string
-        namespace:
-          type: string
-        tenantId:
-          type: string
-      required:
-      - name
-      - namespace
       type: object
     model.RabbitEntities:
       properties:
@@ -1850,14 +1828,34 @@ components:
           example: SASL_PLAINTEXT
           type: string
       type: object
-    model.SyncTenantsResp:
+    model.TopicSearchRequest:
       properties:
-        tenant:
-          $ref: '#/components/schemas/model.Tenant'
-        topics:
-          items:
-            $ref: '#/components/schemas/model.TopicRegistrationRespDto'
-          type: array
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          example: <id of kafka instance where topics are created>
+          type: string
+        leaveRealTopicIntact:
+          type: boolean
+        namespace:
+          example: <namespace to which topics belong>
+          type: string
+        template:
+          type: integer
+        topic:
+          example: <exact topic name in kafka>
+          type: string
+        versioned:
+          type: boolean
+      type: object
+    model.ManagerAccountDto:
+      properties:
+        password:
+          example: 24002eadbc
+          type: string
+        username:
+          example: manager
+          type: string
       type: object
   securitySchemes:
     BasicAuth:

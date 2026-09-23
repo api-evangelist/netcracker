@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: APIHUB Registry – External Contracts API
-  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
-
-    '
+  description: Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
   contact:
     name: Netcracker Opensource Group
     email: opensourcegroup@netcracker.com
@@ -37,9 +35,7 @@ paths:
       tags:
       - Contracts
       summary: Get DDL entities
-      description: 'Get DDL contract entities for a package version. Only `table` entities are supported now.
-
-        '
+      description: Get DDL contract entities for a package version. Only `table` entities are supported now.
       operationId: getPackageVersionDdlEntities
       parameters:
       - $ref: '#/components/parameters/packageId'
@@ -245,9 +241,7 @@ paths:
       summary: Get list of changed DDL entities
       description: 'Get DDL contract changes between two compared package versions with details by entities.
 
-        Only `table` entities are supported now.
-
-        '
+        Only `table` entities are supported now.'
       operationId: getPackageVersionDdlChanges
       parameters:
       - $ref: '#/components/parameters/packageId'
@@ -352,9 +346,7 @@ paths:
       summary: Single DDL entity changes summary
       description: 'Get summary of changes for one DDL entity between current and previous published package version.
 
-        Only `table` entities are supported now.
-
-        '
+        Only `table` entities are supported now.'
       operationId: getPackageVersionDdlEntityChangesSummary
       parameters:
       - $ref: '#/components/parameters/packageId'
@@ -796,25 +788,155 @@ paths:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
 components:
+  parameters:
+    previousVersionPackageId:
+      name: previousVersionPackageId
+      in: query
+      description: 'Package unique identifier for previous version.
+
+        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+
+        '
+      schema:
+        type: string
+        example: QS.RUNENV.K8S-SERVER.CJM-QSS-DEV-2.Q-TMF
+    mcpEntityId:
+      name: mcpEntityId
+      in: path
+      required: true
+      description: MCP logical entity identifier (`mcpEntityId` from the list response). Clients must percent-encode unsafe characters.
+      schema:
+        type: string
+        example: mcp-tool-get_forecast
+    severity:
+      name: severity
+      in: query
+      description: Filter API changes by severity.
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - breaking
+          - non-breaking
+          - deprecated
+          - semi-breaking
+          - annotation
+          - unclassified
+    packageId:
+      name: packageId
+      in: path
+      description: Package unique identifier (full alias)
+      required: true
+      schema:
+        type: string
+        example: QS.CloudQSS.CPQ.Q-TMF
+    limit:
+      name: limit
+      in: query
+      description: Requested number of resources to be provided in response.
+      schema:
+        type: number
+        default: 100
+        maximum: 100
+        minimum: 1
+    ddlEntityId:
+      name: ddlEntityId
+      in: path
+      required: true
+      description: DDL entity logical identifier. Clients must percent-encode unsafe characters.
+      schema:
+        type: string
+        example: public-table-users
+    version:
+      name: version
+      in: path
+      description: Package version
+      required: true
+      schema:
+        type: string
+        example: '2022.3'
+    previousVersion:
+      name: previousVersion
+      in: query
+      description: 'Package previous version.
+
+        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+
+        '
+      schema:
+        type: string
+        example: '2022.3'
+    page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: number
+        default: 0
+    mcpEntity:
+      name: entity
+      in: path
+      required: true
+      description: MCP entity collection type.
+      schema:
+        type: string
+        enum:
+        - inits
+        - tools
+        - prompts
+        - resources
   schemas:
-    VersionStatusEnum:
-      description: Package version status
-      type: string
-      enum:
-      - draft
-      - release
-      - archived
-    DdlEntityChange:
-      description: One side (current or previous) of a DDL entity in a changelog change entry.
+    DdlEntityView:
+      description: DDL entity as returned by the version GET list/details endpoints.
       type: object
       allOf:
       - $ref: '#/components/schemas/DdlEntity'
       - type: object
+        required:
+        - documentId
+        - versionInternalDocumentId
         properties:
+          documentId:
+            description: Source document identifier.
+            type: string
+            example: shop-sql
+          versionInternalDocumentId:
+            description: 'Unique string identifier of the preprocessed (validated, references resolved) internal document where the entity is present. Corresponds to `id` field for the document in `version-internal-documents.json`.
+
+              '
+            type: string
+            example: shop
           packageRef:
             description: Package and version reference key.
             type: string
             example: QS.CloudQSS.CPQ.Q-TMF@2023.2
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
     ChangeReplace:
       type: object
       description: Data of single operation change when change action = replace
@@ -867,127 +989,34 @@ components:
             Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
 
             '
-    DdlEntityView:
-      description: DDL entity as returned by the version GET list/details endpoints.
+    ChangeRemove:
       type: object
-      allOf:
-      - $ref: '#/components/schemas/DdlEntity'
-      - type: object
-        required:
-        - documentId
-        - versionInternalDocumentId
-        properties:
-          documentId:
-            description: Source document identifier.
-            type: string
-            example: shop-sql
-          versionInternalDocumentId:
-            description: 'Unique string identifier of the preprocessed (validated, references resolved) internal document where the entity is present. Corresponds to `id` field for the document in `version-internal-documents.json`.
-
-              '
-            type: string
-            example: shop
-          packageRef:
-            description: Package and version reference key.
-            type: string
-            example: QS.CloudQSS.CPQ.Q-TMF@2023.2
-    McpEntityView:
-      description: 'MCP discovery contract entity as returned by the version GET list/details endpoints: the shared
-
-        `McpEntity` plus (for dashboards) the package reference.
-
-        '
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/McpEntity'
-      - type: object
-        properties:
-          packageRef:
-            description: Package and version reference key.
-            type: string
-            example: QS.CloudQSS.CPQ.Q-TMF@2023.2
-    PackagesMap:
-      description: 'A map of referenced package versions to the package version objects.
-
-        The key is `packageId@version@revision` — three `@`-separated segments (note: the `version` field
-
-        of each value is `version@revision`, only two segments).
-
-        '
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/PackageVersionRef'
-      example:
-        QS.CloudQSS.CPQ.Q-TMF@2023.2@3:
-          refId: QS.CloudQSS.CPQ.Q-TMF
-          kind: package
-          name: Quote Management TMF648
-          version: 2023.2@3
-          status: release
-          parentPackages:
-          - qubership
-          - Qubership JSS
-          - Sample Management
-          deletedAt: '2023-05-30T17:17:11.755146Z'
-          deletedBy: user1221
-          notLatestRevision: true
-    ErrorResponse:
-      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
-      type: object
+      description: Data of single operation change when change action = remove.
       properties:
-        status:
-          description: HTTP status code as an integer; expected to match the actual HTTP response status.
-          type: number
-        code:
-          description: Internal string error code. Mandatory in response.
-          type: string
-        message:
-          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
-          type: string
-        params:
-          type: object
-          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+        previousDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
           example:
-            id: 12345
-            type: string
-        debug:
-          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousValueHash:
           type: string
-      required:
-      - status
-      - code
-      - message
-    SingleOperationChange:
-      allOf:
-      - type: object
-        description: Discrepancy data in a single operation.
-        properties:
-          description:
-            description: Human-readable description of point of change.
-            type: string
-            example: '[Added] Property: summary.'
-          severity:
-            $ref: '#/components/schemas/ChangeSeverity'
-          scope:
-            type: string
-            description: 'Part of operation (like request/response) where change was made. Scope differs for apiTypes.\
+          description: 'Hash of the removed entity.\
 
-              Scope is needed to correctly identify severity of change, because the same change can have different severity in request/response.
+            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
 
-              '
-          action:
-            description: Action, what was done with the endpoint.
-            type: string
-            enum:
-            - add
-            - remove
-            - replace
-            - rename
-      - oneOf:
-        - $ref: '#/components/schemas/ChangeAdd'
-        - $ref: '#/components/schemas/ChangeRemove'
-        - $ref: '#/components/schemas/ChangeReplace'
-        - $ref: '#/components/schemas/ChangeRename'
+            '
     PackageVersionRef:
       description: Package version reference
       type: object
@@ -1072,146 +1101,13 @@ components:
           description: Value of `COMMENT ON TABLE`, or an empty string when none is present.
           type: string
           example: Registered users
-    ChangeRename:
-      type: object
-      description: Data of single operation change when change action = rename.
-      properties:
-        currentDeclarationJsonPaths:
-          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
-
-            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
-
-            '
-          type: array
-          items:
-            type: array
-            items:
-              anyOf:
-              - type: string
-              - type: integer
-          example:
-          - - components/schemas/Cat/minProperties
-            - components/schemas/Dog/minProperties
-          - - /quoteManagement/v5/quote
-        previousDeclarationJsonPaths:
-          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
-
-            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
-
-            '
-          type: array
-          items:
-            type: array
-            items:
-              anyOf:
-              - type: string
-              - type: integer
-          example:
-          - - components/schemas/Cat/minProperties
-            - components/schemas/Dog/minProperties
-          - - /quoteManagement/v5/quote
-        previousKey:
-          type: string
-          description: Previous key (name) of the renamed entity.
-        currentKey:
-          type: string
-          description: Current key (name) of the renamed entity.
-    ChangeSummary:
-      description: 'Numbers of changes between the current and previous published version.
-
-        '
-      type: object
-      properties:
-        breaking:
-          description: Number of changes, breaking the backward compatibility.
-          type: integer
-          default: 0
-        semi-breaking:
-          description: Number of changes, breaking the backward compatibility in a legal way. For example, deleting correctly deprecated endpoint.
-          type: integer
-          default: 0
-        deprecated:
-          description: Number of deprecated endpoints.
-          type: integer
-          default: 0
-        non-breaking:
-          description: Number of non-breaking changes.
-          type: integer
-          default: 0
-        annotation:
-          description: Number of annotation changes.
-          type: integer
-          default: 0
-        unclassified:
-          description: Number of unclassified changes.
-          type: integer
-          default: 0
-    ChangeAdd:
-      type: object
-      description: Data of single operation change when change action = add
-      properties:
-        currentDeclarationJsonPaths:
-          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
-
-            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
-
-            '
-          type: array
-          items:
-            type: array
-            items:
-              anyOf:
-              - type: string
-              - type: integer
-          example:
-          - - components/schemas/Cat/minProperties
-            - components/schemas/Dog/minProperties
-          - - /quoteManagement/v5/quote
-        currentValueHash:
-          type: string
-          description: 'Hash of the added entity.\
-
-            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
-
-            '
-    ChangeSeverity:
-      description: Severity of the particular change.
+    VersionStatusEnum:
+      description: Package version status
       type: string
       enum:
-      - breaking
-      - semi-breaking
-      - deprecated
-      - non-breaking
-      - annotation
-      - unclassified
-    ChangeRemove:
-      type: object
-      description: Data of single operation change when change action = remove.
-      properties:
-        previousDeclarationJsonPaths:
-          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
-
-            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
-
-            '
-          type: array
-          items:
-            type: array
-            items:
-              anyOf:
-              - type: string
-              - type: integer
-          example:
-          - - components/schemas/Cat/minProperties
-            - components/schemas/Dog/minProperties
-          - - /quoteManagement/v5/quote
-        previousValueHash:
-          type: string
-          description: 'Hash of the removed entity.\
-
-            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
-
-            '
+      - draft
+      - release
+      - archived
     McpEntity:
       type: object
       description: 'MCP discovery contract entity. Holds the fields common to the API response and the
@@ -1259,105 +1155,213 @@ components:
           description: Source document identifier.
           type: string
           example: tools-forecast-json
-  parameters:
-    packageId:
-      name: packageId
-      in: path
-      description: Package unique identifier (full alias)
-      required: true
-      schema:
-        type: string
-        example: QS.CloudQSS.CPQ.Q-TMF
-    ddlEntityId:
-      name: ddlEntityId
-      in: path
-      required: true
-      description: DDL entity logical identifier. Clients must percent-encode unsafe characters.
-      schema:
-        type: string
-        example: public-table-users
-    mcpEntity:
-      name: entity
-      in: path
-      required: true
-      description: MCP entity collection type.
-      schema:
-        type: string
-        enum:
-        - inits
-        - tools
-        - prompts
-        - resources
-    severity:
-      name: severity
-      in: query
-      description: Filter API changes by severity.
-      schema:
-        type: array
-        items:
+    DdlEntityChange:
+      description: One side (current or previous) of a DDL entity in a changelog change entry.
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/DdlEntity'
+      - type: object
+        properties:
+          packageRef:
+            description: Package and version reference key.
+            type: string
+            example: QS.CloudQSS.CPQ.Q-TMF@2023.2
+    ChangeAdd:
+      type: object
+      description: Data of single operation change when change action = add
+      properties:
+        currentDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        currentValueHash:
           type: string
-          enum:
-          - breaking
-          - non-breaking
-          - deprecated
-          - semi-breaking
-          - annotation
-          - unclassified
-    previousVersion:
-      name: previousVersion
-      in: query
-      description: 'Package previous version.
+          description: 'Hash of the added entity.\
 
-        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
 
-        '
-      schema:
-        type: string
-        example: '2022.3'
-    mcpEntityId:
-      name: mcpEntityId
-      in: path
-      required: true
-      description: MCP logical entity identifier (`mcpEntityId` from the list response). Clients must percent-encode unsafe characters.
-      schema:
-        type: string
-        example: mcp-tool-get_forecast
-    version:
-      name: version
-      in: path
-      description: Package version
-      required: true
-      schema:
-        type: string
-        example: '2022.3'
-    previousVersionPackageId:
-      name: previousVersionPackageId
-      in: query
-      description: 'Package unique identifier for previous version.
+            '
+    SingleOperationChange:
+      allOf:
+      - type: object
+        description: Discrepancy data in a single operation.
+        properties:
+          description:
+            description: Human-readable description of point of change.
+            type: string
+            example: '[Added] Property: summary.'
+          severity:
+            $ref: '#/components/schemas/ChangeSeverity'
+          scope:
+            type: string
+            description: 'Part of operation (like request/response) where change was made. Scope differs for apiTypes.\
 
-        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+              Scope is needed to correctly identify severity of change, because the same change can have different severity in request/response.
+
+              '
+          action:
+            description: Action, what was done with the endpoint.
+            type: string
+            enum:
+            - add
+            - remove
+            - replace
+            - rename
+      - oneOf:
+        - $ref: '#/components/schemas/ChangeAdd'
+        - $ref: '#/components/schemas/ChangeRemove'
+        - $ref: '#/components/schemas/ChangeReplace'
+        - $ref: '#/components/schemas/ChangeRename'
+    ChangeSummary:
+      description: 'Numbers of changes between the current and previous published version.
 
         '
-      schema:
-        type: string
-        example: QS.RUNENV.K8S-SERVER.CJM-QSS-DEV-2.Q-TMF
-    page:
-      name: page
-      in: query
-      description: Page number
-      schema:
-        type: number
-        default: 0
-    limit:
-      name: limit
-      in: query
-      description: Requested number of resources to be provided in response.
-      schema:
-        type: number
-        default: 100
-        maximum: 100
-        minimum: 1
+      type: object
+      properties:
+        breaking:
+          description: Number of changes, breaking the backward compatibility.
+          type: integer
+          default: 0
+        semi-breaking:
+          description: Number of changes, breaking the backward compatibility in a legal way. For example, deleting correctly deprecated endpoint.
+          type: integer
+          default: 0
+        deprecated:
+          description: Number of deprecated endpoints.
+          type: integer
+          default: 0
+        non-breaking:
+          description: Number of non-breaking changes.
+          type: integer
+          default: 0
+        annotation:
+          description: Number of annotation changes.
+          type: integer
+          default: 0
+        unclassified:
+          description: Number of unclassified changes.
+          type: integer
+          default: 0
+    PackagesMap:
+      description: 'A map of referenced package versions to the package version objects.
+
+        The key is `packageId@version@revision` — three `@`-separated segments (note: the `version` field
+
+        of each value is `version@revision`, only two segments).
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/PackageVersionRef'
+      example:
+        QS.CloudQSS.CPQ.Q-TMF@2023.2@3:
+          refId: QS.CloudQSS.CPQ.Q-TMF
+          kind: package
+          name: Quote Management TMF648
+          version: 2023.2@3
+          status: release
+          parentPackages:
+          - qubership
+          - Qubership JSS
+          - Sample Management
+          deletedAt: '2023-05-30T17:17:11.755146Z'
+          deletedBy: user1221
+          notLatestRevision: true
+    McpEntityView:
+      description: 'MCP discovery contract entity as returned by the version GET list/details endpoints: the shared
+
+        `McpEntity` plus (for dashboards) the package reference.
+
+        '
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/McpEntity'
+      - type: object
+        properties:
+          packageRef:
+            description: Package and version reference key.
+            type: string
+            example: QS.CloudQSS.CPQ.Q-TMF@2023.2
+    ChangeSeverity:
+      description: Severity of the particular change.
+      type: string
+      enum:
+      - breaking
+      - semi-breaking
+      - deprecated
+      - non-breaking
+      - annotation
+      - unclassified
+    ChangeRename:
+      type: object
+      description: Data of single operation change when change action = rename.
+      properties:
+        currentDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousKey:
+          type: string
+          description: Previous key (name) of the renamed entity.
+        currentKey:
+          type: string
+          description: Current key (name) of the renamed entity.
   examples:
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
+    VersionNotFound:
+      description: Version not found by number. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3050
+        message: Published version $version not found
     InternalServerError:
       description: 'Example: default internal server error response'
       value:
@@ -1371,18 +1375,6 @@ components:
         status: 404
         code: APIHUB-3020
         message: package with packageId = $packageId not found
-    VersionNotFound:
-      description: Version not found by number. Response for the 404 error
-      value:
-        status: 404
-        code: APIHUB-3050
-        message: Published version $version not found
-    IncorrectInputParameters:
-      description: Incorrect input parameters
-      value:
-        status: 400
-        code: APIHUB-COMMON-4001
-        message: Incorrect input parameters
   securitySchemes:
     BearerAuth:
       type: http

@@ -2,10 +2,10 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Controller Database administration API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Controller Database administration
-  description: 'Allows to create, access and drop databases. This API uses classifier as a key to create and retrieve databases. Classifier is an abstract key that could be any JSON object mapping to (String -> Object) map. For example classifier could be &#123;   "tenantId": "uuid",   "namespace": "cloud-catalog-ci",   "microserviceName": "product-catalog-manager"&#125;'
+  description: 'Allows to create, access and drop databases. This API uses classifier as a key to create and retrieve databases. Classifier is an abstract key that could be any JSON object mapping to (String -> Object) map. For example classifier could be { "tenantId": "uuid", "namespace": "cloud-catalog-ci", "microserviceName": "product-catalog-manager"}'
 paths:
   /api/v3/dbaas/{namespace}/databases:
     put:
@@ -69,6 +69,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: putApiV3DbaasByNamespaceDatabases
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/databases/get-by-classifier/{type}:
     post:
       summary: V3. Get database by classifier
@@ -122,6 +124,8 @@ paths:
       - SecurityScheme:
         - DB_CLIENT
         - DISCR_TOOL_CLIENT
+      operationId: postApiV3DbaasByNamespaceDatabasesGetByClassifierByType
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/databases/list:
     get:
       summary: V3. List of all databases
@@ -159,6 +163,8 @@ paths:
       - SecurityScheme:
         - DB_CLIENT
         - DISCR_TOOL_CLIENT
+      operationId: getApiV3DbaasByNamespaceDatabasesList
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/databases/registration/externally_manageable:
     put:
       summary: V3. External database registration
@@ -216,6 +222,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: putApiV3DbaasByNamespaceDatabasesRegistrationExternallyManageable
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/databases/statuses:
     get:
       summary: V3. Deprecated. Get list of ghosts and lost databases
@@ -246,9 +254,11 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiV3DbaasByNamespaceDatabasesStatuses
+      x-operation-id-source: derived
   /api/v3/dbaas/{namespace}/databases/{type}:
     delete:
-      summary: ' V3.Delete database by classifier'
+      summary: V3.Delete database by classifier
       description: 'Deletes database by id in the specific namespace. If the optional ''force'' parameter is set to true, errors from the physical adapter during drop are ignored and the database is removed from DBaaS regardless. Warning: using force=true may result in the logical database leaking in the physical database.'
       tags:
       - Controller Database administration
@@ -311,108 +321,32 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: deleteApiV3DbaasByNamespaceDatabasesByType
+      x-operation-id-source: derived
 components:
   schemas:
-    TmfError:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
-    DatabaseStateStatus:
-      type: string
-      enum:
-      - PROCESSING
-      - CREATED
-      - DELETING
-      - DELETING_FAILED
-      - ARCHIVED
-      - ORPHAN
-    DatabaseInfo:
-      type: object
-      properties:
-        name:
-          type: string
-    TmfErrorResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmfError'
-        '@type':
-          type: string
-        '@schemaLocation':
-          type: string
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    DatabasesInfoSegment:
-      type: object
-      properties:
-        name:
-          type: string
-        totalDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseInfo'
-        registration:
-          $ref: '#/components/schemas/DatabasesRegistrationInfo'
-        deletingDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseInfo'
     Date:
       type: string
       format: date
       examples:
       - '2022-03-10'
+    DatabasesInfo:
+      type: object
+      properties:
+        global:
+          $ref: '#/components/schemas/DatabasesInfoSegment'
+        perAdapters:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabasesInfoSegment'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
     FieldTypeEnum:
       type: string
       enum:
       - PASSWORD
-    DbResource:
-      type: object
-      required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
     DatabasesRegistrationInfo:
       type: object
       properties:
@@ -461,144 +395,6 @@ components:
         userRole:
           type: string
           description: Indicates connection properties with which user role should be returned to a client
-    ConnectionDescription:
-      type: object
-      properties:
-        fields:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/FieldDescription'
-    DatabaseRegistry:
-      type: object
-      required:
-      - classifier
-      - namespace
-      - type
-      - database
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-          type: string
-          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
-        timeDbCreation:
-          $ref: '#/components/schemas/Date'
-          type: string
-          description: Time to create a database
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
-        namespace:
-          type: string
-          description: Namespace where database is placed
-        type:
-          type: string
-          description: Type of database, for example postgresql or mongodb
-        database:
-          $ref: '#/components/schemas/Database'
-          description: It lists of database classifiers
-        dbState:
-          $ref: '#/components/schemas/DbState'
-        databaseRegistry:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseRegistry'
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/DbResource'
-        oldClassifier:
-          type: object
-          additionalProperties: {}
-        connectionProperties:
-          type: array
-          items:
-            type: object
-            additionalProperties: {}
-        adapterId:
-          type: string
-        name:
-          type: string
-        markedForDrop:
-          type: boolean
-        backupDisabled:
-          type: boolean
-        dbOwnerRoles:
-          type: array
-          items:
-            type: string
-        settings:
-          type: object
-          additionalProperties: {}
-        connectionDescription:
-          $ref: '#/components/schemas/ConnectionDescription'
-        warnings:
-          type: array
-          items:
-            type: string
-        externallyManageable:
-          type: boolean
-        bgVersion:
-          type: string
-        physicalDatabaseId:
-          type: string
-    DbState:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        state:
-          $ref: '#/components/schemas/DatabaseStateStatus'
-          type: string
-          deprecated: true
-        databaseState:
-          $ref: '#/components/schemas/DatabaseStateStatus'
-        description:
-          type: string
-        podName:
-          type: string
-    ClassifierWithRolesRequest:
-      type: object
-      required:
-      - classifier
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Database composite identify key. See details in https://perch.qubership.org/display/CLOUDCORE/DbaaS+Database+Classifier
-        originService:
-          type: string
-          description: Origin service which send request
-        userRole:
-          type: string
-          description: Indicates connection properties with which user role should be returned to a client
-    ExternalDatabaseRequestV3:
-      type: object
-      required:
-      - classifier
-      - connectionProperties
-      - type
-      - dbName
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: See the description of "classifier" properties of DatabaseCreateRequest entity
-        connectionProperties:
-          type: array
-          items:
-            type: object
-            additionalProperties: {}
-          description: There is an information about connection to database. It contains such keys as url, authDbName, username, password, port, host, etc. You should specify them in order for the client to be able to connect to the database.
-        type:
-          type: string
-          description: Type of physical database.
-        dbName:
-          type: string
-          description: Name of logical database.
-        updateConnectionProperties:
-          type: boolean
-          description: Is connection properties update required. False by default. If true, then old connection properties will be replaced by the new ones provided.
     Database:
       type: object
       required:
@@ -689,20 +485,236 @@ components:
           description: It lists resource which will be deleted when sending the request for delete a database
         dbState:
           $ref: '#/components/schemas/DbState'
+    DatabaseInfo:
+      type: object
+      properties:
+        name:
+          type: string
+    ClassifierWithRolesRequest:
+      type: object
+      required:
+      - classifier
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Database composite identify key. See details in https://perch.qubership.org/display/CLOUDCORE/DbaaS+Database+Classifier
+        originService:
+          type: string
+          description: Origin service which send request
+        userRole:
+          type: string
+          description: Indicates connection properties with which user role should be returned to a client
+    DatabaseStateStatus:
+      type: string
+      enum:
+      - PROCESSING
+      - CREATED
+      - DELETING
+      - DELETING_FAILED
+      - ARCHIVED
+      - ORPHAN
     FieldDescription:
       type: object
       properties:
         type:
           $ref: '#/components/schemas/FieldTypeEnum'
-    DatabasesInfo:
+    DatabasesInfoSegment:
       type: object
       properties:
-        global:
-          $ref: '#/components/schemas/DatabasesInfoSegment'
-        perAdapters:
+        name:
+          type: string
+        totalDatabases:
           type: array
           items:
-            $ref: '#/components/schemas/DatabasesInfoSegment'
+            $ref: '#/components/schemas/DatabaseInfo'
+        registration:
+          $ref: '#/components/schemas/DatabasesRegistrationInfo'
+        deletingDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+    DbState:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        state:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+          type: string
+          deprecated: true
+        databaseState:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+        description:
+          type: string
+        podName:
+          type: string
+    ConnectionDescription:
+      type: object
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldDescription'
+    DatabaseRegistry:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - database
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed
+        type:
+          type: string
+          description: Type of database, for example postgresql or mongodb
+        database:
+          $ref: '#/components/schemas/Database'
+          description: It lists of database classifiers
+        dbState:
+          $ref: '#/components/schemas/DbState'
+        databaseRegistry:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+        oldClassifier:
+          type: object
+          additionalProperties: {}
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        adapterId:
+          type: string
+        name:
+          type: string
+        markedForDrop:
+          type: boolean
+        backupDisabled:
+          type: boolean
+        dbOwnerRoles:
+          type: array
+          items:
+            type: string
+        settings:
+          type: object
+          additionalProperties: {}
+        connectionDescription:
+          $ref: '#/components/schemas/ConnectionDescription'
+        warnings:
+          type: array
+          items:
+            type: string
+        externallyManageable:
+          type: boolean
+        bgVersion:
+          type: string
+        physicalDatabaseId:
+          type: string
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    ExternalDatabaseRequestV3:
+      type: object
+      required:
+      - classifier
+      - connectionProperties
+      - type
+      - dbName
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: See the description of "classifier" properties of DatabaseCreateRequest entity
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: There is an information about connection to database. It contains such keys as url, authDbName, username, password, port, host, etc. You should specify them in order for the client to be able to connect to the database.
+        type:
+          type: string
+          description: Type of physical database.
+        dbName:
+          type: string
+          description: Name of logical database.
+        updateConnectionProperties:
+          type: boolean
+          description: Is connection properties update required. False by default. If true, then old connection properties will be replaced by the new ones provided.
+    TmfErrorResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/TmfError'
+        '@type':
+          type: string
+        '@schemaLocation':
+          type: string
+    TmfError:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
   securitySchemes:
     SecurityScheme:
       type: http

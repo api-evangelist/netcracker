@@ -35,9 +35,7 @@ paths:
       tags:
       - Admin
       summary: List builds
-      description: 'Return a page of builds with persisted build configuration. If no filter is provided, the latest builds are returned first.
-
-        '
+      description: Return a page of builds with persisted build configuration. If no filter is provided, the latest builds are returned first.
       operationId: listBuilds
       parameters:
       - name: packageId
@@ -127,9 +125,7 @@ paths:
       tags:
       - Admin
       summary: Get build
-      description: 'Return build data and persisted build configuration by build ID.
-
-        '
+      description: Return build data and persisted build configuration by build ID.
       operationId: getBuild
       parameters:
       - name: buildId
@@ -188,9 +184,7 @@ paths:
       tags:
       - Admin
       summary: Get build result archive
-      description: 'Download the build result archive for a completed build. The response body is a binary stream (application/octet-stream) containing build artifacts.
-
-        '
+      description: Download the build result archive for a completed build. The response body is a binary stream (application/octet-stream) containing build artifacts.
       operationId: getBuildResult
       parameters:
       - name: buildId
@@ -250,9 +244,7 @@ paths:
       tags:
       - Admin
       summary: Get build sources archive
-      description: 'Download build sources archive by build ID. The archive includes an apihub_build_config.json file with the build configuration.
-
-        '
+      description: Download build sources archive by build ID. The archive includes an apihub_build_config.json file with the build configuration.
       operationId: getBuildSources
       parameters:
       - name: buildId
@@ -312,9 +304,7 @@ paths:
       tags:
       - Admin
       summary: Start operations migration
-      description: 'Start an asynchronous operations migration job. Use the returned migration ID to check status, reports, and diagnostics endpoints.
-
-        '
+      description: Start an asynchronous operations migration job. Use the returned migration ID to check status, reports, and diagnostics endpoints.
       operationId: startOpsMigration
       requestBody:
         required: true
@@ -401,9 +391,7 @@ paths:
       tags:
       - Admin
       summary: Get migration status
-      description: 'Retrieve migration status and report data for a migration job identified by migrationId.
-
-        '
+      description: Retrieve migration status and report data for a migration job identified by migrationId.
       operationId: getMigrationReport
       parameters:
       - name: migrationId
@@ -457,9 +445,7 @@ paths:
       tags:
       - Admin
       summary: Get suspicious builds
-      description: 'Retrieve suspicious build records detected during the specified migration. Use query parameters to filter and paginate the result set.
-
-        '
+      description: Retrieve suspicious build records detected during the specified migration. Use query parameters to filter and paginate the result set.
       operationId: getSuspiciousBuilds
       parameters:
       - name: migrationId
@@ -526,9 +512,7 @@ paths:
       tags:
       - Admin
       summary: Get migration performance report
-      description: 'Retrieve performance metrics for the specified migration, including stage-level timings and counters.
-
-        '
+      description: Retrieve performance metrics for the specified migration, including stage-level timings and counters.
       operationId: getMigrationPerfReport
       parameters:
       - name: migrationId
@@ -588,9 +572,7 @@ paths:
       tags:
       - Admin
       summary: Cancel running migrations
-      description: 'Cancel currently running migration jobs. This operation is idempotent and safely returns success when no migration is running.
-
-        '
+      description: Cancel currently running migration jobs. This operation is idempotent and safely returns success when no migration is running.
       operationId: cancelRunningMigrations
       responses:
         '200':
@@ -710,9 +692,7 @@ paths:
 
         * If the parameter is not transmitted in request - its value stays unchanged.
 
-        * The empty parameter value in request sets the empty value in database.
-
-        '
+        * The empty parameter value in request sets the empty value in database.'
       operationId: patchPackagesId
       requestBody:
         description: Package update parameters
@@ -889,9 +869,7 @@ paths:
 
         The Api Key for package with kind:group is acceptable for all child groups and packages.\
 
-        If packageId = ''\*'', then system tokens shall be created. Only system administrator can specify packageId = ''\*''.
-
-        '
+        If packageId = ''\*'', then system tokens shall be created. Only system administrator can specify packageId = ''\*''.'
       operationId: postPackagesIdApiKeysV4
       requestBody:
         description: Create API key parameters
@@ -975,9 +953,7 @@ paths:
       summary: Package API Keys list retrieve
       description: 'Get a package API Keys list.\
 
-        If packageId = ''\*'', then system tokens shall be returned. Only system administrator can specify packageId = ''\*''.
-
-        '
+        If packageId = ''\*'', then system tokens shall be returned. Only system administrator can specify packageId = ''\*''.'
       operationId: getPackagesIdApiKeysV4
       responses:
         '200':
@@ -1053,9 +1029,7 @@ paths:
       summary: Delete package API Key
       description: 'Delete package API Key.\
 
-        If packageId = ''\*'', then system token with specified id shall be deleted. Only system administrator can specify packageId = ''\*''.
-
-        '
+        If packageId = ''\*'', then system token with specified id shall be deleted. Only system administrator can specify packageId = ''\*''.'
       operationId: deletePackagesIdApiKeysId
       responses:
         '204':
@@ -1136,9 +1110,7 @@ paths:
 
         * **No building** - only references publication. Files array in config and sources are empty. In this case the build process won''t be started.
 
-        The 204 response will be returned in success.
-
-        '
+        The 204 response will be returned in success.'
       operationId: postPackagesIdPublish
       parameters:
       - name: clientBuild
@@ -1376,9 +1348,7 @@ paths:
 
         * The empty parameter value in request sets the empty value in database.
 
-        * The array of labels will be fully replaced as-it-send, no JSON-Patch approach for arrays is applicable.
-
-        '
+        * The array of labels will be fully replaced as-it-send, no JSON-Patch approach for arrays is applicable.'
       operationId: patchPackagesIdVersionsIdV2
       parameters:
       - $ref: '#/components/parameters/version'
@@ -1475,9 +1445,7 @@ paths:
       summary: Delete package version
       description: 'Delete the package''s version.
 
-        If the version was placed as a "defaultReleaseVersion" on a package, it will be cleared on this package (without the previous version restore).
-
-        '
+        If the version was placed as a "defaultReleaseVersion" on a package, it will be cleared on this package (without the previous version restore).'
       operationId: deletePackagesIdVersionsId
       parameters:
       - $ref: '#/components/parameters/version'
@@ -1558,9 +1526,7 @@ paths:
       summary: Copy package version to another package
       description: 'Publish package version in target package using sources of source package (server-side building only).\
 
-        The final specifications will be stored using the POST /packages/{packageId}/publish/{publishId}/status. 202 response and the publish process Id will be returned in success.
-
-        '
+        The final specifications will be stored using the POST /packages/{packageId}/publish/{publishId}/status. 202 response and the publish process Id will be returned in success.'
       operationId: getPackageIdVersionIdCopy
       requestBody:
         content:
@@ -1680,9 +1646,7 @@ paths:
       summary: Get the user avatar
       description: 'Get the user avatar.
 
-        API returns the data of photo file in a png format.
-
-        '
+        API returns the data of photo file in a png format.'
       operationId: getUsersIdProfileAvatar
       security:
       - {}
@@ -1750,9 +1714,7 @@ paths:
       tags:
       - Admin
       summary: Get Prometheus metrics
-      description: 'Returns Prometheus metrics in text format.
-
-        '
+      description: Returns Prometheus metrics in text format.
       operationId: getMetrics
       security: []
       responses:
@@ -1789,23 +1751,108 @@ components:
           type: string
         excluded:
           type: boolean
-    BuildConfigMetadata:
+    BuildConfigFile:
       type: object
       properties:
-        branchName:
+        fileId:
           type: string
-        repositoryUrl:
+        slug:
           type: string
-        cloudName:
-          type: string
-        cloudUrl:
-          type: string
-        namespace:
-          type: string
-        versionLabels:
+        index:
+          type: integer
+          format: int32
+        publish:
+          type:
+          - boolean
+          - 'null'
+        labels:
           type: array
           items:
             type: string
+        blobId:
+          type: string
+        xApiKind:
+          type: string
+    ExtendedBuild:
+      type: object
+      properties:
+        buildId:
+          type: string
+          description: Build identifier.
+        status:
+          type: string
+          description: Build execution status.
+          enum:
+          - none
+          - running
+          - complete
+          - error
+        details:
+          type: string
+          description: Build status details or error text.
+        clientBuild:
+          type: boolean
+          description: Indicates whether the build was created as a client build.
+        packageId:
+          type: string
+          description: Package ID associated with the build.
+        version:
+          type: string
+          description: Package version associated with the build.
+        createdAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the build was created.
+        lastActive:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the build was last updated.
+        createdBy:
+          type: string
+          description: User who created the build.
+        startedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Timestamp when the build started.
+        restartCount:
+          type: integer
+          format: int32
+          description: Number of builder restarts for this build.
+        builderId:
+          type: string
+          description: Builder ID that processed or is processing the build.
+        priority:
+          type: integer
+          format: int32
+          description: Build queue priority.
+        metadata:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          description: Build metadata stored in the build table.
+        config:
+          $ref: '#/components/schemas/BuildConfig'
+        dependencies:
+          type: array
+          items:
+            type: string
+          description: Build IDs that this build depends on and must wait to complete before it can run.
+      required:
+      - buildId
+      - status
+      - clientBuild
+      - packageId
+      - version
+      - restartCount
+      - priority
+      - config
     ErrorResponse:
       description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
       type: object
@@ -1832,6 +1879,11 @@ components:
       - status
       - code
       - message
+    ValidationRulesSeverity:
+      type: object
+      properties:
+        brokenRefs:
+          type: string
     ExtendedBuilds:
       type: object
       properties:
@@ -1841,6 +1893,23 @@ components:
             $ref: '#/components/schemas/ExtendedBuild'
       required:
       - builds
+    BuildConfigMetadata:
+      type: object
+      properties:
+        branchName:
+          type: string
+        repositoryUrl:
+          type: string
+        cloudName:
+          type: string
+        cloudUrl:
+          type: string
+        namespace:
+          type: string
+        versionLabels:
+          type: array
+          items:
+            type: string
     BuildConfig:
       type: object
       description: Build configuration persisted in build_src.config.
@@ -1928,159 +1997,64 @@ components:
           type: array
           items:
             type: string
-    BuildConfigFile:
+    PackageCreate:
+      description: Parameters for the package creation
+      required:
+      - alias
+      - name
+      - kind
       type: object
       properties:
-        fileId:
+        parentId:
+          description: Parent package ID
           type: string
-        slug:
+        kind:
+          description: 'Package kind.
+
+            * If kind = workspace, the parentId will be ignored.
+
+            * If kind = group or package or dashboard, the parentId is required.
+
+            '
           type: string
-        index:
-          type: integer
-          format: int32
-        publish:
-          type:
-          - boolean
-          - 'null'
-        labels:
-          type: array
-          items:
-            type: string
-        blobId:
-          type: string
-        xApiKind:
-          type: string
-    ValidationRulesSeverity:
-      type: object
-      properties:
-        brokenRefs:
-          type: string
-    ExtendedBuild:
-      type: object
-      properties:
-        buildId:
-          type: string
-          description: Build identifier.
-        status:
-          type: string
-          description: Build execution status.
           enum:
-          - none
-          - running
-          - complete
-          - error
-        details:
+          - workspace
+          - group
+          - package
+          - dashboard
+        name:
+          description: Name of the new package
           type: string
-          description: Build status details or error text.
-        clientBuild:
+        alias:
+          description: Package short alias (abbreviation)
+          type: string
+          maxLength: 10
+          pattern: ^[a-zA-Z0-9-_]
+        description:
+          description: Common description of the package
+          type: string
+        serviceName:
+          description: 'Service name that package belongs to. Should be equal to service deployment name in kubernetes.
+
+            Ignored for Workspace and Group kind.
+
+            '
+          type: string
+        defaultRole:
+          description: Default role of the package.
+          type: string
+        releaseVersionPattern:
+          description: Release version mask. Value shall be inherited from parent group with the ability to override it.
+          type: string
+        excludeFromSearch:
+          description: 'If true, the package (including child packages) will be ignored by global search.
+
+            Changing the value of the parent package will change the value of all child packages.
+
+            A child package cannot have a negative value if the parent package has a positive value. The default value for a newly created package is equal to the value from the parent package.
+
+            '
           type: boolean
-          description: Indicates whether the build was created as a client build.
-        packageId:
-          type: string
-          description: Package ID associated with the build.
-        version:
-          type: string
-          description: Package version associated with the build.
-        createdAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp when the build was created.
-        lastActive:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp when the build was last updated.
-        createdBy:
-          type: string
-          description: User who created the build.
-        startedAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Timestamp when the build started.
-        restartCount:
-          type: integer
-          format: int32
-          description: Number of builder restarts for this build.
-        builderId:
-          type: string
-          description: Builder ID that processed or is processing the build.
-        priority:
-          type: integer
-          format: int32
-          description: Build queue priority.
-        metadata:
-          type:
-          - object
-          - 'null'
-          additionalProperties: true
-          description: Build metadata stored in the build table.
-        config:
-          $ref: '#/components/schemas/BuildConfig'
-        dependencies:
-          type: array
-          items:
-            type: string
-          description: Build IDs that this build depends on and must wait to complete before it can run.
-      required:
-      - buildId
-      - status
-      - clientBuild
-      - packageId
-      - version
-      - restartCount
-      - priority
-      - config
-    PackageApiKey:
-      type: object
-      description: ApiKey details for the package
-      title: PackageApiKey
-      required:
-      - id
-      - name
-      - createdBy
-      - createdAt
-      - roles
-      properties:
-        id:
-          description: ApiKey unique identifier
-          type: string
-        packageId:
-          description: Internal unique package ID (full alias)
-          type: string
-        name:
-          description: ApiKey name
-          type: string
-        createdBy:
-          $ref: '#/components/schemas/User'
-        createdFor:
-          $ref: '#/components/schemas/User'
-        createdAt:
-          description: Date and time of ApiKey creation
-          type: string
-          format: datetime
-        roles:
-          description: List of role identifiers assigned to the entity.
-          type: array
-          items:
-            type: string
-    ApiKey:
-      title: ApiKey
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          description: ApiKey unique identifier
-          type: string
-        name:
-          description: ApiKey name
-          type: string
     Package:
       description: Simple package object, without content and dependencies
       type: object
@@ -2157,40 +2131,78 @@ components:
             '
           type: string
           example: /api/v1/{group}/
-    VersionStatusEnum:
-      description: Package version status
-      type: string
-      enum:
-      - draft
-      - release
-      - archived
-    PackageList:
-      description: Base package object for parents list.
+    PackageVersionContent:
+      description: Published package version content
       type: object
-      title: PackageList
+      required:
+      - packageId
+      - version
+      - createdAt
+      - createdBy
+      - summary
+      - revision
+      - revisionsCount
+      - status
+      - apiProcessorVerson
       properties:
         packageId:
           description: Package unique string identifier (full alias)
           type: string
-        alias:
+          example: QS.CloudQSS.CPQ.Q-TMF
+        version:
+          description: Package version name.The <version>@<revision> mask is used to return the revision number.
           type: string
-          description: Package short alias (abbreviation)
-          maxLength: 10
-          pattern: ^[a-zA-Z0-9-_]
-        parentId:
-          description: Parent package ID
+          example: 2022.2@5
+        createdAt:
+          description: Date of the package version publication.
           type: string
-        kind:
-          description: Package kind
+          format: date-time
+        createdBy:
+          $ref: '#/components/schemas/Principal'
+        previousVersion:
+          description: Name of the previous published version.The <version>@<revision> mask is used to return the revision number.
           type: string
-          enum:
-          - workspace
-          - group
-          - package
-          - dashboard
-        name:
-          description: Name of the package
+          example: 2022.2@5
+        previousVersionPackageId:
+          description: Package id of the previous version to compare with. Required for agent snapshots.
           type: string
+          example: QS.GRP.SOMEPKG
+        versionLabels:
+          description: List of version labels.
+          type: array
+          items:
+            type: string
+          example:
+          - part-of:CloudQSS-CPQBE
+        notLatestRevision:
+          type: boolean
+          default: false
+        revisionsCount:
+          description: Total number of revisions in the version.
+          type: integer
+          format: int32
+          example: 3
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        apiProcessorVerson:
+          description: Version of api-processor with which current version was built.
+          type: string
+    Principal:
+      description: User or API key
+      allOf:
+      - oneOf:
+        - $ref: '#/components/schemas/User'
+        - $ref: '#/components/schemas/ApiKey'
+      - type: object
+        required:
+        - type
+        properties:
+          type:
+            description: Identifies whether principal is user or API key
+            type: string
+            enum:
+            - user
+            - apiKey
     BuildConfig_2:
       type: object
       description: 'Configuration of the source files.
@@ -2429,86 +2441,13 @@ components:
 
                   '
                 type: boolean
-    PackageVersionContent:
-      description: Published package version content
-      type: object
-      required:
-      - packageId
-      - version
-      - createdAt
-      - createdBy
-      - summary
-      - revision
-      - revisionsCount
-      - status
-      - apiProcessorVerson
-      properties:
-        packageId:
-          description: Package unique string identifier (full alias)
-          type: string
-          example: QS.CloudQSS.CPQ.Q-TMF
-        version:
-          description: Package version name.The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2022.2@5
-        createdAt:
-          description: Date of the package version publication.
-          type: string
-          format: date-time
-        createdBy:
-          $ref: '#/components/schemas/Principal'
-        previousVersion:
-          description: Name of the previous published version.The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2022.2@5
-        previousVersionPackageId:
-          description: Package id of the previous version to compare with. Required for agent snapshots.
-          type: string
-          example: QS.GRP.SOMEPKG
-        versionLabels:
-          description: List of version labels.
-          type: array
-          items:
-            type: string
-          example:
-          - part-of:CloudQSS-CPQBE
-        notLatestRevision:
-          type: boolean
-          default: false
-        revisionsCount:
-          description: Total number of revisions in the version.
-          type: integer
-          format: int32
-          example: 3
-        status:
-          $ref: '#/components/schemas/VersionStatusEnum'
-        apiProcessorVerson:
-          description: Version of api-processor with which current version was built.
-          type: string
-    ApiType:
-      title: apiType
+    VersionStatusEnum:
+      description: Package version status
       type: string
       enum:
-      - rest
-      - graphql
-      - protobuf
-      - asyncapi
-    Principal:
-      description: User or API key
-      allOf:
-      - oneOf:
-        - $ref: '#/components/schemas/User'
-        - $ref: '#/components/schemas/ApiKey'
-      - type: object
-        required:
-        - type
-        properties:
-          type:
-            description: Identifies whether principal is user or API key
-            type: string
-            enum:
-            - user
-            - apiKey
+      - draft
+      - release
+      - archived
     User:
       description: Represents an APIHUB user with identity and profile information returned by API endpoints.
       type: object
@@ -2532,6 +2471,46 @@ components:
           description: URL of the user avatar image.
           type: string
           format: URL
+    PackageList:
+      description: Base package object for parents list.
+      type: object
+      title: PackageList
+      properties:
+        packageId:
+          description: Package unique string identifier (full alias)
+          type: string
+        alias:
+          type: string
+          description: Package short alias (abbreviation)
+          maxLength: 10
+          pattern: ^[a-zA-Z0-9-_]
+        parentId:
+          description: Parent package ID
+          type: string
+        kind:
+          description: Package kind
+          type: string
+          enum:
+          - workspace
+          - group
+          - package
+          - dashboard
+        name:
+          description: Name of the package
+          type: string
+    Permission:
+      description: Permission
+      type: string
+      enum:
+      - read
+      - create_and_update_package
+      - delete_package
+      - manage_draft_version
+      - manage_release_version
+      - manage_archived_version
+      - user_access_management
+      - access_token_management
+      example: read
     PackageUpdate:
       description: Parameters for the package update. Not changed parameters must not be transmitted. Parameters, required in creation, must not be empty if transmitted.
       type: object
@@ -2575,77 +2554,60 @@ components:
         restGroupingPrefix:
           description: Regular expression used as criteria for grouping operations.
           type: string
-    Permission:
-      description: Permission
+    ApiKey:
+      title: ApiKey
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          description: ApiKey unique identifier
+          type: string
+        name:
+          description: ApiKey name
+          type: string
+    ApiType:
+      title: apiType
       type: string
       enum:
-      - read
-      - create_and_update_package
-      - delete_package
-      - manage_draft_version
-      - manage_release_version
-      - manage_archived_version
-      - user_access_management
-      - access_token_management
-      example: read
-    PackageCreate:
-      description: Parameters for the package creation
-      required:
-      - alias
-      - name
-      - kind
+      - rest
+      - graphql
+      - protobuf
+      - asyncapi
+    PackageApiKey:
       type: object
+      description: ApiKey details for the package
+      title: PackageApiKey
+      required:
+      - id
+      - name
+      - createdBy
+      - createdAt
+      - roles
       properties:
-        parentId:
-          description: Parent package ID
+        id:
+          description: ApiKey unique identifier
           type: string
-        kind:
-          description: 'Package kind.
-
-            * If kind = workspace, the parentId will be ignored.
-
-            * If kind = group or package or dashboard, the parentId is required.
-
-            '
+        packageId:
+          description: Internal unique package ID (full alias)
           type: string
-          enum:
-          - workspace
-          - group
-          - package
-          - dashboard
         name:
-          description: Name of the new package
+          description: ApiKey name
           type: string
-        alias:
-          description: Package short alias (abbreviation)
+        createdBy:
+          $ref: '#/components/schemas/User'
+        createdFor:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          description: Date and time of ApiKey creation
           type: string
-          maxLength: 10
-          pattern: ^[a-zA-Z0-9-_]
-        description:
-          description: Common description of the package
-          type: string
-        serviceName:
-          description: 'Service name that package belongs to. Should be equal to service deployment name in kubernetes.
-
-            Ignored for Workspace and Group kind.
-
-            '
-          type: string
-        defaultRole:
-          description: Default role of the package.
-          type: string
-        releaseVersionPattern:
-          description: Release version mask. Value shall be inherited from parent group with the ability to override it.
-          type: string
-        excludeFromSearch:
-          description: 'If true, the package (including child packages) will be ignored by global search.
-
-            Changing the value of the parent package will change the value of all child packages.
-
-            A child package cannot have a negative value if the parent package has a positive value. The default value for a newly created package is equal to the value from the parent package.
-
-            '
-          type: boolean
+          format: datetime
+        roles:
+          description: List of role identifiers assigned to the entity.
+          type: array
+          items:
+            type: string
   examples:
     InternalServerError:
       description: 'Example: default internal server error response'
@@ -2654,6 +2616,16 @@ components:
         code: APIHUB-8000
         reason: InternalServerError
         message: InternalServerError
+    GroupOrWorkspaceReferencedByDashboard:
+      description: Group or workspace cannot be deleted because dashboard versions reference packages inside it.
+      value:
+        status: 409
+        code: '8500'
+        message: 'Cannot delete $kind $packageId: it contains packages that are referenced by dashboards: $packages. Remove the references or delete the dashboards, then retry.'
+        params:
+          kind: group
+          packageId: sample.group
+          packages: sample.group.package1 (sample.dashboard|2024.2@3, other.dashboard|2024.1@1), sample.group.package2 (other.dashboard|1.0@1)
     VersionReferencedAsPreviousByRelease:
       description: Version cannot be changed to 'draft' because a released version uses it as its previous version
       value:
@@ -2675,39 +2647,12 @@ components:
           packageId: QS.group.my-package
           previousVersion: '2024.1'
           previousVersionPackageId: QS.group.previous-package
-    VersionStatusChangePreviousVersionNotRelease:
-      description: Version status cannot be changed to 'release' when the previous version is a draft
-      value:
-        status: 400
-        code: '8600'
-        message: Version 2024.2 for package QS.group.my-package cannot be changed to the 'release' status because previous version 2024.1 for package QS.group.previous-package is in the 'draft' status. Change the previous version to 'release', then retry.
-        params:
-          version: '2024.2'
-          packageId: QS.group.my-package
-          previousVersion: '2024.1'
-          previousVersionPackageId: QS.group.previous-package
-    GroupOrWorkspaceReferencedByDashboard:
-      description: Group or workspace cannot be deleted because dashboard versions reference packages inside it.
-      value:
-        status: 409
-        code: '8500'
-        message: 'Cannot delete $kind $packageId: it contains packages that are referenced by dashboards: $packages. Remove the references or delete the dashboards, then retry.'
-        params:
-          kind: group
-          packageId: sample.group
-          packages: sample.group.package1 (sample.dashboard|2024.2@3, other.dashboard|2024.1@1), sample.group.package2 (other.dashboard|1.0@1)
     PackageNotFound:
       description: Package not found by ID. Response for the 404 error
       value:
         status: 404
         code: APIHUB-3020
         message: package with packageId = $packageId not found
-    IncorrectInputParameters:
-      description: Incorrect input parameters
-      value:
-        status: 400
-        code: APIHUB-COMMON-4001
-        message: Incorrect input parameters
     VersionReferencedByDashboard:
       description: Version cannot be deleted because one or more dashboard versions reference it.
       value:
@@ -2727,6 +2672,23 @@ components:
         params:
           packageId: sample.package
           dashboards: sample.dashboard|2024.2@3, other.dashboard|2024.1@1
+    VersionStatusChangePreviousVersionNotRelease:
+      description: Version status cannot be changed to 'release' when the previous version is a draft
+      value:
+        status: 400
+        code: '8600'
+        message: Version 2024.2 for package QS.group.my-package cannot be changed to the 'release' status because previous version 2024.1 for package QS.group.previous-package is in the 'draft' status. Change the previous version to 'release', then retry.
+        params:
+          version: '2024.2'
+          packageId: QS.group.my-package
+          previousVersion: '2024.1'
+          previousVersionPackageId: QS.group.previous-package
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
   parameters:
     packageId:
       name: packageId

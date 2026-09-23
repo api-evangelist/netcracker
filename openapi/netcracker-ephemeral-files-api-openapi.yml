@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: APIHUB Registry – External Ephemeral Files API
-  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
-
-    '
+  description: Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
   contact:
     name: Netcracker Opensource Group
     email: opensourcegroup@netcracker.com
@@ -30,9 +28,7 @@ security:
 - PersonalAccessToken: []
 tags:
 - name: Ephemeral Files
-  description: 'APIs for short-lived file downloads. Files are stored temporarily on the server and accessed via signed tokens embedded in producer responses (e.g. AI chat assistant markdown links).
-
-    '
+  description: APIs for short-lived file downloads. Files are stored temporarily on the server and accessed via signed tokens embedded in producer responses (e.g. AI chat assistant markdown links).
 paths:
   /api/v1/ephemeral-files/{fileId}:
     parameters:
@@ -46,12 +42,10 @@ paths:
     get:
       tags:
       - Ephemeral Files
-      summary: Download an ephemeral file.
+      summary: Download an ephemeral file
       description: 'Downloads a short-lived file stored by the backend. Producers (such as the AI chat assistant) embed a signed download URL into their response; other subsystems can reuse the same mechanism for exports, reports, and similar artefacts.
 
-        The endpoint is served without session authentication; instead, access is authorized via a short-lived signed token passed in the `token` query parameter. The token lifetime is a server-side setting and is not published to the client.
-
-        '
+        The endpoint is served without session authentication; instead, access is authorized via a short-lived signed token passed in the `token` query parameter. The token lifetime is a server-side setting and is not published to the client.'
       operationId: downloadEphemeralFile
       security: []
       parameters:
@@ -127,12 +121,12 @@ components:
         status: 401
         code: APIHUB-EF-3003
         message: Missing token query parameter
-    EphemeralFileTokenInvalid:
-      description: Download token invalid or not valid for the requested file.
+    EphemeralFileTokenExpired:
+      description: Signed download token expired.
       value:
-        status: 401
-        code: APIHUB-EF-3002
-        message: Invalid download token
+        status: 410
+        code: APIHUB-EF-4101
+        message: download token expired, please request the file again
     InternalServerError:
       description: 'Example: default internal server error response'
       value:
@@ -146,12 +140,12 @@ components:
         status: 404
         code: APIHUB-EF-3001
         message: ephemeral file with fileId = $fileId not found
-    EphemeralFileTokenExpired:
-      description: Signed download token expired.
+    EphemeralFileTokenInvalid:
+      description: Download token invalid or not valid for the requested file.
       value:
-        status: 410
-        code: APIHUB-EF-4101
-        message: download token expired, please request the file again
+        status: 401
+        code: APIHUB-EF-3002
+        message: Invalid download token
   schemas:
     ErrorResponse:
       description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).

@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Global Database Operation Controller v3 API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Global Database Operation Controller v3
   description: This controller provides APIs for performing operations on existing databases and users without requiring a specific namespace in the endpoints.
@@ -39,55 +39,10 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiV3DbaasDatabasesUpdateHost
+      x-operation-id-source: derived
 components:
   schemas:
-    UpdateHostRequest:
-      type: object
-      required:
-      - type
-      - classifier
-      - physicalDatabaseHost
-      - physicalDatabaseId
-      description: Request object containing the necessary information to update the physical host in a logical database
-      properties:
-        type:
-          type: string
-          description: The physical type of logical database. For example mongodb or postgresql
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: 'The unique key of existing database. '
-        makeCopy:
-          type: boolean
-          description: If true, a copy of the logical database registry will be created before applying changes. If false, changes will be made directly to the existing registry.
-          default: true
-        physicalDatabaseHost:
-          type: string
-          description: 'Contains physical database host on which it''s needed to change. The host must follow the format: <physical database k8s service>.<physical database namespace>. Example: pg-patroni.core-postgresql.'
-        physicalDatabaseId:
-          type: string
-          description: Specifies id of new physical database. The value can be found in dbaas-adapter env
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    DbResource:
-      type: object
-      required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
     DatabaseResponseV3ListCP:
       type: object
       required:
@@ -140,6 +95,53 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    UpdateHostRequest:
+      type: object
+      required:
+      - type
+      - classifier
+      - physicalDatabaseHost
+      - physicalDatabaseId
+      description: Request object containing the necessary information to update the physical host in a logical database
+      properties:
+        type:
+          type: string
+          description: The physical type of logical database. For example mongodb or postgresql
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: 'The unique key of existing database. '
+        makeCopy:
+          type: boolean
+          description: If true, a copy of the logical database registry will be created before applying changes. If false, changes will be made directly to the existing registry.
+          default: true
+        physicalDatabaseHost:
+          type: string
+          description: 'Contains physical database host on which it''s needed to change. The host must follow the format: <physical database k8s service>.<physical database namespace>. Example: pg-patroni.core-postgresql.'
+        physicalDatabaseId:
+          type: string
+          description: Specifies id of new physical database. The value can be found in dbaas-adapter env
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
   securitySchemes:
     SecurityScheme:
       type: http

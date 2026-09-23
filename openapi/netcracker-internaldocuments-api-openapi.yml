@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: APIHUB Registry – External Internal Documents API
-  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
-
-    '
+  description: Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
   contact:
     name: Netcracker Opensource Group
     email: opensourcegroup@netcracker.com
@@ -29,7 +27,7 @@ security:
 - api-key: []
 - PersonalAccessToken: []
 tags:
-- name: Internal Documents
+- name: Internaldocuments
   description: APIs for internal documents management.
 paths:
   /api/v1/version-internal-documents/{hash}:
@@ -42,9 +40,8 @@ paths:
         type: string
     get:
       tags:
-      - Internal Documents
+      - Internaldocuments
       summary: Get version internal document content
-      description: Get version internal document content
       operationId: getVersionInternalDocumentsHash
       security:
       - BearerAuth: []
@@ -99,9 +96,8 @@ paths:
         type: string
     get:
       tags:
-      - Internal Documents
+      - Internaldocuments
       summary: Get comparison internal document content
-      description: Get comparison internal document content
       operationId: getComparisonInternalDocumentsHash
       security:
       - BearerAuth: []
@@ -152,11 +148,9 @@ paths:
     - $ref: '#/components/parameters/version'
     get:
       tags:
-      - Internal Documents
+      - Internaldocuments
       summary: Get version internal documents
-      description: 'Get list of version internal documents for the version. Version internal documents are only supported for packages of kind `package`
-
-        '
+      description: Get list of version internal documents for the version. Version internal documents are only supported for packages of kind `package`
       operationId: getPackagesIdVersionsIdVersionInternalDocuments
       security:
       - BearerAuth: []
@@ -224,11 +218,9 @@ paths:
     - $ref: '#/components/parameters/previousVersion'
     get:
       tags:
-      - Internal Documents
+      - Internaldocuments
       summary: Get version comparison internal documents
-      description: 'Get list of internal documents for the version comparison. Internal documents are only supported for packages of kind `package`
-
-        '
+      description: Get list of internal documents for the version comparison. Internal documents are only supported for packages of kind `package`
       operationId: getPackagesIdVersionsIdComparisonInternalDocuments
       security:
       - BearerAuth: []
@@ -307,14 +299,14 @@ components:
       schema:
         type: string
         example: QS.RUNENV.K8S-SERVER.CJM-QSS-DEV-2.Q-TMF
-    packageId:
-      name: packageId
+    version:
+      name: version
       in: path
-      description: Package unique identifier (full alias)
+      description: Package version
       required: true
       schema:
         type: string
-        example: QS.CloudQSS.CPQ.Q-TMF
+        example: '2022.3'
     previousVersion:
       name: previousVersion
       in: query
@@ -326,28 +318,14 @@ components:
       schema:
         type: string
         example: '2022.3'
-    version:
-      name: version
+    packageId:
+      name: packageId
       in: path
-      description: Package version
+      description: Package unique identifier (full alias)
       required: true
       schema:
         type: string
-        example: '2022.3'
-  examples:
-    PackageNotFound:
-      description: Package not found by ID. Response for the 404 error
-      value:
-        status: 404
-        code: APIHUB-3020
-        message: package with packageId = $packageId not found
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
+        example: QS.CloudQSS.CPQ.Q-TMF
   schemas:
     InternalDocumentMetadata:
       type: object
@@ -390,6 +368,20 @@ components:
       - status
       - code
       - message
+  examples:
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
+    PackageNotFound:
+      description: Package not found by ID. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3020
+        message: package with packageId = $packageId not found
   securitySchemes:
     BearerAuth:
       type: http

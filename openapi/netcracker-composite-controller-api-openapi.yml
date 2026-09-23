@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Composite Controller API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Composite Controller
 paths:
@@ -34,6 +34,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiCompositeV1Structures
+      x-operation-id-source: derived
     get:
       summary: Get all composite structures
       description: Retrieve all composite structures that are registered in DBaaS.
@@ -54,6 +56,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiCompositeV1Structures
+      x-operation-id-source: derived
   /api/composite/v1/structures/{compositeId}:
     get:
       summary: Get composite structure by composite id
@@ -83,6 +87,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: getApiCompositeV1StructuresByCompositeId
+      x-operation-id-source: derived
   /api/composite/v1/structures/{compositeId}/delete:
     delete:
       summary: Delete composite by composite id
@@ -109,6 +115,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: deleteApiCompositeV1StructuresByCompositeIdDelete
+      x-operation-id-source: derived
 components:
   schemas:
     CompositeStructureDto:

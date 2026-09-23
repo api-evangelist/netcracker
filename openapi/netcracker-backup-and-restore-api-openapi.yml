@@ -2,9 +2,9 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Backup & Restore API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
-- name: Backup & Restore
+- name: Backup And Restore
   description: Backup & Restore operations for DBaaS
 paths:
   /api/backups/v1/backup:
@@ -12,7 +12,7 @@ paths:
       summary: Initiate database backup
       description: Starts an asynchronous backup operation for the specified databases. Returns immediately with a backup name that can be used to track progress.
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - name: dryRun
         in: query
@@ -76,12 +76,14 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: postApiBackupsV1Backup
+      x-operation-id-source: derived
   /api/backups/v1/backup/{backupName}:
     get:
       summary: Get backup details
       description: Retrieve details about a specific backup operation
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: Unique name of the backup
         required: true
@@ -122,11 +124,13 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiBackupsV1BackupByBackupName
+      x-operation-id-source: derived
     delete:
       summary: Delete backup
       description: Delete the backup operation
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: Unique name of the backup
         required: true
@@ -170,12 +174,14 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: deleteApiBackupsV1BackupByBackupName
+      x-operation-id-source: derived
   /api/backups/v1/backup/{backupName}/metadata:
     get:
       summary: Get backup metadata
       description: Retrieve metadata about a completed backup
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: Unique name of the backup
         required: true
@@ -229,12 +235,14 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiBackupsV1BackupByBackupNameMetadata
+      x-operation-id-source: derived
   /api/backups/v1/backup/{backupName}/restore:
     post:
       summary: Restore from backup
       description: Initiate a database restore operation from an existing backup.This operation is asynchronous and returns immediately with a restore name that can be used to track progress.Operation is not idempotent
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: Unique name of the backup
         required: true
@@ -299,12 +307,14 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: postApiBackupsV1BackupByBackupNameRestore
+      x-operation-id-source: derived
   /api/backups/v1/backup/{backupName}/status:
     get:
       summary: Get backup status
       description: Retrieve the current status of a backup operation
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: Unique name of the backup
         required: true
@@ -345,12 +355,13 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiBackupsV1BackupByBackupNameStatus
+      x-operation-id-source: derived
   /api/backups/v1/operation/uploadMetadata:
     post:
       summary: Upload backup metadata
-      description: Upload backup metadata
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: 'Digest header in format: SHA-256=<base64-hash>'
         in: header
@@ -398,12 +409,14 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: postApiBackupsV1OperationUploadMetadata
+      x-operation-id-source: derived
   /api/backups/v1/restore/{restoreName}:
     get:
       summary: Get restore details
       description: Retrieve details about a specific restore operation
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: Unique name of the restore operation
         required: true
@@ -444,11 +457,13 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiBackupsV1RestoreByRestoreName
+      x-operation-id-source: derived
     delete:
       summary: Delete restore
       description: Delete a restore operation
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: Unique name of the restore operation
         required: true
@@ -479,12 +494,14 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: deleteApiBackupsV1RestoreByRestoreName
+      x-operation-id-source: derived
   /api/backups/v1/restore/{restoreName}/retry:
     post:
       summary: Retry restore
       description: Retry a failed restore operation
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: Unique name of the restore operation
         required: true
@@ -531,12 +548,14 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: postApiBackupsV1RestoreByRestoreNameRetry
+      x-operation-id-source: derived
   /api/backups/v1/restore/{restoreName}/status:
     get:
       summary: Get restore status
       description: Retrieve the current status of a restore operation
       tags:
-      - Backup & Restore
+      - Backup And Restore
       parameters:
       - description: Unique name of the restore operation
         required: true
@@ -571,164 +590,71 @@ paths:
       security:
       - SecurityScheme:
         - BACKUP_MANAGER
+      operationId: getApiBackupsV1RestoreByRestoreNameStatus
+      x-operation-id-source: derived
 components:
   schemas:
-    RestoreStatusResponse:
-      type: object
-      required:
-      - status
-      description: Current status of a restore operation
-      properties:
-        status:
-          type:
-          - string
-          - object
-          enum:
-          - NOT_STARTED
-          - IN_PROGRESS
-          - FAILED
-          - COMPLETED
-          - DELETED
-          description: Current state of the restore operation
-        total:
-          type: integer
-          format: int32
-          examples:
-          - 5
-          description: Total number of databases to be restored
-          minimum: 0
-        completed:
-          type: integer
-          format: int32
-          examples:
-          - 3
-          description: Number of databases successfully restored
-          minimum: 0
-        errorMessage:
-          type: string
-          examples:
-          - Insufficient permissions to create database
-          description: Error details if the restore failed
-    BackupStatusResponse:
-      type: object
-      required:
-      - status
-      description: Current status of a backup operation
-      properties:
-        status:
-          type:
-          - string
-          - object
-          enum:
-          - NOT_STARTED
-          - IN_PROGRESS
-          - FAILED
-          - COMPLETED
-          - DELETE_IN_PROGRESS
-          - DELETED
-          description: Current state of the backup operation
-        total:
-          type: integer
-          format: int32
-          examples:
-          - 5
-          description: Total number of databases being backed up
-        completed:
-          type: integer
-          format: int32
-          examples:
-          - 3
-          description: Number of databases successfully backed up
-        size:
-          type: integer
-          format: int64
-          examples:
-          - 1073741824
-          description: Total size of the backup in bytes
-        errorMessage:
-          type: string
-          examples:
-          - Failed to connect to database
-          description: Error details if the backup failed
-    TmfError:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
-    BackupExternalDatabaseResponse:
+    LogicalBackupResponse:
       type: object
       required:
       - id
-      - name
-      description: External database details
+      - logicalBackupName
+      - adapterId
+      - type
+      - status
+      - backupDatabases
+      description: Logical backup details
       properties:
         id:
           $ref: '#/components/schemas/UUID'
           type: string
           examples:
           - 550e8400-e29b-41d4-a716-446655440000
-          description: Identifier of the external backup database
-        name:
+          description: Identifier of the logical backup
+        logicalBackupName:
+          type: string
+          description: Name of the logical backup in adapter
+        adapterId:
           type: string
           examples:
-          - mydb
-          description: Name of the external database
+          - 4e1e9922-e5bf-490d-bb57-18a14de593c6
+          description: Unique identifier of the adapter
         type:
           type: string
+          description: Type of the adapter
+        status:
+          type:
+          - string
+          - object
+          enum:
+          - NOT_STARTED
+          - IN_PROGRESS
+          - FAILED
+          - RETRYABLE_FAIL
+          - COMPLETED
+          description: Current state of the backup databases of one adapter
+        errorMessage:
+          type: string
           examples:
-          - postgresql
-          description: Type of the database
-        classifiers:
-          type: array
+          - Backup Not Found
+          description: Error message if backup failed
+        creationTime:
+          $ref: '#/components/schemas/Instant'
+          type: string
           examples:
-          - - namespace: namespace
-              microserviceName: microserviceName
-              scope: service
-          items:
-            type: object
-            additionalProperties: {}
-          description: List of database classifiers. Each classifier is a sorted map of attributes.
-    Filter:
-      type: object
-      description: Single filter criteria for backup and restore operations
-      properties:
-        namespace:
+          - '2025-11-13T12:34:56Z'
+          description: Timestamp when the backup was created
+        completionTime:
+          $ref: '#/components/schemas/Instant'
+          type: string
+          examples:
+          - '2025-11-13T12:45:00Z'
+          description: Timestamp when the backup completed
+        backupDatabases:
           type: array
           items:
-            type: string
-          description: Filter by Kubernetes namespaces
-        microserviceName:
-          type: array
-          items:
-            type: string
-          description: Filter by microservice names
-        databaseType:
-          type: array
-          items:
-            type: string
-          description: Filter by database types
-        databaseKind:
-          type: array
-          items:
-            type: string
-            enum:
-            - CONFIGURATION
-            - TRANSACTIONAL
-          description: Filter by database kinds
+            $ref: '#/components/schemas/BackupDatabaseResponse'
+          description: List of logical backup databases
     RestoreResponse:
       type: object
       required:
@@ -845,126 +771,11 @@ components:
           items:
             $ref: '#/components/schemas/RestoreExternalDatabaseResponse'
           description: List of external databases
-    TmfErrorResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmfError'
-        '@type':
-          type: string
-        '@schemaLocation':
-          type: string
-    BackupDatabaseResponse:
-      type: object
-      required:
-      - id
-      - name
-      - status
-      - path
-      description: Logical database backup details
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-          type: string
-          examples:
-          - 550e8400-e29b-41d4-a716-446655440000
-          description: Identifier of the backup database
-        name:
-          type: string
-          examples:
-          - mydb
-          description: Name of the database
-        classifiers:
-          type: array
-          examples:
-          - - namespace: namespace
-              microserviceName: microserviceName
-              scope: service
-          items:
-            type: object
-            additionalProperties: {}
-          description: List of database classifiers. Each classifier is a sorted map of attributes.
-        settings:
-          type: object
-          examples:
-          - key: value
-          additionalProperties: {}
-          description: Database settings as a key-value map
-        users:
-          type: array
-          examples:
-          - - name: username
-              role: admin
-          items:
-            $ref: '#/components/schemas/User'
-          description: List of database users
-        configurational:
-          type: boolean
-          examples:
-          - true
-          description: Indicates the type of the database
-        status:
-          type:
-          - string
-          - object
-          enum:
-          - NOT_STARTED
-          - IN_PROGRESS
-          - FAILED
-          - RETRYABLE_FAIL
-          - COMPLETED
-          description: Current state of the backup database
-        size:
-          type: integer
-          format: int64
-          examples:
-          - 12256
-          description: Size of the backup
-        duration:
-          type: integer
-          format: int64
-          examples:
-          - 12000
-          description: Duration of the backup operation
-        path:
-          type: string
-          examples:
-          - /backups/mydb-2025-11-13.bak
-          description: Path to the backup file in the storage
-        errorMessage:
-          type: string
-          examples:
-          - Backup Not Found
-          description: Error message if the backup failed
-        creationTime:
-          $ref: '#/components/schemas/Instant'
-          type: string
-          examples:
-          - '2025-11-13T12:34:56Z'
-          description: Timestamp when the backup was created
     UUID:
       type: string
       format: uuid
       pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    User:
+    User1:
       type: object
       description: Database user information
       properties:
@@ -978,34 +789,39 @@ components:
           examples:
           - admin
           description: Role of the database user
-    LogicalBackupResponse:
+    Filter:
+      type: object
+      description: Single filter criteria for backup and restore operations
+      properties:
+        namespace:
+          type: array
+          items:
+            type: string
+          description: Filter by Kubernetes namespaces
+        microserviceName:
+          type: array
+          items:
+            type: string
+          description: Filter by microservice names
+        databaseType:
+          type: array
+          items:
+            type: string
+          description: Filter by database types
+        databaseKind:
+          type: array
+          items:
+            type: string
+            enum:
+            - CONFIGURATION
+            - TRANSACTIONAL
+          description: Filter by database kinds
+    RestoreStatusResponse:
       type: object
       required:
-      - id
-      - logicalBackupName
-      - adapterId
-      - type
       - status
-      - backupDatabases
-      description: Logical backup details
+      description: Current status of a restore operation
       properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-          type: string
-          examples:
-          - 550e8400-e29b-41d4-a716-446655440000
-          description: Identifier of the logical backup
-        logicalBackupName:
-          type: string
-          description: Name of the logical backup in adapter
-        adapterId:
-          type: string
-          examples:
-          - 4e1e9922-e5bf-490d-bb57-18a14de593c6
-          description: Unique identifier of the adapter
-        type:
-          type: string
-          description: Type of the adapter
         status:
           type:
           - string
@@ -1014,177 +830,28 @@ components:
           - NOT_STARTED
           - IN_PROGRESS
           - FAILED
-          - RETRYABLE_FAIL
           - COMPLETED
-          description: Current state of the backup databases of one adapter
-        errorMessage:
-          type: string
-          examples:
-          - Backup Not Found
-          description: Error message if backup failed
-        creationTime:
-          $ref: '#/components/schemas/Instant'
-          type: string
-          examples:
-          - '2025-11-13T12:34:56Z'
-          description: Timestamp when the backup was created
-        completionTime:
-          $ref: '#/components/schemas/Instant'
-          type: string
-          examples:
-          - '2025-11-13T12:45:00Z'
-          description: Timestamp when the backup completed
-        backupDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/BackupDatabaseResponse'
-          description: List of logical backup databases
-    BackupRequest:
-      type: object
-      required:
-      - backupName
-      - storageName
-      - blobPath
-      - filterCriteria
-      - externalDatabaseStrategy
-      - ignoreNotBackupableDatabases
-      description: Request to create a database backup
-      properties:
-        backupName:
-          type: string
-          examples:
-          - before-prod-update-20251013T1345-G5s8
-          pattern: \S
-          description: Unique name of the backup
-        storageName:
-          type: string
-          examples:
-          - s3-backend
-          pattern: \S
-          description: Name of the storage backend containing the backup
-        blobPath:
-          type: string
-          examples:
-          - /backups/before-prod-update-20251013T1345-G5s8/logical/dbaas/
-          pattern: \S
-          description: Path in the storage where backup will be stored
-        filterCriteria:
-          type: object
-          description: Filter criteria
-          properties:
-            include:
-              type: array
-              items:
-                $ref: '#/components/schemas/Filter'
-              description: Include databases that match any of the filters in the list
-            exclude:
-              type: array
-              items:
-                $ref: '#/components/schemas/Filter'
-              description: Exclude databases that match any of the filters in the list
-        externalDatabaseStrategy:
-          type:
-          - string
-          - object
-          enum:
-          - FAIL
-          - SKIP
-          - INCLUDE
-          examples:
-          - FAIL
-          description: How to handle external databases during backup
-          default: FAIL
-        ignoreNotBackupableDatabases:
-          type: boolean
-          examples:
-          - false
-          description: Whether non-backupable databases should be ignored during backup
-          default: false
-    LogicalRestoreResponse:
-      type: object
-      required:
-      - id
-      - logicalRestoreName
-      - adapterId
-      - type
-      - restoreDatabases
-      - status
-      description: Logical restore details
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-          type: string
-          examples:
-          - 550e8400-e29b-41d4-a716-446655440000
-          description: Identifier of the logical restore
-        logicalRestoreName:
-          type: string
-          description: Name of the logical restore in adapter
-        adapterId:
-          type: string
-          examples:
-          - 4e1e9922-e5bf-490d-bb57-18a14de593c6
-          description: Unique identifier of the adapter
-        type:
-          type: string
-          examples:
-          - postgres
-          description: Type of the adapter
-        restoreDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/RestoreDatabaseResponse'
-          description: List of logical restore databases
-        status:
-          type:
-          - string
-          - object
-          enum:
-          - NOT_STARTED
-          - IN_PROGRESS
-          - FAILED
-          - RETRYABLE_FAIL
-          - COMPLETED
+          - DELETED
           description: Current state of the restore operation
+        total:
+          type: integer
+          format: int32
+          examples:
+          - 5
+          description: Total number of databases to be restored
+          minimum: 0
+        completed:
+          type: integer
+          format: int32
+          examples:
+          - 3
+          description: Number of databases successfully restored
+          minimum: 0
         errorMessage:
           type: string
-          description: Information about error message during restore process
-        creationTime:
-          $ref: '#/components/schemas/Instant'
-          type: string
-          description: Aggregated information about creation time of databases in adapter
-        completionTime:
-          $ref: '#/components/schemas/Instant'
-          type: string
-          description: Aggregated information about completion time of databases in adapter
-    RestoreExternalDatabaseResponse:
-      type: object
-      required:
-      - id
-      - name
-      description: External database details
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-          type: string
           examples:
-          - 550e8400-e29b-41d4-a716-446655440000
-          description: Identifier of the external restore database
-        name:
-          type: string
-          examples:
-          - mydb
-          description: Name of the external database
-        type:
-          type: string
-          examples:
-          - postgresql
-          description: Type of the database
-        classifiers:
-          type: array
-          items:
-            $ref: '#/components/schemas/ClassifierDetailsResponse'
-          description: List of classifier objects describing database attributes.
+          - Insufficient permissions to create database
+          description: Error details if the restore failed
     RestoreRequest:
       type: object
       required:
@@ -1256,7 +923,144 @@ components:
           - FAIL
           description: How to handle external databases during restore
           default: FAIL
-    User1:
+    LogicalRestoreResponse:
+      type: object
+      required:
+      - id
+      - logicalRestoreName
+      - adapterId
+      - type
+      - restoreDatabases
+      - status
+      description: Logical restore details
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          examples:
+          - 550e8400-e29b-41d4-a716-446655440000
+          description: Identifier of the logical restore
+        logicalRestoreName:
+          type: string
+          description: Name of the logical restore in adapter
+        adapterId:
+          type: string
+          examples:
+          - 4e1e9922-e5bf-490d-bb57-18a14de593c6
+          description: Unique identifier of the adapter
+        type:
+          type: string
+          examples:
+          - postgres
+          description: Type of the adapter
+        restoreDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/RestoreDatabaseResponse'
+          description: List of logical restore databases
+        status:
+          type:
+          - string
+          - object
+          enum:
+          - NOT_STARTED
+          - IN_PROGRESS
+          - FAILED
+          - RETRYABLE_FAIL
+          - COMPLETED
+          description: Current state of the restore operation
+        errorMessage:
+          type: string
+          description: Information about error message during restore process
+        creationTime:
+          $ref: '#/components/schemas/Instant'
+          type: string
+          description: Aggregated information about creation time of databases in adapter
+        completionTime:
+          $ref: '#/components/schemas/Instant'
+          type: string
+          description: Aggregated information about completion time of databases in adapter
+    RestoreDatabaseResponse:
+      type: object
+      required:
+      - id
+      - name
+      - status
+      - path
+      description: Logical database restore details
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          examples:
+          - 550e8400-e29b-41d4-a716-446655440000
+          description: Identifier of the restore database
+        name:
+          type: string
+          examples:
+          - mydb
+          description: Name of the database
+        classifiers:
+          type: array
+          examples:
+          - - namespace: namespace
+              microserviceName: microserviceName
+              scope: service
+          items:
+            $ref: '#/components/schemas/ClassifierDetailsResponse'
+          description: List of database classifiers. Each classifier is a sorted map of attributes.
+        users:
+          type: array
+          examples:
+          - '[{"name":"username","role":"admin"}'
+          items:
+            $ref: '#/components/schemas/User1'
+          description: List of database users
+        settings:
+          type: object
+          examples:
+          - key: value
+          additionalProperties: {}
+          description: Database settings as a key-value map
+        bgVersion:
+          type: string
+          examples:
+          - v2.1.0
+          description: Blue-Green version of database
+        status:
+          type:
+          - string
+          - object
+          enum:
+          - NOT_STARTED
+          - IN_PROGRESS
+          - FAILED
+          - RETRYABLE_FAIL
+          - COMPLETED
+          description: Current state of the restore database
+        duration:
+          type: integer
+          format: int64
+          examples:
+          - 12000
+          description: Duration of the restore operation
+        path:
+          type: string
+          examples:
+          - /backups/mydb-2025-11-13.bak
+          description: Path to the restore file in the storage
+        errorMessage:
+          type: string
+          examples:
+          - Restore Not Found
+          description: Error message if the restore failed
+        creationTime:
+          $ref: '#/components/schemas/Instant'
+          type: string
+          examples:
+          - '2025-11-13T12:34:56Z'
+          description: Timestamp when the restore was created
+    User:
       type: object
       description: Database user information
       properties:
@@ -1270,6 +1074,187 @@ components:
           examples:
           - admin
           description: Role of the database user
+    RestoreExternalDatabaseResponse:
+      type: object
+      required:
+      - id
+      - name
+      description: External database details
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          examples:
+          - 550e8400-e29b-41d4-a716-446655440000
+          description: Identifier of the external restore database
+        name:
+          type: string
+          examples:
+          - mydb
+          description: Name of the external database
+        type:
+          type: string
+          examples:
+          - postgresql
+          description: Type of the database
+        classifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClassifierDetailsResponse'
+          description: List of classifier objects describing database attributes.
+    Instant:
+      type: string
+      format: date-time
+      examples:
+      - '2022-03-10T16:15:50Z'
+    BackupRequest:
+      type: object
+      required:
+      - backupName
+      - storageName
+      - blobPath
+      - filterCriteria
+      - externalDatabaseStrategy
+      - ignoreNotBackupableDatabases
+      description: Request to create a database backup
+      properties:
+        backupName:
+          type: string
+          examples:
+          - before-prod-update-20251013T1345-G5s8
+          pattern: \S
+          description: Unique name of the backup
+        storageName:
+          type: string
+          examples:
+          - s3-backend
+          pattern: \S
+          description: Name of the storage backend containing the backup
+        blobPath:
+          type: string
+          examples:
+          - /backups/before-prod-update-20251013T1345-G5s8/logical/dbaas/
+          pattern: \S
+          description: Path in the storage where backup will be stored
+        filterCriteria:
+          type: object
+          description: Filter criteria
+          properties:
+            include:
+              type: array
+              items:
+                $ref: '#/components/schemas/Filter'
+              description: Include databases that match any of the filters in the list
+            exclude:
+              type: array
+              items:
+                $ref: '#/components/schemas/Filter'
+              description: Exclude databases that match any of the filters in the list
+        externalDatabaseStrategy:
+          type:
+          - string
+          - object
+          enum:
+          - FAIL
+          - SKIP
+          - INCLUDE
+          examples:
+          - FAIL
+          description: How to handle external databases during backup
+          default: FAIL
+        ignoreNotBackupableDatabases:
+          type: boolean
+          examples:
+          - false
+          description: Whether non-backupable databases should be ignored during backup
+          default: false
+    TmfErrorResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/TmfError'
+        '@type':
+          type: string
+        '@schemaLocation':
+          type: string
+    TmfError:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+    BackupStatusResponse:
+      type: object
+      required:
+      - status
+      description: Current status of a backup operation
+      properties:
+        status:
+          type:
+          - string
+          - object
+          enum:
+          - NOT_STARTED
+          - IN_PROGRESS
+          - FAILED
+          - COMPLETED
+          - DELETE_IN_PROGRESS
+          - DELETED
+          description: Current state of the backup operation
+        total:
+          type: integer
+          format: int32
+          examples:
+          - 5
+          description: Total number of databases being backed up
+        completed:
+          type: integer
+          format: int32
+          examples:
+          - 3
+          description: Number of databases successfully backed up
+        size:
+          type: integer
+          format: int64
+          examples:
+          - 1073741824
+          description: Total size of the backup in bytes
+        errorMessage:
+          type: string
+          examples:
+          - Failed to connect to database
+          description: Error details if the backup failed
     BackupResponse:
       type: object
       required:
@@ -1377,21 +1362,54 @@ components:
           items:
             $ref: '#/components/schemas/BackupExternalDatabaseResponse'
           description: List of external databases
-    RestoreDatabaseResponse:
+    BackupExternalDatabaseResponse:
       type: object
       required:
       - id
       - name
-      - status
-      - path
-      description: Logical database restore details
+      description: External database details
       properties:
         id:
           $ref: '#/components/schemas/UUID'
           type: string
           examples:
           - 550e8400-e29b-41d4-a716-446655440000
-          description: Identifier of the restore database
+          description: Identifier of the external backup database
+        name:
+          type: string
+          examples:
+          - mydb
+          description: Name of the external database
+        type:
+          type: string
+          examples:
+          - postgresql
+          description: Type of the database
+        classifiers:
+          type: array
+          examples:
+          - - namespace: namespace
+              microserviceName: microserviceName
+              scope: service
+          items:
+            type: object
+            additionalProperties: {}
+          description: List of database classifiers. Each classifier is a sorted map of attributes.
+    BackupDatabaseResponse:
+      type: object
+      required:
+      - id
+      - name
+      - status
+      - path
+      description: Logical database backup details
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          examples:
+          - 550e8400-e29b-41d4-a716-446655440000
+          description: Identifier of the backup database
         name:
           type: string
           examples:
@@ -1404,26 +1422,28 @@ components:
               microserviceName: microserviceName
               scope: service
           items:
-            $ref: '#/components/schemas/ClassifierDetailsResponse'
+            type: object
+            additionalProperties: {}
           description: List of database classifiers. Each classifier is a sorted map of attributes.
-        users:
-          type: array
-          examples:
-          - '[{"name":"username","role":"admin"}'
-          items:
-            $ref: '#/components/schemas/User1'
-          description: List of database users
         settings:
           type: object
           examples:
           - key: value
           additionalProperties: {}
           description: Database settings as a key-value map
-        bgVersion:
-          type: string
+        users:
+          type: array
           examples:
-          - v2.1.0
-          description: Blue-Green version of database
+          - - name: username
+              role: admin
+          items:
+            $ref: '#/components/schemas/User'
+          description: List of database users
+        configurational:
+          type: boolean
+          examples:
+          - true
+          description: Indicates the type of the database
         status:
           type:
           - string
@@ -1434,34 +1454,35 @@ components:
           - FAILED
           - RETRYABLE_FAIL
           - COMPLETED
-          description: Current state of the restore database
+          description: Current state of the backup database
+        size:
+          type: integer
+          format: int64
+          examples:
+          - 12256
+          description: Size of the backup
         duration:
           type: integer
           format: int64
           examples:
           - 12000
-          description: Duration of the restore operation
+          description: Duration of the backup operation
         path:
           type: string
           examples:
           - /backups/mydb-2025-11-13.bak
-          description: Path to the restore file in the storage
+          description: Path to the backup file in the storage
         errorMessage:
           type: string
           examples:
-          - Restore Not Found
-          description: Error message if the restore failed
+          - Backup Not Found
+          description: Error message if the backup failed
         creationTime:
           $ref: '#/components/schemas/Instant'
           type: string
           examples:
           - '2025-11-13T12:34:56Z'
-          description: Timestamp when the restore was created
-    Instant:
-      type: string
-      format: date-time
-      examples:
-      - '2022-03-10T16:15:50Z'
+          description: Timestamp when the backup was created
     ClassifierDetailsResponse:
       type: object
       required:

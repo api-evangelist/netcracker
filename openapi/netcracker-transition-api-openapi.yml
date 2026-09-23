@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: APIHUB system administrators API – External Transition API
-  description: 'External API contract for system administrators. This API covers technical administration operations such as package transitions, role management, administrator management, and selected operational actions. All endpoints require authenticated access and are intended for trusted administrative users.
-
-    '
+  description: External API contract for system administrators. This API covers technical administration operations such as package transitions, role management, administrator management, and selected operational actions. All endpoints require authenticated access and are intended for trusted administrative users.
   contact:
     name: Netcracker Opensource Group
     email: opensourcegroup@netcracker.com
@@ -112,9 +110,7 @@ paths:
       tags:
       - Transition
       summary: Get move status
-      description: 'Retrieve the status of an asynchronous move operation by operation ID, including progress, timestamps, and resulting package identifiers.
-
-        '
+      description: Retrieve the status of an asynchronous move operation by operation ID, including progress, timestamps, and resulting package identifiers.
       operationId: getMoveStatus
       parameters:
       - name: id
@@ -164,9 +160,7 @@ paths:
       tags:
       - Transition
       summary: List completed transition activities
-      description: 'List completed transition activities. Supports offset/limit pagination for recent completed operations.
-
-        '
+      description: List completed transition activities. Supports offset/limit pagination for recent completed operations.
       operationId: listActivities
       parameters:
       - name: offset
@@ -224,9 +218,7 @@ paths:
       tags:
       - Transition
       summary: List transitions
-      description: 'Retrieve the full mapping of historical package ID transitions (oldPackageId to newPackageId).
-
-        '
+      description: Retrieve the full mapping of historical package ID transitions (oldPackageId to newPackageId).
       operationId: listPackageTransitions
       responses:
         '200':
@@ -287,32 +279,6 @@ components:
         code: APIHUB-COMMON-4001
         message: Incorrect input parameters
   schemas:
-    ErrorResponse:
-      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
-      type: object
-      properties:
-        status:
-          description: HTTP status code as an integer; expected to match the actual HTTP response status.
-          type: number
-        code:
-          description: Internal string error code. Mandatory in response.
-          type: string
-        message:
-          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
-          type: string
-        params:
-          type: object
-          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
-          example:
-            id: 12345
-            type: string
-        debug:
-          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
-          type: string
-      required:
-      - status
-      - code
-      - message
     TransitionStatus:
       type: object
       properties:
@@ -352,6 +318,32 @@ components:
           type: integer
           format: int32
           description: Serial number of the completed transition record (internal monotonic identifier).
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
   securitySchemes:
     BearerAuth:
       type: http

@@ -1,9 +1,7 @@
 openapi: 3.2.0
 info:
   title: APIHUB Registry – External Auth API
-  description: 'Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
-
-    '
+  description: Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
   contact:
     name: Netcracker Opensource Group
     email: opensourcegroup@netcracker.com
@@ -203,9 +201,7 @@ paths:
 
         the response will contain cookie with access token for future API calls.
 
-        All subsequent APIHUB calls must use this token in a **CookieAuth** or **BearerAuth** authentication.
-
-        '
+        All subsequent APIHUB calls must use this token in a **CookieAuth** or **BearerAuth** authentication.'
       operationId: getLoginSsoSaml
       security:
       - {}
@@ -260,9 +256,7 @@ paths:
 
         the response will contain cookie with access token for future API calls.
 
-        All subsequent APIHUB calls must use this token in a **BearerAuth** authentication.
-
-        '
+        All subsequent APIHUB calls must use this token in a **BearerAuth** authentication.'
       operationId: postAuthSAML
       security:
       - {}
@@ -304,13 +298,6 @@ paths:
                   $ref: '#/components/examples/InternalServerError'
 components:
   examples:
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
     IncorrectInputParameters:
       description: Incorrect input parameters
       value:
@@ -323,6 +310,13 @@ components:
         status: 401
         code: APIHUB-4101
         message: Authentication required
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
   schemas:
     ErrorResponse:
       description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).

@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: DBaaS Aggregator Database users controller v3 API
   version: 6.13.2
-  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component. DBaaS acts as an aggregator for all adapters. It is designed to collect requests for managed databases and route them to the appropriate adapter. DBaaS stores information about all databases used in a cloud project. These databases are isolated by namespace. DBaaS uses a Classifier to identify databases within a cloud namespace. The Classifier includes service-related information such as scope, microservice name, tenant ID, and namespace.
+  description: This documentation presents the REST API for the "Database as a Service" (DBaaS) component.
 tags:
 - name: Database users controller v3
   description: This controller contains API for operations with database users.
@@ -53,6 +53,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: putApiV3DbaasUsers
+      x-operation-id-source: derived
     delete:
       summary: V3. Delete user
       description: The API allows to delete specific user for database.
@@ -90,6 +92,8 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: deleteApiV3DbaasUsers
+      x-operation-id-source: derived
   /api/v3/dbaas/users/restore:
     post:
       summary: V3. Restore users
@@ -126,9 +130,11 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiV3DbaasUsersRestore
+      x-operation-id-source: derived
   /api/v3/dbaas/users/rotate-password:
     post:
-      summary: V3. Rotate user password.
+      summary: V3. Rotate user password
       description: The API allows to rotate password for specific user.
       tags:
       - Database users controller v3
@@ -160,12 +166,17 @@ paths:
       security:
       - SecurityScheme:
         - DB_CLIENT
+      operationId: postApiV3DbaasUsersRotatePassword
+      x-operation-id-source: derived
 components:
   schemas:
-    SuccessfulRestoreUsersResponse:
+    UnsuccessfulRestore:
       type: object
       properties:
-        message:
+        connectionProperties:
+          type: object
+          additionalProperties: {}
+        errorMessage:
           type: string
     GetOrCreateUserRequest:
       type: object
@@ -193,36 +204,28 @@ components:
         userRole:
           type: string
           description: User role, for example admin, rw, ro
-    UnsuccessfulRestore:
-      type: object
-      properties:
-        connectionProperties:
-          type: object
-          additionalProperties: {}
-        errorMessage:
-          type: string
-    UserOperationRequest:
-      type: object
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
-        logicalUserId:
-          type: string
-          description: User uniq identifier. Using this field with classifier and type dbaas will determine to create or return created before user.
-        type:
-          type: string
-          description: The physical type of logical database. For example mongodb or postgresql
-        userId:
-          type: string
-          description: The user identificator.
     SuccessfullRestore:
       type: object
       properties:
         connectionProperties:
           type: object
           additionalProperties: {}
+    SuccessfulRestoreUsersResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    RestoreUsersResponse:
+      type: object
+      properties:
+        unsuccessfully:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnsuccessfulRestore'
+        successfully:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccessfullRestore'
     GetOrCreateUserResponse:
       type: object
       required:
@@ -252,17 +255,22 @@ components:
         role:
           type: string
           description: User role
-    RestoreUsersResponse:
+    UserOperationRequest:
       type: object
       properties:
-        unsuccessfully:
-          type: array
-          items:
-            $ref: '#/components/schemas/UnsuccessfulRestore'
-        successfully:
-          type: array
-          items:
-            $ref: '#/components/schemas/SuccessfullRestore'
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        logicalUserId:
+          type: string
+          description: User uniq identifier. Using this field with classifier and type dbaas will determine to create or return created before user.
+        type:
+          type: string
+          description: The physical type of logical database. For example mongodb or postgresql
+        userId:
+          type: string
+          description: The user identificator.
   securitySchemes:
     SecurityScheme:
       type: http

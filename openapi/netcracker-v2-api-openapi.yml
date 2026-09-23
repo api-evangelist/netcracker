@@ -4,7 +4,7 @@ info:
   description: API for Maas Service.
   title: Maas Service V2 API
 tags:
-- name: V2
+- name: v2
 paths:
   /api/v2/auth/account/manager/{name}/password:
     put:
@@ -49,7 +49,7 @@ paths:
         - manager
       summary: Update Password using Manager Role
       tags:
-      - V2
+      - v2
   /api/v2/config:
     post:
       description: Apply Config V2
@@ -82,7 +82,7 @@ paths:
         - agent
       summary: Apply Config V2 using Agent Role
       tags:
-      - V2
+      - v2
       requestBody:
         content:
           application/json:
@@ -92,7 +92,6 @@ paths:
         required: true
   /api/v2/kafka/discrepancy-report/{namespace}:
     get:
-      description: Get Report
       operationId: GetReport
       parameters:
       - description: namespace
@@ -134,7 +133,7 @@ paths:
                 type: object
       summary: Get Report
       tags:
-      - V2
+      - v2
   /api/v2/kafka/recover-topic:
     post:
       description: Sync Topic To Kafka
@@ -177,7 +176,7 @@ paths:
         - agent
       summary: Sync Topic To Kafka using Agent Role
       tags:
-      - V2
+      - v2
   /api/v2/kafka/recovery/{namespace}:
     post:
       description: Sync All Topics To Kafka
@@ -204,7 +203,7 @@ paths:
         - agent
       summary: Sync All Topics To Kafka using Agent Role
       tags:
-      - V2
+      - v2
   /api/v2/kafka/topic:
     post:
       description: Get Or Create Topic
@@ -280,7 +279,7 @@ paths:
         - agent
       summary: Get Or Create Topic using Agent Role
       tags:
-      - V2
+      - v2
       requestBody:
         content:
           application/json:
@@ -353,7 +352,7 @@ paths:
         - agent
       summary: Get Topic By Classifier using Agent Role
       tags:
-      - V2
+      - v2
       requestBody:
         content:
           application/json:
@@ -403,7 +402,7 @@ paths:
         - agent
       summary: Search Topics using Agent Role
       tags:
-      - V2
+      - v2
       requestBody:
         content:
           application/json:
@@ -471,7 +470,7 @@ paths:
         - agent
       summary: Watch Topics Create using Agent Role
       tags:
-      - V2
+      - v2
   /api/v2/monitoring/entity-distribution:
     get:
       description: Get Monitoring Entities
@@ -496,10 +495,9 @@ paths:
         - manager
       summary: Get Monitoring Entities using Manager Role
       tags:
-      - V2
+      - v2
   /api/v2/monitoring/entity-request-audit:
     get:
-      description: Get Monitoring Entity Requests
       operationId: GetMonitoringEntityRequests
       responses:
         '200':
@@ -518,7 +516,7 @@ paths:
                 type: object
       summary: Get Monitoring Entity Requests
       tags:
-      - V2
+      - v2
   /api/v2/rabbit/recovery/{namespace}:
     post:
       description: Recover Namespace
@@ -552,7 +550,7 @@ paths:
         - agent
       summary: Recover Namespace using Agent Role
       tags:
-      - V2
+      - v2
   /api/v2/rabbit/validations:
     get:
       description: Validate Rabbit Configs
@@ -596,66 +594,9 @@ paths:
         - agent
       summary: Validate Rabbit Configs using Agent Role
       tags:
-      - V2
+      - v2
 components:
   schemas:
-    model.TopicSearchRequest:
-      properties:
-        classifier:
-          $ref: '#/components/schemas/model.Classifier'
-        instance:
-          example: <id of kafka instance where topics are created>
-          type: string
-        leaveRealTopicIntact:
-          type: boolean
-        namespace:
-          example: <namespace to which topics belong>
-          type: string
-        template:
-          type: integer
-        topic:
-          example: <exact topic name in kafka>
-          type: string
-        versioned:
-          type: boolean
-      type: object
-    model.TopicSettings:
-      properties:
-        configs:
-          additionalProperties:
-            type: string
-          type: object
-        minNumPartitions:
-          example: 1
-          type: integer
-        numPartitions:
-          example: 1
-          type: integer
-        replicaAssignment:
-          additionalProperties:
-            items:
-              type: integer
-            type: array
-          type: object
-        replicationFactor:
-          example: 1
-          type: integer
-        versioned:
-          example: true
-          type: boolean
-      type: object
-    model.Classifier:
-      properties:
-        name:
-          type: string
-        namespace:
-          type: string
-        tenantId:
-          type: string
-      required:
-      - name
-      - namespace
-      type: object
     model.TopicTemplate:
       properties:
         configs:
@@ -728,19 +669,30 @@ components:
           example: false
           type: boolean
       type: object
-    model.KafkaTopicSyncReport:
+    model.TopicSettings:
       properties:
-        classifier:
-          $ref: '#/components/schemas/model.Classifier'
-        errMsg:
-          example: can not get topic info
-          type: string
-        name:
-          example: maas.local.test-topic-0
-          type: string
-        status:
-          example: added
-          type: string
+        configs:
+          additionalProperties:
+            type: string
+          type: object
+        minNumPartitions:
+          example: 1
+          type: integer
+        numPartitions:
+          example: 1
+          type: integer
+        replicaAssignment:
+          additionalProperties:
+            items:
+              type: integer
+            type: array
+          type: object
+        replicationFactor:
+          example: 1
+          type: integer
+        versioned:
+          example: true
+          type: boolean
       type: object
     model.KafkaCredentials:
       properties:
@@ -755,15 +707,18 @@ components:
         username:
           type: string
       type: object
-    model.DiscrepancyReportItem:
+    model.KafkaTopicSyncReport:
       properties:
         classifier:
           $ref: '#/components/schemas/model.Classifier'
+        errMsg:
+          example: can not get topic info
+          type: string
         name:
-          example: maas.test.81.my-awesome-test-topic
+          example: maas.local.test-topic-0
           type: string
         status:
-          example: ok
+          example: added
           type: string
       type: object
     model.LazyBindingDto:
@@ -780,6 +735,49 @@ components:
         vhost:
           example: maas.core-dev.test
           type: string
+      type: object
+    model.TopicSearchRequest:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          example: <id of kafka instance where topics are created>
+          type: string
+        leaveRealTopicIntact:
+          type: boolean
+        namespace:
+          example: <namespace to which topics belong>
+          type: string
+        template:
+          type: integer
+        topic:
+          example: <exact topic name in kafka>
+          type: string
+        versioned:
+          type: boolean
+      type: object
+    model.DiscrepancyReportItem:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        name:
+          example: maas.test.81.my-awesome-test-topic
+          type: string
+        status:
+          example: ok
+          type: string
+      type: object
+    model.Classifier:
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        tenantId:
+          type: string
+      required:
+      - name
+      - namespace
       type: object
   securitySchemes:
     BasicAuth:
