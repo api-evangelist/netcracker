@@ -1,15 +1,10 @@
 openapi: 3.2.0
 info:
-  title: APIHUB Registry – External Auth API
-  description: Public-facing API contract for APIHUB. This API is intended for external and integration clients and covers package/catalog operations, publication workflows, search, user/profile actions, and selected administration capabilities secured by APIHUB authentication schemes.
-  contact:
-    name: Netcracker Opensource Group
-    email: opensourcegroup@netcracker.com
-  license:
-    name: Apache-2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0
-  version: '2026.1'
-  x-api-kind: BWC
+  title: Netcracker Auth API
+  x-refined-note:
+  - x-api-kind differs across the merged source definitions and was not carried
+  version: '1.0'
+  description: 'Operations tagged Auth across 2 of this provider''s published API definitions: netcracker-qubership-apihub-registry-openapi.yml, netcracker-qubership-maas-swagger.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://{apihub}.qubership.org
   description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
@@ -21,11 +16,6 @@ servers:
       - dev.apihub
       - staging.apihub
       default: apihub
-security:
-- BearerAuth: []
-- CookieAuth: []
-- api-key: []
-- PersonalAccessToken: []
 tags:
 - name: Auth
   description: APIs for auth integrations.
@@ -67,6 +57,17 @@ paths:
               examples:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
   /api/v2/system/configuration:
     get:
       tags:
@@ -152,6 +153,17 @@ paths:
               examples:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
   /api/v1/logout:
     post:
       tags:
@@ -184,6 +196,17 @@ paths:
               examples:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
   /login/sso/saml:
     get:
       x-nc-api-audience: noBWC
@@ -242,6 +265,17 @@ paths:
               examples:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
   /api/v2/auth/saml:
     post:
       x-nc-api-audience: noBWC
@@ -296,20 +330,249 @@ paths:
               examples:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
+    servers:
+    - url: https://{apihub}.qubership.org
+      description: Primary APIHUB server endpoint (use the apihub variable to select production, development, or staging).
+      variables:
+        apihub:
+          description: APIHUB subdomain/environment selector (apihub=production, dev.apihub=development, staging.apihub=staging).
+          enum:
+          - apihub
+          - dev.apihub
+          - staging.apihub
+          default: apihub
+  /api/v1/auth/account/client:
+    delete:
+      description: Delete Client Account
+      operationId: DeleteClientAccount
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Delete Client Account using Manager Role
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.ClientAccountDto'
+        description: ClientAccountDto
+        required: true
+    post:
+      description: Create new account
+      operationId: CreateAccount
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.ClientAccountDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Create Account
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.ClientAccountDto'
+        description: ClientAccountDto
+        required: true
+  /api/v1/auth/account/manager:
+    post:
+      description: Save Manager Account
+      operationId: SaveManagerAccount
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.ManagerAccountDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Save Manager Account using Manager Role
+      tags:
+      - Auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.ManagerAccountDto'
+        description: ManagerAccountDto
+        required: true
+  /api/v1/auth/accounts:
+    get:
+      description: Get All Accounts
+      operationId: GetAllAccounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.Account'
+                type: array
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Get All Accounts using Manager Role
+      tags:
+      - Auth
+  /api/v2/auth/account/manager/{name}/password:
+    put:
+      description: Update Password
+      operationId: UpdatePassword
+      parameters:
+      - description: new-password
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Update Password using Manager Role
+      tags:
+      - Auth
 components:
   examples:
-    IncorrectInputParameters:
-      description: Incorrect input parameters
-      value:
-        status: 400
-        code: APIHUB-COMMON-4001
-        message: Incorrect input parameters
     Unauthorized:
       description: Unauthorized access
       value:
         status: 401
         code: APIHUB-4101
         message: Authentication required
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
     InternalServerError:
       description: 'Example: default internal server error response'
       value:
@@ -344,6 +607,60 @@ components:
       - status
       - code
       - message
+    model.ManagerAccountDto:
+      properties:
+        password:
+          example: 24002eadbc
+          type: string
+        username:
+          example: manager
+          type: string
+      type: object
+    model.ClientAccountDto:
+      properties:
+        namespace:
+          example: namespace
+          type: string
+        password:
+          example: client
+          type: string
+        roles:
+          example:
+          - agent
+          items:
+            type: string
+          type: array
+        username:
+          example: client
+          type: string
+      type: object
+    model.Account:
+      properties:
+        domainNamespaces:
+          example:
+          - namespace1
+          items:
+            type: string
+          type: array
+        manager:
+          example:
+          - client
+          items:
+            type: string
+          type: array
+        namespace:
+          example: _GLOBAL
+          type: string
+        password:
+          example: '***'
+          type: string
+        salt:
+          example: '***'
+          type: string
+        username:
+          example: manager
+          type: string
+      type: object
   securitySchemes:
     BearerAuth:
       type: http
@@ -377,3 +694,6 @@ components:
 externalDocs:
   description: Find out more about this project and repository documentation
   url: https://github.com/Netcracker/qubership-apihub
+x-refined-from:
+- netcracker-qubership-apihub-registry-openapi.yml
+- netcracker-qubership-maas-swagger.yml

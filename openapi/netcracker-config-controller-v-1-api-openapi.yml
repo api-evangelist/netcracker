@@ -148,6 +148,41 @@ components:
           type: string
         description:
           type: string
+    DeclarativeResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        trackingId:
+          type:
+          - string
+          - 'null'
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Condition'
+    OperationDetails:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDetails'
+    Condition:
+      type: object
+      properties:
+        type:
+          type: string
+        state:
+          type: string
+        reason:
+          type:
+          - string
+          - 'null'
+        message:
+          type:
+          - string
+          - 'null'
     OperationStatusExtendedResponse:
       type: object
       properties:
@@ -176,41 +211,6 @@ components:
           type: string
         restoreId:
           type: string
-    Condition:
-      type: object
-      properties:
-        type:
-          type: string
-        state:
-          type: string
-        reason:
-          type:
-          - string
-          - 'null'
-        message:
-          type:
-          - string
-          - 'null'
-    OperationDetails:
-      type: object
-      properties:
-        tasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaskDetails'
-    DeclarativeResponse:
-      type: object
-      properties:
-        status:
-          type: string
-        trackingId:
-          type:
-          - string
-          - 'null'
-        conditions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Condition'
   securitySchemes:
     SecurityScheme:
       type: http

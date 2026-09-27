@@ -1,0 +1,159 @@
+openapi: 3.2.0
+info:
+  contact: {}
+  description: API for Maas Service.
+  title: Maas Service Composite API
+tags:
+- name: Composite
+paths:
+  /api/composite/v1/structure:
+    post:
+      description: Register new Composite
+      operationId: Create
+      responses:
+        '204':
+          description: ''
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Create Composite Registration
+      tags:
+      - Composite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1.RegistrationRequest'
+        description: RegistrationRequest
+        required: true
+  /api/composite/v1/structure/{id}:
+    delete:
+      operationId: DeleteById
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+        '404':
+          description: ''
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Destroy Composite Registrations
+      tags:
+      - Composite
+    get:
+      description: Get Composite Registration By Baseline ID
+      operationId: GetById
+      parameters:
+      - description: Registration ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1.RegistrationResponse'
+        '404':
+          description: ''
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Composite Registration By ID
+      tags:
+      - Composite
+  /api/composite/v1/structures:
+    get:
+      operationId: GetAll
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/v1.RegistrationResponse'
+                type: array
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get All Composite Registrations
+      tags:
+      - Composite
+components:
+  schemas:
+    v1.RegistrationRequest:
+      properties:
+        id:
+          type: string
+        namespaces:
+          items:
+            type: string
+          type: array
+      required:
+      - id
+      - namespaces
+      type: object
+    v1.RegistrationResponse:
+      properties:
+        id:
+          type: string
+        namespaces:
+          items:
+            type: string
+          type: array
+      type: object
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

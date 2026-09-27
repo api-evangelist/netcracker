@@ -1033,17 +1033,38 @@ components:
       schema:
         type: string
         example: QS.RUNENV.K8S-SERVER.CJM-QSS-DEV-2.Q-TMF
-    asyncapiChannel:
-      name: asyncapiChannel
-      in: query
-      description: 'Filter operations by AsyncAPI channel identifier (comma-separated).
-
-        Applicable only when apiType = asyncapi; ignored for other API types.
-
-        '
+    packageId:
+      name: packageId
+      in: path
+      description: Package unique identifier (full alias)
+      required: true
       schema:
         type: string
-        example: userSignup,orderCreated
+        example: QS.CloudQSS.CPQ.Q-TMF
+    limit:
+      name: limit
+      in: query
+      description: Requested number of resources to be provided in response.
+      schema:
+        type: number
+        default: 100
+        maximum: 100
+        minimum: 1
+    severity:
+      name: severity
+      in: query
+      description: Filter API changes by severity.
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - breaking
+          - non-breaking
+          - deprecated
+          - semi-breaking
+          - annotation
+          - unclassified
     apiAudience:
       name: apiAudience
       in: query
@@ -1064,21 +1085,25 @@ components:
         - external
         - unknown
         default: all
-    severity:
-      name: severity
+    asyncapiChannel:
+      name: asyncapiChannel
       in: query
-      description: Filter API changes by severity.
+      description: 'Filter operations by AsyncAPI channel identifier (comma-separated).
+
+        Applicable only when apiType = asyncapi; ignored for other API types.
+
+        '
       schema:
-        type: array
-        items:
-          type: string
-          enum:
-          - breaking
-          - non-breaking
-          - deprecated
-          - semi-breaking
-          - annotation
-          - unclassified
+        type: string
+        example: userSignup,orderCreated
+    version:
+      name: version
+      in: path
+      description: Package version
+      required: true
+      schema:
+        type: string
+        example: '2022.3'
     asyncapiProtocol:
       name: asyncapiProtocol
       in: query
@@ -1094,42 +1119,6 @@ components:
       schema:
         type: string
         example: kafka
-    packageId:
-      name: packageId
-      in: path
-      description: Package unique identifier (full alias)
-      required: true
-      schema:
-        type: string
-        example: QS.CloudQSS.CPQ.Q-TMF
-    limit:
-      name: limit
-      in: query
-      description: Requested number of resources to be provided in response.
-      schema:
-        type: number
-        default: 100
-        maximum: 100
-        minimum: 1
-    version:
-      name: version
-      in: path
-      description: Package version
-      required: true
-      schema:
-        type: string
-        example: '2022.3'
-    previousVersion:
-      name: previousVersion
-      in: query
-      description: 'Package previous version.
-
-        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
-
-        '
-      schema:
-        type: string
-        example: '2022.3'
     apiType:
       name: apiType
       description: Type of the API.
@@ -1142,13 +1131,6 @@ components:
         - graphql
         - protobuf
         - asyncapi
-    page:
-      name: page
-      in: query
-      description: Page number
-      schema:
-        type: number
-        default: 0
     modelName:
       name: modelName
       in: path
@@ -1157,6 +1139,24 @@ components:
       schema:
         type: string
         example: CreateItemDto
+    page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: number
+        default: 0
+    previousVersion:
+      name: previousVersion
+      in: query
+      description: 'Package previous version.
+
+        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+
+        '
+      schema:
+        type: string
+        example: '2022.3'
     operationId:
       name: operationId
       in: path
@@ -1166,78 +1166,114 @@ components:
         type: string
         example: get-quoteManagement-v5-quote-quoteId
   schemas:
-    DeprecatedItems:
-      description: List of deprecated items in the operation.
-      type: array
-      items:
-        type: object
-        properties:
-          deprecatedInPreviousVersions:
-            description: List of previous release versions where item was also deprecated
-            type: array
-            items:
-              type: string
-            example:
-            - '2022.2'
-            - 2022,1
-            - '2021.4'
-          declarationJsonPaths:
-            description: Declarative path to deprecated item.
-            type: array
-            items:
-              type: array
-              items:
-                anyOf:
-                - type: string
-                - type: integer
-            example:
-            - - paths
-              - /post/saml/
-              - test
-              - 1
-            - - paths
-              - /post/saml/
-              - test
-              - 22
-          description:
-            description: Human-readable description of deprecated item.
-            type: string
-            example: '[Deprecated] query parameter ''petId'''
-          deprecatedInfo:
-            description: "Additional information about single deprecated item:\n* for REST API it is value of 'x-deprecated-meta' extension (value of extension must be string), which is defined for deprecated item.\n* for GraphQL API it is value of 'reason' argument of @deprecated directive.\n* for AsyncAPI 3.0: \"[Deprecated] message {name}\" (name = message.title or messageId),\n  or \"[Deprecated] channel {name}\" (name = channel.title or channelId).\n"
-            type: string
-          tolerantHash:
-            description: Tolerant hash for Schema object or Parameter object that has been deprecated. It is needed to identify that the same schema/parameter was deprecated in previous version.
-            type: string
-          hash:
-            description: Hash (full) for Schema object or Parameter object that has been deprecated, it is needed to detect semi-breaking changes in UI.
-            type: string
-    ErrorResponse:
-      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+    AsyncAPIOperation:
+      description: AsyncAPI operation object.
+      title: AsyncAPIOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
+    AsyncAPIOperationMeta:
+      description: 'Specific parameters for AsyncAPI 3.0 operation.
+
+        An APIHUB Operation for AsyncAPI is the triple (channel, operation, message).
+
+        '
+      title: AsyncAPIOperationMeta
+      required:
+      - action
+      - channel
+      - protocol
+      - asyncOperationId
+      - messageId
       type: object
       properties:
-        status:
-          description: HTTP status code as an integer; expected to match the actual HTTP response status.
-          type: number
-        code:
-          description: Internal string error code. Mandatory in response.
+        action:
+          description: 'AsyncAPI operation action: send or receive.'
           type: string
-        message:
-          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          enum:
+          - send
+          - receive
+        channel:
+          description: 'AsyncAPI channel identifier.
+
+            Uses channel.title if available; otherwise uses channelId (key in the document''s root channels map).
+
+            '
           type: string
-        params:
+          example: User Signup Channel
+        protocol:
+          description: 'Communication protocol derived from the channel''s first server.
+
+            Expected values: kafka, amqp. Any other protocol value from the spec is displayed as-is.
+
+            If the channel has no server references or the protocol cannot be resolved, the value is "Unknown".
+
+            '
+          type: string
+          example: kafka
+        asyncOperationId:
+          description: 'AsyncAPI operationId as defined in the AsyncAPI specification.
+
+            The key in the root operations map that identifies the operation.
+
+            '
+          type: string
+          example: onUserSignUp
+        messageId:
+          description: 'AsyncAPI messageId as defined in the AsyncAPI specification.
+
+            The key in the channel''s messages map that identifies the message.
+
+            '
+          type: string
+          example: userSignedUp
+        customTags:
+          description: Custom tags.
           type: object
-          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+    RestOperation:
+      description: REST operation object.
+      title: RestOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/RestOperationMeta'
+    ChangeSeverity:
+      description: Severity of the particular change.
+      type: string
+      enum:
+      - breaking
+      - semi-breaking
+      - deprecated
+      - non-breaking
+      - annotation
+      - unclassified
+    ChangeRemove:
+      type: object
+      description: Data of single operation change when change action = remove.
+      properties:
+        previousDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
           example:
-            id: 12345
-            type: string
-        debug:
-          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousValueHash:
           type: string
-      required:
-      - status
-      - code
-      - message
+          description: 'Hash of the removed entity.\
+
+            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
+
+            '
     ChangeReplace:
       type: object
       description: Data of single operation change when change action = replace
@@ -1290,16 +1326,62 @@ components:
             Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
 
             '
-    ChangeSeverity:
-      description: Severity of the particular change.
+    PackageVersionRef:
+      description: Package version reference
+      type: object
+      title: Referenced package version
+      required:
+      - refId
+      - kind
+      - name
+      - version
+      - status
+      properties:
+        refId:
+          description: Referenced package Id.
+          type: string
+          example: QS.CloudQSS.CPQ.CORE
+        kind:
+          description: Package kind
+          type: string
+          enum:
+          - package
+          - dashboard
+        name:
+          description: Name of the referenced package
+          type: string
+          example: Quote Management TMF648
+        version:
+          description: Referenced package version number. The <version>@<revision> mask is used to return the revision number.
+          type: string
+          example: 2022.2@5
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        parentPackages:
+          description: Array of parent package names
+          type: array
+          items:
+            type: string
+        deletedAt:
+          description: date when package version was deleted package version
+          type: string
+          format: date-type
+          example: '2023-05-30T17:17:11.755146Z'
+        deletedBy:
+          description: user who deleted package version
+          type: string
+          example: user1221
+        notLatestRevision:
+          type: boolean
+          default: false
+    ApiType:
+      title: apiType
       type: string
       enum:
-      - breaking
-      - semi-breaking
-      - deprecated
-      - non-breaking
-      - annotation
-      - unclassified
+      - rest
+      - graphql
+      - protobuf
+      - asyncapi
     GraphQLOperationMeta:
       description: Specific parameters for GraphQL operation.
       title: GraphQLOperationMeta
@@ -1325,6 +1407,313 @@ components:
         customTags:
           description: Custom tags.
           type: object
+    PackagesMap:
+      description: 'A map of referenced package versions to the package version objects.
+
+        The key is `packageId@version@revision` — three `@`-separated segments (note: the `version` field
+
+        of each value is `version@revision`, only two segments).
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/PackageVersionRef'
+      example:
+        QS.CloudQSS.CPQ.Q-TMF@2023.2@3:
+          refId: QS.CloudQSS.CPQ.Q-TMF
+          kind: package
+          name: Quote Management TMF648
+          version: 2023.2@3
+          status: release
+          parentPackages:
+          - qubership
+          - Qubership JSS
+          - Sample Management
+          deletedAt: '2023-05-30T17:17:11.755146Z'
+          deletedBy: user1221
+          notLatestRevision: true
+    SingleOperationChange:
+      allOf:
+      - type: object
+        description: Discrepancy data in a single operation.
+        properties:
+          description:
+            description: Human-readable description of point of change.
+            type: string
+            example: '[Added] Property: summary.'
+          severity:
+            $ref: '#/components/schemas/ChangeSeverity'
+          scope:
+            type: string
+            description: 'Part of operation (like request/response) where change was made. Scope differs for apiTypes.\
+
+              Scope is needed to correctly identify severity of change, because the same change can have different severity in request/response.
+
+              '
+          action:
+            description: Action, what was done with the endpoint.
+            type: string
+            enum:
+            - add
+            - remove
+            - replace
+            - rename
+      - oneOf:
+        - $ref: '#/components/schemas/ChangeAdd'
+        - $ref: '#/components/schemas/ChangeRemove'
+        - $ref: '#/components/schemas/ChangeReplace'
+        - $ref: '#/components/schemas/ChangeRename'
+    RestOperationMeta:
+      description: Specific parameters for REST operation.
+      title: RestOperationMeta
+      required:
+      - path
+      - method
+      type: object
+      properties:
+        path:
+          description: Operation endpoint path.
+          type: string
+          example: /quoteManagement/v5/quote
+        method:
+          description: Operation method.
+          type: string
+          enum:
+          - post
+          - get
+          - put
+          - patch
+          - delete
+          - head
+          - options
+          - connect
+          - trace
+        title:
+          description: Operation summary/title.
+          type: string
+        customTags:
+          description: Custom tags.
+          type: object
+    ProtobufOperationMeta:
+      description: Specific parameters for Protobuf operation.
+      title: GraphQLOperationMeta
+      required:
+      - type
+      - method
+      type: object
+      properties:
+        type:
+          description: Operation type
+          type: string
+          enum:
+          - unary
+          - serverStreaming
+          - clientStreaming
+          - bidirectionalStreaming
+        method:
+          description: Protobuf method name.
+          type: string
+          example: ListActionLogItems
+        title:
+          description: Operation title (same as method name but with adding spaces between capital letters)
+          type: string
+          example: List Action Log Items
+        customTags:
+          description: Custom tags.
+          type: object
+    ProtobufOperation:
+      description: Protobuf operation object.
+      title: ProtobufOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/ProtobufOperationMeta'
+    ChangeRename:
+      type: object
+      description: Data of single operation change when change action = rename.
+      properties:
+        currentDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        previousKey:
+          type: string
+          description: Previous key (name) of the renamed entity.
+        currentKey:
+          type: string
+          description: Current key (name) of the renamed entity.
+    VersionStatusEnum:
+      description: Package version status
+      type: string
+      enum:
+      - draft
+      - release
+      - archived
+    GraphQLOperation:
+      description: GraphQL operation object.
+      title: GraphQLOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/GraphQLOperationMeta'
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+    ChangeAdd:
+      type: object
+      description: Data of single operation change when change action = add
+      properties:
+        currentDeclarationJsonPaths:
+          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
+
+            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
+
+            '
+          type: array
+          items:
+            type: array
+            items:
+              anyOf:
+              - type: string
+              - type: integer
+          example:
+          - - components/schemas/Cat/minProperties
+            - components/schemas/Dog/minProperties
+          - - /quoteManagement/v5/quote
+        currentValueHash:
+          type: string
+          description: 'Hash of the added entity.\
+
+            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
+
+            '
+    ChangeSummary:
+      description: 'Numbers of changes between the current and previous published version.
+
+        '
+      type: object
+      properties:
+        breaking:
+          description: Number of changes, breaking the backward compatibility.
+          type: integer
+          default: 0
+        semi-breaking:
+          description: Number of changes, breaking the backward compatibility in a legal way. For example, deleting correctly deprecated endpoint.
+          type: integer
+          default: 0
+        deprecated:
+          description: Number of deprecated endpoints.
+          type: integer
+          default: 0
+        non-breaking:
+          description: Number of non-breaking changes.
+          type: integer
+          default: 0
+        annotation:
+          description: Number of annotation changes.
+          type: integer
+          default: 0
+        unclassified:
+          description: Number of unclassified changes.
+          type: integer
+          default: 0
+    DeprecatedItems:
+      description: List of deprecated items in the operation.
+      type: array
+      items:
+        type: object
+        properties:
+          deprecatedInPreviousVersions:
+            description: List of previous release versions where item was also deprecated
+            type: array
+            items:
+              type: string
+            example:
+            - '2022.2'
+            - 2022,1
+            - '2021.4'
+          declarationJsonPaths:
+            description: Declarative path to deprecated item.
+            type: array
+            items:
+              type: array
+              items:
+                anyOf:
+                - type: string
+                - type: integer
+            example:
+            - - paths
+              - /post/saml/
+              - test
+              - 1
+            - - paths
+              - /post/saml/
+              - test
+              - 22
+          description:
+            description: Human-readable description of deprecated item.
+            type: string
+            example: '[Deprecated] query parameter ''petId'''
+          deprecatedInfo:
+            description: "Additional information about single deprecated item:\n* for REST API it is value of 'x-deprecated-meta' extension (value of extension must be string), which is defined for deprecated item.\n* for GraphQL API it is value of 'reason' argument of @deprecated directive.\n* for AsyncAPI 3.0: \"[Deprecated] message {name}\" (name = message.title or messageId),\n  or \"[Deprecated] channel {name}\" (name = channel.title or channelId).\n"
+            type: string
+          tolerantHash:
+            description: Tolerant hash for Schema object or Parameter object that has been deprecated. It is needed to identify that the same schema/parameter was deprecated in previous version.
+            type: string
+          hash:
+            description: Hash (full) for Schema object or Parameter object that has been deprecated, it is needed to detect semi-breaking changes in UI.
+            type: string
     Operation:
       description: Operation object
       title: Operation
@@ -1436,396 +1825,13 @@ components:
           type: string
           pattern: ^[a-z0-9-]
           example: qitmf-v5-11-ref-resolved-json
-    ChangeRemove:
-      type: object
-      description: Data of single operation change when change action = remove.
-      properties:
-        previousDeclarationJsonPaths:
-          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
-
-            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
-
-            '
-          type: array
-          items:
-            type: array
-            items:
-              anyOf:
-              - type: string
-              - type: integer
-          example:
-          - - components/schemas/Cat/minProperties
-            - components/schemas/Dog/minProperties
-          - - /quoteManagement/v5/quote
-        previousValueHash:
-          type: string
-          description: 'Hash of the removed entity.\
-
-            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
-
-            '
-    AsyncAPIOperation:
-      description: AsyncAPI operation object.
-      title: AsyncAPIOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
-    ProtobufOperationMeta:
-      description: Specific parameters for Protobuf operation.
-      title: GraphQLOperationMeta
-      required:
-      - type
-      - method
-      type: object
-      properties:
-        type:
-          description: Operation type
-          type: string
-          enum:
-          - unary
-          - serverStreaming
-          - clientStreaming
-          - bidirectionalStreaming
-        method:
-          description: Protobuf method name.
-          type: string
-          example: ListActionLogItems
-        title:
-          description: Operation title (same as method name but with adding spaces between capital letters)
-          type: string
-          example: List Action Log Items
-        customTags:
-          description: Custom tags.
-          type: object
-    VersionStatusEnum:
-      description: Package version status
-      type: string
-      enum:
-      - draft
-      - release
-      - archived
-    RestOperation:
-      description: REST operation object.
-      title: RestOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/RestOperationMeta'
-    ChangeAdd:
-      type: object
-      description: Data of single operation change when change action = add
-      properties:
-        currentDeclarationJsonPaths:
-          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
-
-            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
-
-            '
-          type: array
-          items:
-            type: array
-            items:
-              anyOf:
-              - type: string
-              - type: integer
-          example:
-          - - components/schemas/Cat/minProperties
-            - components/schemas/Dog/minProperties
-          - - /quoteManagement/v5/quote
-        currentValueHash:
-          type: string
-          description: 'Hash of the added entity.\
-
-            Hash is needed to identify that the same enitity was changed in other operations, that allows calculating declarative number of changes in package version.
-
-            '
-    RestOperationMeta:
-      description: Specific parameters for REST operation.
-      title: RestOperationMeta
-      required:
-      - path
-      - method
-      type: object
-      properties:
-        path:
-          description: Operation endpoint path.
-          type: string
-          example: /quoteManagement/v5/quote
-        method:
-          description: Operation method.
-          type: string
-          enum:
-          - post
-          - get
-          - put
-          - patch
-          - delete
-          - head
-          - options
-          - connect
-          - trace
-        title:
-          description: Operation summary/title.
-          type: string
-        customTags:
-          description: Custom tags.
-          type: object
-    SingleOperationChange:
-      allOf:
-      - type: object
-        description: Discrepancy data in a single operation.
-        properties:
-          description:
-            description: Human-readable description of point of change.
-            type: string
-            example: '[Added] Property: summary.'
-          severity:
-            $ref: '#/components/schemas/ChangeSeverity'
-          scope:
-            type: string
-            description: 'Part of operation (like request/response) where change was made. Scope differs for apiTypes.\
-
-              Scope is needed to correctly identify severity of change, because the same change can have different severity in request/response.
-
-              '
-          action:
-            description: Action, what was done with the endpoint.
-            type: string
-            enum:
-            - add
-            - remove
-            - replace
-            - rename
-      - oneOf:
-        - $ref: '#/components/schemas/ChangeAdd'
-        - $ref: '#/components/schemas/ChangeRemove'
-        - $ref: '#/components/schemas/ChangeReplace'
-        - $ref: '#/components/schemas/ChangeRename'
-    GraphQLOperation:
-      description: GraphQL operation object.
-      title: GraphQLOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/GraphQLOperationMeta'
-    ProtobufOperation:
-      description: Protobuf operation object.
-      title: ProtobufOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/ProtobufOperationMeta'
-    AsyncAPIOperationMeta:
-      description: 'Specific parameters for AsyncAPI 3.0 operation.
-
-        An APIHUB Operation for AsyncAPI is the triple (channel, operation, message).
-
-        '
-      title: AsyncAPIOperationMeta
-      required:
-      - action
-      - channel
-      - protocol
-      - asyncOperationId
-      - messageId
-      type: object
-      properties:
-        action:
-          description: 'AsyncAPI operation action: send or receive.'
-          type: string
-          enum:
-          - send
-          - receive
-        channel:
-          description: 'AsyncAPI channel identifier.
-
-            Uses channel.title if available; otherwise uses channelId (key in the document''s root channels map).
-
-            '
-          type: string
-          example: User Signup Channel
-        protocol:
-          description: 'Communication protocol derived from the channel''s first server.
-
-            Expected values: kafka, amqp. Any other protocol value from the spec is displayed as-is.
-
-            If the channel has no server references or the protocol cannot be resolved, the value is "Unknown".
-
-            '
-          type: string
-          example: kafka
-        asyncOperationId:
-          description: 'AsyncAPI operationId as defined in the AsyncAPI specification.
-
-            The key in the root operations map that identifies the operation.
-
-            '
-          type: string
-          example: onUserSignUp
-        messageId:
-          description: 'AsyncAPI messageId as defined in the AsyncAPI specification.
-
-            The key in the channel''s messages map that identifies the message.
-
-            '
-          type: string
-          example: userSignedUp
-        customTags:
-          description: Custom tags.
-          type: object
-    ApiType:
-      title: apiType
-      type: string
-      enum:
-      - rest
-      - graphql
-      - protobuf
-      - asyncapi
-    ChangeSummary:
-      description: 'Numbers of changes between the current and previous published version.
-
-        '
-      type: object
-      properties:
-        breaking:
-          description: Number of changes, breaking the backward compatibility.
-          type: integer
-          default: 0
-        semi-breaking:
-          description: Number of changes, breaking the backward compatibility in a legal way. For example, deleting correctly deprecated endpoint.
-          type: integer
-          default: 0
-        deprecated:
-          description: Number of deprecated endpoints.
-          type: integer
-          default: 0
-        non-breaking:
-          description: Number of non-breaking changes.
-          type: integer
-          default: 0
-        annotation:
-          description: Number of annotation changes.
-          type: integer
-          default: 0
-        unclassified:
-          description: Number of unclassified changes.
-          type: integer
-          default: 0
-    PackagesMap:
-      description: 'A map of referenced package versions to the package version objects.
-
-        The key is `packageId@version@revision` — three `@`-separated segments (note: the `version` field
-
-        of each value is `version@revision`, only two segments).
-
-        '
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/PackageVersionRef'
-      example:
-        QS.CloudQSS.CPQ.Q-TMF@2023.2@3:
-          refId: QS.CloudQSS.CPQ.Q-TMF
-          kind: package
-          name: Quote Management TMF648
-          version: 2023.2@3
-          status: release
-          parentPackages:
-          - qubership
-          - Qubership JSS
-          - Sample Management
-          deletedAt: '2023-05-30T17:17:11.755146Z'
-          deletedBy: user1221
-          notLatestRevision: true
-    PackageVersionRef:
-      description: Package version reference
-      type: object
-      title: Referenced package version
-      required:
-      - refId
-      - kind
-      - name
-      - version
-      - status
-      properties:
-        refId:
-          description: Referenced package Id.
-          type: string
-          example: QS.CloudQSS.CPQ.CORE
-        kind:
-          description: Package kind
-          type: string
-          enum:
-          - package
-          - dashboard
-        name:
-          description: Name of the referenced package
-          type: string
-          example: Quote Management TMF648
-        version:
-          description: Referenced package version number. The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2022.2@5
-        status:
-          $ref: '#/components/schemas/VersionStatusEnum'
-        parentPackages:
-          description: Array of parent package names
-          type: array
-          items:
-            type: string
-        deletedAt:
-          description: date when package version was deleted package version
-          type: string
-          format: date-type
-          example: '2023-05-30T17:17:11.755146Z'
-        deletedBy:
-          description: user who deleted package version
-          type: string
-          example: user1221
-        notLatestRevision:
-          type: boolean
-          default: false
-    ChangeRename:
-      type: object
-      description: Data of single operation change when change action = rename.
-      properties:
-        currentDeclarationJsonPaths:
-          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
-
-            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
-
-            '
-          type: array
-          items:
-            type: array
-            items:
-              anyOf:
-              - type: string
-              - type: integer
-          example:
-          - - components/schemas/Cat/minProperties
-            - components/schemas/Dog/minProperties
-          - - /quoteManagement/v5/quote
-        previousDeclarationJsonPaths:
-          description: '(below, a document is not considered to be an original document, but a document with one specific operation)\
-
-            When comparing two documents (origin and changed; difference from changed document apended to the original document), a declarative jsonPath is calculated for each change.
-
-            '
-          type: array
-          items:
-            type: array
-            items:
-              anyOf:
-              - type: string
-              - type: integer
-          example:
-          - - components/schemas/Cat/minProperties
-            - components/schemas/Dog/minProperties
-          - - /quoteManagement/v5/quote
-        previousKey:
-          type: string
-          description: Previous key (name) of the renamed entity.
-        currentKey:
-          type: string
-          description: Current key (name) of the renamed entity.
   examples:
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
     InternalServerError:
       description: 'Example: default internal server error response'
       value:
@@ -1839,12 +1845,6 @@ components:
         status: 404
         code: APIHUB-3020
         message: package with packageId = $packageId not found
-    IncorrectInputParameters:
-      description: Incorrect input parameters
-      value:
-        status: 400
-        code: APIHUB-COMMON-4001
-        message: Incorrect input parameters
   securitySchemes:
     BearerAuth:
       type: http

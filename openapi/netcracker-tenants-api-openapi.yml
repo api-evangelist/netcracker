@@ -1,0 +1,67 @@
+openapi: 3.2.0
+info:
+  contact: {}
+  description: API for Maas Service.
+  title: Maas Service Tenants API
+tags:
+- name: Tenants
+paths:
+  /api/v1/tenants:
+    get:
+      description: Get Tenants By Namespace
+      operationId: GetTenantsByNamespace
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.Tenant'
+                type: array
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Tenants By Namespace using Agent Role
+      tags:
+      - Tenants
+components:
+  schemas:
+    model.Tenant:
+      properties:
+        externalId:
+          example: '101'
+          type: string
+        namespace:
+          type: string
+        tenantPresentation:
+          additionalProperties: true
+          type: object
+      type: object
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

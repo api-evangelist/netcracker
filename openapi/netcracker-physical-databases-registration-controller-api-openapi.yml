@@ -174,14 +174,65 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    RegisteredPhysicalDatabasesDTO:
+    Metadata:
       type: object
+      required:
+      - apiVersion
+      - supportedRoles
+      - features
       properties:
-        identified:
+        apiVersion:
+          type: string
+          description: Adapter API version
+        apiVersions:
+          $ref: '#/components/schemas/ApiVersion'
+          type: object
+          description: Adapter API version
+        supportedRoles:
+          type: array
+          items:
+            type: string
+          description: list of supported roles
+        features:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
-          description: List of registered physical databases with with a known identifier
+            type: boolean
+          description: Prohibition or permission of features
+        roHost:
+          type: string
+          description: Host of RO pod
+    Spec:
+      type: object
+      properties:
+        specRootUrl:
+          type: string
+          description: The root URL part for that API version
+        major:
+          type: integer
+          format: int32
+          description: The last adapter API major version
+        minor:
+          type: integer
+          format: int32
+          description: The last adapter API minor version
+        supportedMajors:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Contains a list of supported adapter API major versions
+    HttpBasicCredentials:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          description: Basic authentication username.
+        password:
+          type: string
+          description: Basic authentication password.
     PhysicalDatabaseRegistryRequestV3:
       type: object
       required:
@@ -210,6 +261,22 @@ components:
         status:
           type: string
           description: 'Adapter status: running or run'
+    RegisteredPhysicalDatabasesDTO:
+      type: object
+      properties:
+        identified:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
+          description: List of registered physical databases with with a known identifier
+    ApiVersion:
+      type: object
+      properties:
+        specs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Spec'
+          description: The root URL part for that API version
     PhysicalDatabaseRegistrationResponseDTOV3:
       type: object
       required:
@@ -252,73 +319,6 @@ components:
           type: array
           items:
             type: string
-    HttpBasicCredentials:
-      type: object
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-          description: Basic authentication username.
-        password:
-          type: string
-          description: Basic authentication password.
-    Spec:
-      type: object
-      properties:
-        specRootUrl:
-          type: string
-          description: The root URL part for that API version
-        major:
-          type: integer
-          format: int32
-          description: The last adapter API major version
-        minor:
-          type: integer
-          format: int32
-          description: The last adapter API minor version
-        supportedMajors:
-          type: array
-          items:
-            type: integer
-            format: int32
-          description: Contains a list of supported adapter API major versions
-    Metadata:
-      type: object
-      required:
-      - apiVersion
-      - supportedRoles
-      - features
-      properties:
-        apiVersion:
-          type: string
-          description: Adapter API version
-        apiVersions:
-          $ref: '#/components/schemas/ApiVersion'
-          type: object
-          description: Adapter API version
-        supportedRoles:
-          type: array
-          items:
-            type: string
-          description: list of supported roles
-        features:
-          type: object
-          additionalProperties:
-            type: boolean
-          description: Prohibition or permission of features
-        roHost:
-          type: string
-          description: Host of RO pod
-    ApiVersion:
-      type: object
-      properties:
-        specs:
-          type: array
-          items:
-            $ref: '#/components/schemas/Spec'
-          description: The root URL part for that API version
   securitySchemes:
     SecurityScheme:
       type: http

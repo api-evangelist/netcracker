@@ -62,7 +62,7 @@ tags:
 - Standards
 - Orchestration
 - Monetization
-- Open-Source
+- Open Source
 tags_raw:
 - Telecommunications
 - United States
@@ -77,6 +77,7 @@ tags_raw:
 - Orchestration
 - Monetization
 - Open Source
+- Open-Source
 created: '2026-07-25'
 modified: '2026-07-25'
 specificationVersion: '0.23'
@@ -1482,88 +1483,6 @@ apis:
     url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
   - type: SourceCode
     url: https://github.com/Netcracker/qubership-dbaas
-- aid: netcracker:netcracker-v1-api
-  name: Netcracker V1 API
-  description: The V1 API from Netcracker — 22 operation(s) for v1.
-  humanURL: https://netcracker.github.io/apihub/
-  baseURL: https://{apihub}.qubership.org
-  tags:
-  - v1
-  tags_raw:
-  - V1
-  properties:
-  - type: OpenAPI
-    url: openapi/netcracker-v1-api-openapi.yml
-  - type: Documentation
-    url: https://netcracker.github.io/apihub/
-  - type: APIReference
-    url: >-
-      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
-  - type: SourceCode
-    url: https://github.com/Netcracker/qubership-apihub-backend
-  - type: GettingStarted
-    url: https://netcracker.github.io/apihub/deploy/
-  - type: Postman
-    url: https://github.com/Netcracker/qubership-apihub-postman-collections
-  - type: APIReference
-    url: >-
-      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
-  - type: Documentation
-    url: https://github.com/Netcracker/qubership-maas
-  - type: APIReference
-    url: >-
-      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
-  - type: SourceCode
-    url: https://github.com/Netcracker/qubership-maas
-  - type: SDKs
-    url: packages/netcracker-packages.yml
-  - type: Documentation
-    url: https://github.com/Netcracker/qubership-dbaas
-  - type: APIReference
-    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
-  - type: SourceCode
-    url: https://github.com/Netcracker/qubership-dbaas
-- aid: netcracker:netcracker-v2-api
-  name: Netcracker V2 API
-  description: The V2 API from Netcracker — 13 operation(s) for v2.
-  humanURL: https://netcracker.github.io/apihub/
-  baseURL: https://{apihub}.qubership.org
-  tags:
-  - v2
-  tags_raw:
-  - V2
-  properties:
-  - type: OpenAPI
-    url: openapi/netcracker-v2-api-openapi.yml
-  - type: Documentation
-    url: https://netcracker.github.io/apihub/
-  - type: APIReference
-    url: >-
-      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
-  - type: SourceCode
-    url: https://github.com/Netcracker/qubership-apihub-backend
-  - type: GettingStarted
-    url: https://netcracker.github.io/apihub/deploy/
-  - type: Postman
-    url: https://github.com/Netcracker/qubership-apihub-postman-collections
-  - type: APIReference
-    url: >-
-      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
-  - type: Documentation
-    url: https://github.com/Netcracker/qubership-maas
-  - type: APIReference
-    url: >-
-      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
-  - type: SourceCode
-    url: https://github.com/Netcracker/qubership-maas
-  - type: SDKs
-    url: packages/netcracker-packages.yml
-  - type: Documentation
-    url: https://github.com/Netcracker/qubership-dbaas
-  - type: APIReference
-    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
-  - type: SourceCode
-    url: https://github.com/Netcracker/qubership-dbaas
 - aid: netcracker:netcracker-versions-api
   name: Netcracker Versions API
   description: Published package versions API.
@@ -1574,6 +1493,357 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/netcracker-versions-api-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+  - type: SDKs
+    url: packages/netcracker-packages.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+- aid: netcracker:netcracker-bg-status-api
+  name: Netcracker Bg Status API
+  description: The Bg Status API from Netcracker — 1 operation(s) for bg status.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - Bg Status
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-bg-status-api-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+  - type: SDKs
+    url: packages/netcracker-packages.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+- aid: netcracker:netcracker-composite-api
+  name: Netcracker Composite API
+  description: The Composite API from Netcracker — 3 operation(s) for composite.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - Composite
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-composite-api-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+  - type: SDKs
+    url: packages/netcracker-packages.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+- aid: netcracker:netcracker-config-api
+  name: Netcracker Config API
+  description: The Config API from Netcracker — 2 operation(s) for config.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - Config
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-config-api-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+  - type: SDKs
+    url: packages/netcracker-packages.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+- aid: netcracker:netcracker-kafka-api
+  name: Netcracker Kafka API
+  description: The Kafka API from Netcracker — 13 operation(s) for kafka.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - Kafka
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-kafka-api-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+  - type: SDKs
+    url: packages/netcracker-packages.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+- aid: netcracker:netcracker-monitoring-api
+  name: Netcracker Monitoring API
+  description: The Monitoring API from Netcracker — 2 operation(s) for monitoring.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - Monitoring
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-monitoring-api-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+  - type: SDKs
+    url: packages/netcracker-packages.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+- aid: netcracker:netcracker-namespace-api
+  name: Netcracker Namespace API
+  description: The Namespace API from Netcracker — 1 operation(s) for namespace.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - Namespace
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-namespace-api-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+  - type: SDKs
+    url: packages/netcracker-packages.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+- aid: netcracker:netcracker-rabbit-api
+  name: Netcracker Rabbit API
+  description: The Rabbit API from Netcracker — 7 operation(s) for rabbit.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - Rabbit
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-rabbit-api-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+  - type: SDKs
+    url: packages/netcracker-packages.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+- aid: netcracker:netcracker-synchronize-tenants-api
+  name: Netcracker Synchronize Tenants API
+  description: The Synchronize Tenants API from Netcracker — 1 operation(s) for synchronize tenants.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - Synchronize Tenants
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-synchronize-tenants-api-openapi.yml
+  - type: Documentation
+    url: https://netcracker.github.io/apihub/
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-apihub-backend
+  - type: GettingStarted
+    url: https://netcracker.github.io/apihub/deploy/
+  - type: Postman
+    url: https://github.com/Netcracker/qubership-apihub-postman-collections
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-maas
+  - type: APIReference
+    url: >-
+      https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-maas
+  - type: SDKs
+    url: packages/netcracker-packages.yml
+  - type: Documentation
+    url: https://github.com/Netcracker/qubership-dbaas
+  - type: APIReference
+    url: https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json
+  - type: SourceCode
+    url: https://github.com/Netcracker/qubership-dbaas
+- aid: netcracker:netcracker-tenants-api
+  name: Netcracker Tenants API
+  description: The Tenants API from Netcracker — 1 operation(s) for tenants.
+  humanURL: https://netcracker.github.io/apihub/
+  baseURL: https://{apihub}.qubership.org
+  tags:
+  - Tenants
+  properties:
+  - type: OpenAPI
+    url: openapi/netcracker-tenants-api-openapi.yml
   - type: Documentation
     url: https://netcracker.github.io/apihub/
   - type: APIReference

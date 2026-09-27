@@ -325,28 +325,107 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    DatabasesInfo:
+    ClassifierWithRolesRequest:
+      type: object
+      required:
+      - classifier
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Database composite identify key. See details in https://perch.qubership.org/display/CLOUDCORE/DbaaS+Database+Classifier
+        originService:
+          type: string
+          description: Origin service which send request
+        userRole:
+          type: string
+          description: Indicates connection properties with which user role should be returned to a client
+    ConnectionDescription:
       type: object
       properties:
-        global:
-          $ref: '#/components/schemas/DatabasesInfoSegment'
-        perAdapters:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldDescription'
+    DatabaseInfo:
+      type: object
+      properties:
+        name:
+          type: string
+    DatabaseRegistry:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - database
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed
+        type:
+          type: string
+          description: Type of database, for example postgresql or mongodb
+        database:
+          $ref: '#/components/schemas/Database'
+          description: It lists of database classifiers
+        dbState:
+          $ref: '#/components/schemas/DbState'
+        databaseRegistry:
           type: array
           items:
-            $ref: '#/components/schemas/DatabasesInfoSegment'
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    FieldTypeEnum:
-      type: string
-      enum:
-      - PASSWORD
+            $ref: '#/components/schemas/DatabaseRegistry'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+        oldClassifier:
+          type: object
+          additionalProperties: {}
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        adapterId:
+          type: string
+        name:
+          type: string
+        markedForDrop:
+          type: boolean
+        backupDisabled:
+          type: boolean
+        dbOwnerRoles:
+          type: array
+          items:
+            type: string
+        settings:
+          type: object
+          additionalProperties: {}
+        connectionDescription:
+          $ref: '#/components/schemas/ConnectionDescription'
+        warnings:
+          type: array
+          items:
+            type: string
+        externallyManageable:
+          type: boolean
+        bgVersion:
+          type: string
+        physicalDatabaseId:
+          type: string
     DatabasesRegistrationInfo:
       type: object
       properties:
@@ -362,39 +441,26 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DatabaseInfo'
-    DatabaseCreateRequestV3:
+    DatabasesInfoSegment:
       type: object
-      required:
-      - classifier
-      - type
-      description: V3 Request model for adding database to DBaaS
       properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of database and distinguishes this database from other databases in the same namespace. It contains such keys as dbClassifier, isServiceDb, microserviceName, namespace. Setting keys depends on the database type. If database with such classifier exists, then this database will be given away. The backupDisabled parameter can not be modified; it is installed only once during creating database request.
+        name:
+          type: string
+        totalDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+        registration:
+          $ref: '#/components/schemas/DatabasesRegistrationInfo'
+        deletingDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+    FieldDescription:
+      type: object
+      properties:
         type:
-          type: string
-          description: Describes the type of database in which you want to create a database. For example mongodb or postgresql
-        namePrefix:
-          type: string
-          description: This is a prefix of the database name. Prefix depends on the type of the database and it should be less than 27 characters if dbName is not specified.
-        backupDisabled:
-          type: boolean
-          description: This field indicates if backup is disabled or not. If true - database would not be backed up.
-        settings:
-          type: object
-          additionalProperties: {}
-          description: Additional settings for creating database. There is a possibility to update settings after database creation.
-        physicalDatabaseId:
-          type: string
-          description: Specifies the identificator of physical database where a logical database will be created. If it is not specified then logical database will be created in default physical database. You can get the list of all physical databases by "List registered physical databases" API.
-        originService:
-          type: string
-          description: Origin service which send request
-        userRole:
-          type: string
-          description: Indicates connection properties with which user role should be returned to a client
+          $ref: '#/components/schemas/FieldTypeEnum'
     Database:
       type: object
       required:
@@ -485,190 +551,43 @@ components:
           description: It lists resource which will be deleted when sending the request for delete a database
         dbState:
           $ref: '#/components/schemas/DbState'
-    DatabaseInfo:
-      type: object
-      properties:
-        name:
-          type: string
-    ClassifierWithRolesRequest:
+    DatabaseCreateRequestV3:
       type: object
       required:
       - classifier
+      - type
+      description: V3 Request model for adding database to DBaaS
       properties:
         classifier:
           type: object
           additionalProperties: {}
-          description: Database composite identify key. See details in https://perch.qubership.org/display/CLOUDCORE/DbaaS+Database+Classifier
+          description: Classifier describes the purpose of database and distinguishes this database from other databases in the same namespace. It contains such keys as dbClassifier, isServiceDb, microserviceName, namespace. Setting keys depends on the database type. If database with such classifier exists, then this database will be given away. The backupDisabled parameter can not be modified; it is installed only once during creating database request.
+        type:
+          type: string
+          description: Describes the type of database in which you want to create a database. For example mongodb or postgresql
+        namePrefix:
+          type: string
+          description: This is a prefix of the database name. Prefix depends on the type of the database and it should be less than 27 characters if dbName is not specified.
+        backupDisabled:
+          type: boolean
+          description: This field indicates if backup is disabled or not. If true - database would not be backed up.
+        settings:
+          type: object
+          additionalProperties: {}
+          description: Additional settings for creating database. There is a possibility to update settings after database creation.
+        physicalDatabaseId:
+          type: string
+          description: Specifies the identificator of physical database where a logical database will be created. If it is not specified then logical database will be created in default physical database. You can get the list of all physical databases by "List registered physical databases" API.
         originService:
           type: string
           description: Origin service which send request
         userRole:
           type: string
           description: Indicates connection properties with which user role should be returned to a client
-    DatabaseStateStatus:
+    FieldTypeEnum:
       type: string
       enum:
-      - PROCESSING
-      - CREATED
-      - DELETING
-      - DELETING_FAILED
-      - ARCHIVED
-      - ORPHAN
-    FieldDescription:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/FieldTypeEnum'
-    DatabasesInfoSegment:
-      type: object
-      properties:
-        name:
-          type: string
-        totalDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseInfo'
-        registration:
-          $ref: '#/components/schemas/DatabasesRegistrationInfo'
-        deletingDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseInfo'
-    DbState:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        state:
-          $ref: '#/components/schemas/DatabaseStateStatus'
-          type: string
-          deprecated: true
-        databaseState:
-          $ref: '#/components/schemas/DatabaseStateStatus'
-        description:
-          type: string
-        podName:
-          type: string
-    ConnectionDescription:
-      type: object
-      properties:
-        fields:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/FieldDescription'
-    DatabaseRegistry:
-      type: object
-      required:
-      - classifier
-      - namespace
-      - type
-      - database
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-          type: string
-          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
-        timeDbCreation:
-          $ref: '#/components/schemas/Date'
-          type: string
-          description: Time to create a database
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
-        namespace:
-          type: string
-          description: Namespace where database is placed
-        type:
-          type: string
-          description: Type of database, for example postgresql or mongodb
-        database:
-          $ref: '#/components/schemas/Database'
-          description: It lists of database classifiers
-        dbState:
-          $ref: '#/components/schemas/DbState'
-        databaseRegistry:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseRegistry'
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/DbResource'
-        oldClassifier:
-          type: object
-          additionalProperties: {}
-        connectionProperties:
-          type: array
-          items:
-            type: object
-            additionalProperties: {}
-        adapterId:
-          type: string
-        name:
-          type: string
-        markedForDrop:
-          type: boolean
-        backupDisabled:
-          type: boolean
-        dbOwnerRoles:
-          type: array
-          items:
-            type: string
-        settings:
-          type: object
-          additionalProperties: {}
-        connectionDescription:
-          $ref: '#/components/schemas/ConnectionDescription'
-        warnings:
-          type: array
-          items:
-            type: string
-        externallyManageable:
-          type: boolean
-        bgVersion:
-          type: string
-        physicalDatabaseId:
-          type: string
-    DbResource:
-      type: object
-      required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
-    ExternalDatabaseRequestV3:
-      type: object
-      required:
-      - classifier
-      - connectionProperties
-      - type
-      - dbName
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: See the description of "classifier" properties of DatabaseCreateRequest entity
-        connectionProperties:
-          type: array
-          items:
-            type: object
-            additionalProperties: {}
-          description: There is an information about connection to database. It contains such keys as url, authDbName, username, password, port, host, etc. You should specify them in order for the client to be able to connect to the database.
-        type:
-          type: string
-          description: Type of physical database.
-        dbName:
-          type: string
-          description: Name of logical database.
-        updateConnectionProperties:
-          type: boolean
-          description: Is connection properties update required. False by default. If true, then old connection properties will be replaced by the new ones provided.
+      - PASSWORD
     TmfErrorResponse:
       type: object
       properties:
@@ -696,6 +615,55 @@ components:
           type: string
         '@schemaLocation':
           type: string
+    DatabaseStateStatus:
+      type: string
+      enum:
+      - PROCESSING
+      - CREATED
+      - DELETING
+      - DELETING_FAILED
+      - ARCHIVED
+      - ORPHAN
+    DatabasesInfo:
+      type: object
+      properties:
+        global:
+          $ref: '#/components/schemas/DatabasesInfoSegment'
+        perAdapters:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabasesInfoSegment'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    ExternalDatabaseRequestV3:
+      type: object
+      required:
+      - classifier
+      - connectionProperties
+      - type
+      - dbName
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: See the description of "classifier" properties of DatabaseCreateRequest entity
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: There is an information about connection to database. It contains such keys as url, authDbName, username, password, port, host, etc. You should specify them in order for the client to be able to connect to the database.
+        type:
+          type: string
+          description: Type of physical database.
+        dbName:
+          type: string
+          description: Name of logical database.
+        updateConnectionProperties:
+          type: boolean
+          description: Is connection properties update required. False by default. If true, then old connection properties will be replaced by the new ones provided.
     TmfError:
       type: object
       properties:
@@ -715,6 +683,38 @@ components:
         meta:
           type: object
           additionalProperties: {}
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    DbState:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        state:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+          type: string
+          deprecated: true
+        databaseState:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+        description:
+          type: string
+        podName:
+          type: string
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
   securitySchemes:
     SecurityScheme:
       type: http

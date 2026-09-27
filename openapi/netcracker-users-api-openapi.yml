@@ -914,6 +914,84 @@ paths:
                   $ref: '#/components/examples/InternalServerError'
 components:
   schemas:
+    Permission:
+      description: Permission
+      type: string
+      enum:
+      - read
+      - create_and_update_package
+      - delete_package
+      - manage_draft_version
+      - manage_release_version
+      - manage_archived_version
+      - user_access_management
+      - access_token_management
+      example: read
+    MemberCreate:
+      description: Assign users and role to the package
+      type: object
+      title: MemberCreate
+      required:
+      - emails
+      - roleIds
+      properties:
+        emails:
+          description: List of email addresses of the users to create.
+          type: array
+          items:
+            type: string
+            format: email
+          example:
+          - john.doe@example.com
+        roleIds:
+          type: array
+          description: List of role IDs, added to the user.
+          items:
+            type: string
+          example:
+          - owner
+          - editor
+          - viewer
+          - none
+    User:
+      description: Represents an APIHUB user with identity and profile information returned by API endpoints.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          description: Unique user login (username) used to authenticate the user.
+          type: string
+          example: user1221
+        name:
+          description: Name of the user
+          type: string
+          example: John Doe
+        email:
+          description: Email address of the user
+          type: string
+          format: email
+          example: john.doe@example.com
+        avatarUrl:
+          description: URL of the user avatar image.
+          type: string
+          format: URL
+    ExtendedUserV2:
+      allOf:
+      - $ref: '#/components/schemas/User'
+      - type: object
+        required:
+        - systemRole
+        properties:
+          systemRole:
+            type: string
+            description: System role of the user.
+          accessTokenTTLSeconds:
+            type:
+            - integer
+            - 'null'
+            format: int32
+            description: Optional access token time-to-live in seconds.
     ExtendedUser:
       allOf:
       - $ref: '#/components/schemas/User'
@@ -969,71 +1047,6 @@ components:
                       description: Name of the package
                       type: string
                       example: qubership
-    MemberCreate:
-      description: Assign users and role to the package
-      type: object
-      title: MemberCreate
-      required:
-      - emails
-      - roleIds
-      properties:
-        emails:
-          description: List of email addresses of the users to create.
-          type: array
-          items:
-            type: string
-            format: email
-          example:
-          - john.doe@example.com
-        roleIds:
-          type: array
-          description: List of role IDs, added to the user.
-          items:
-            type: string
-          example:
-          - owner
-          - editor
-          - viewer
-          - none
-    Permission:
-      description: Permission
-      type: string
-      enum:
-      - read
-      - create_and_update_package
-      - delete_package
-      - manage_draft_version
-      - manage_release_version
-      - manage_archived_version
-      - user_access_management
-      - access_token_management
-      example: read
-    ErrorResponse:
-      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
-      type: object
-      properties:
-        status:
-          description: HTTP status code as an integer; expected to match the actual HTTP response status.
-          type: number
-        code:
-          description: Internal string error code. Mandatory in response.
-          type: string
-        message:
-          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
-          type: string
-        params:
-          type: object
-          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
-          example:
-            id: 12345
-            type: string
-        debug:
-          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
-          type: string
-      required:
-      - status
-      - code
-      - message
     Package:
       description: Simple package object, without content and dependencies
       type: object
@@ -1110,22 +1123,6 @@ components:
             '
           type: string
           example: /api/v1/{group}/
-    ExtendedUserV2:
-      allOf:
-      - $ref: '#/components/schemas/User'
-      - type: object
-        required:
-        - systemRole
-        properties:
-          systemRole:
-            type: string
-            description: System role of the user.
-          accessTokenTTLSeconds:
-            type:
-            - integer
-            - 'null'
-            format: int32
-            description: Optional access token time-to-live in seconds.
     Role:
       description: Represents a role with its identifier, display name, and assigned permissions.
       type: object
@@ -1143,37 +1140,33 @@ components:
           type: string
           description: Role name.
           example: Editor
-    User:
-      description: Represents an APIHUB user with identity and profile information returned by API endpoints.
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
       type: object
-      required:
-      - id
       properties:
-        id:
-          description: Unique user login (username) used to authenticate the user.
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
           type: string
-          example: user1221
-        name:
-          description: Name of the user
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
           type: string
-          example: John Doe
-        email:
-          description: Email address of the user
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
           type: string
-          format: email
-          example: john.doe@example.com
-        avatarUrl:
-          description: URL of the user avatar image.
-          type: string
-          format: URL
+      required:
+      - status
+      - code
+      - message
   parameters:
-    page:
-      name: page
-      in: query
-      description: Page number
-      schema:
-        type: number
-        default: 0
     packageId:
       name: packageId
       in: path
@@ -1191,14 +1184,14 @@ components:
         default: 100
         maximum: 100
         minimum: 1
+    page:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: number
+        default: 0
   examples:
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
     IncorrectInputParameters:
       description: Incorrect input parameters
       value:
@@ -1211,6 +1204,13 @@ components:
         status: 404
         code: APIHUB-3020
         message: package with packageId = $packageId not found
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
   securitySchemes:
     BearerAuth:
       type: http

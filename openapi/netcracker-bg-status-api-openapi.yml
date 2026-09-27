@@ -1,0 +1,128 @@
+openapi: 3.2.0
+info:
+  contact: {}
+  description: API for Maas Service.
+  title: Maas Service Bg Status API
+tags:
+- name: Bg Status
+paths:
+  /api/v1/bg-status:
+    get:
+      description: Get Bg Status By Namespace
+      operationId: GetBgStatusByNamespace
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/model.BgStatus'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Get Bg Status By Namespace using Agent Role
+      tags:
+      - Bg Status
+    post:
+      description: Apply Bg Status
+      operationId: ApplyBgStatus
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Apply Bg Status using Agent Role
+      tags:
+      - Bg Status
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/model.CpDeploymentVersion'
+              type: array
+        description: CpMessageDto
+        required: true
+components:
+  schemas:
+    model.CpDeploymentVersion:
+      properties:
+        createdWhen:
+          example: '2021-08-18T16:33:15.142354459Z'
+          type: string
+        stage:
+          example: ACTIVE
+          type: string
+        updatedWhen:
+          example: '2021-08-18T16:33:15.14235456Z'
+          type: string
+        version:
+          example: v1
+          type: string
+      type: object
+    model.BgStatus:
+      properties:
+        active:
+          example: v2
+          type: string
+        candidates:
+          example:
+          - v2
+          - v3
+          items:
+            type: string
+          type: array
+        legacy:
+          example: v3
+          type: string
+        namespace:
+          example: namespace
+          type: string
+        timestamp:
+          example: '2021-08-18T17:29:06.82837Z'
+          type: string
+      type: object
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

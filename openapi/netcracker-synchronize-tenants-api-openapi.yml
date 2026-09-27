@@ -1,0 +1,168 @@
+openapi: 3.2.0
+info:
+  contact: {}
+  description: API for Maas Service.
+  title: Maas Service Synchronize Tenants API
+tags:
+- name: Synchronize Tenants
+paths:
+  /api/v1/synchronize-tenants:
+    post:
+      description: Sync Tenants
+      operationId: SyncTenants
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/model.SyncTenantsResp'
+                type: array
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Sync Tenants using Agent Role
+      tags:
+      - Synchronize Tenants
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/model.Tenant'
+              type: array
+        description: Request Body
+        required: true
+components:
+  schemas:
+    model.SyncTenantsResp:
+      properties:
+        tenant:
+          $ref: '#/components/schemas/model.Tenant'
+        topics:
+          items:
+            $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+          type: array
+      type: object
+    model.Classifier:
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        tenantId:
+          type: string
+      required:
+      - name
+      - namespace
+      type: object
+    model.KafkaCredentials:
+      properties:
+        clientCert:
+          type: string
+        clientKey:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+        username:
+          type: string
+      type: object
+    model.TopicSettings:
+      properties:
+        configs:
+          additionalProperties:
+            type: string
+          type: object
+        minNumPartitions:
+          example: 1
+          type: integer
+        numPartitions:
+          example: 1
+          type: integer
+        replicaAssignment:
+          additionalProperties:
+            items:
+              type: integer
+            type: array
+          type: object
+        replicationFactor:
+          example: 1
+          type: integer
+        versioned:
+          example: true
+          type: boolean
+      type: object
+    model.TopicRegistrationRespDto:
+      properties:
+        actualSettings:
+          $ref: '#/components/schemas/model.TopicSettings'
+        addresses:
+          additionalProperties:
+            items:
+              type: string
+            type: array
+          type: object
+        caCert:
+          example: ' '
+          type: string
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        credential:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/model.KafkaCredentials'
+            type: array
+          type: object
+        externallyManaged:
+          type: boolean
+        instance:
+          example: localkafka
+          type: string
+        name:
+          example: local.sampleTopic2.430d243ba9c74f25bf05f492a52804fd
+          type: string
+        namespace:
+          example: local
+          type: string
+        requestedSettings:
+          $ref: '#/components/schemas/model.TopicSettings'
+        template:
+          example: '2'
+          type: string
+        versioned:
+          example: false
+          type: boolean
+      type: object
+    model.Tenant:
+      properties:
+        externalId:
+          example: '101'
+          type: string
+        namespace:
+          type: string
+        tenantPresentation:
+          additionalProperties: true
+          type: object
+      type: object
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

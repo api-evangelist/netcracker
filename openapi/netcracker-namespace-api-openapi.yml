@@ -1,0 +1,56 @@
+openapi: 3.2.0
+info:
+  contact: {}
+  description: API for Maas Service.
+  title: Maas Service Namespace API
+tags:
+- name: Namespace
+paths:
+  /api/v1/namespace:
+    delete:
+      description: Delete Namespace
+      operationId: DeleteNamespace
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Delete Namespace using Manager Role
+      tags:
+      - Namespace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/model.Namespace'
+        description: Namespace
+        required: true
+components:
+  schemas:
+    model.Namespace:
+      properties:
+        namespace:
+          example: <your namespace>
+          type: string
+      type: object
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

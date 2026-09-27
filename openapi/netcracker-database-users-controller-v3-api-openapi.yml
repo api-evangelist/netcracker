@@ -170,62 +170,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    UnsuccessfulRestore:
-      type: object
-      properties:
-        connectionProperties:
-          type: object
-          additionalProperties: {}
-        errorMessage:
-          type: string
-    GetOrCreateUserRequest:
-      type: object
-      required:
-      - classifier
-      - logicalUserId
-      - type
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as scope, microserviceName, namespace.
-        logicalUserId:
-          type: string
-          description: User uniq identifier. Using this field with classifier and type dbaas will determine to create or return created before user.
-        type:
-          type: string
-          description: The physical type of logical database. For example postgresql
-        physicalDbId:
-          type: string
-          description: Identificator of physical database related to a logical database.
-        usernamePrefix:
-          type: string
-          description: Prefix for username
-        userRole:
-          type: string
-          description: User role, for example admin, rw, ro
-    SuccessfullRestore:
-      type: object
-      properties:
-        connectionProperties:
-          type: object
-          additionalProperties: {}
-    SuccessfulRestoreUsersResponse:
-      type: object
-      properties:
-        message:
-          type: string
-    RestoreUsersResponse:
-      type: object
-      properties:
-        unsuccessfully:
-          type: array
-          items:
-            $ref: '#/components/schemas/UnsuccessfulRestore'
-        successfully:
-          type: array
-          items:
-            $ref: '#/components/schemas/SuccessfullRestore'
     GetOrCreateUserResponse:
       type: object
       required:
@@ -271,6 +215,62 @@ components:
         userId:
           type: string
           description: The user identificator.
+    SuccessfulRestoreUsersResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    UnsuccessfulRestore:
+      type: object
+      properties:
+        connectionProperties:
+          type: object
+          additionalProperties: {}
+        errorMessage:
+          type: string
+    RestoreUsersResponse:
+      type: object
+      properties:
+        unsuccessfully:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnsuccessfulRestore'
+        successfully:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccessfullRestore'
+    SuccessfullRestore:
+      type: object
+      properties:
+        connectionProperties:
+          type: object
+          additionalProperties: {}
+    GetOrCreateUserRequest:
+      type: object
+      required:
+      - classifier
+      - logicalUserId
+      - type
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as scope, microserviceName, namespace.
+        logicalUserId:
+          type: string
+          description: User uniq identifier. Using this field with classifier and type dbaas will determine to create or return created before user.
+        type:
+          type: string
+          description: The physical type of logical database. For example postgresql
+        physicalDbId:
+          type: string
+          description: Identificator of physical database related to a logical database.
+        usernamePrefix:
+          type: string
+          description: Prefix for username
+        userRole:
+          type: string
+          description: User role, for example admin, rw, ro
   securitySchemes:
     SecurityScheme:
       type: http

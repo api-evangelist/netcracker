@@ -51,27 +51,6 @@ paths:
         '500':
           $ref: '#/components/examples/InternalServerError'
 components:
-  examples:
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
-    SystemInfo:
-      description: Example of the system description
-      value:
-        backendVersion: master-20250522.080756-379-RELEASE
-        productionMode: true
-        migrationInProgress: false
-        aiChatEnabled: false
-        externalLinks:
-        - User guide|https://www.example.com/guide
-        - Support team|https://www.example.com/support]
-        featureFlags:
-          useV3Search: false
-          previousVersionStatusValidation: true
   schemas:
     SystemInfo:
       description: Information about the APIHUB product
@@ -116,6 +95,27 @@ components:
               description: When true, previous version status validation is enforced on publish and patch endpoints. When false, the system runs with the legacy behaviour.
               type: boolean
               default: true
+  examples:
+    SystemInfo:
+      description: Example of the system description
+      value:
+        backendVersion: master-20250522.080756-379-RELEASE
+        productionMode: true
+        migrationInProgress: false
+        aiChatEnabled: false
+        externalLinks:
+        - User guide|https://www.example.com/guide
+        - Support team|https://www.example.com/support]
+        featureFlags:
+          useV3Search: false
+          previousVersionStatusValidation: true
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
   securitySchemes:
     BearerAuth:
       type: http

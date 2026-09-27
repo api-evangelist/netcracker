@@ -119,6 +119,62 @@ components:
         dbHost:
           type: string
           description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    RegisterDatabaseRequestV3:
+      type: object
+      required:
+      - classifier
+      - connectionProperties
+      - resources
+      - namespace
+      - type
+      - name
+      description: Request to add database to registration
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of database, it should not exist in registration, or the request would be ignored.
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+          description: Connection properties used to connect to database. It contains such keys as url, authDbName, username, password, port, host. Setting keys depends on the database type.
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+          description: List of the resources needed to drop during database drop.
+        namespace:
+          type: string
+          description: Namespace where database is placed.
+        type:
+          type: string
+          description: The type of database, for example postgresql or mongodb.
+        adapterId:
+          type: string
+          description: Identifier of an adapter to work with database. If not specified then the default would be used.
+        name:
+          type: string
+          description: Name of database.
+        backupDisabled:
+          type: boolean
+          description: This parameter specifies if the DBaaS should except this database from backup/restore procedure. The parameter cannot be modified and it is installed only once during registration request.
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
+        dbHost:
+          type: string
+          description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
     DatabaseResponseV3ListCP:
       type: object
       required:
@@ -171,15 +227,6 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
     MigrationResult:
       type: object
       properties:
@@ -215,53 +262,6 @@ components:
         name:
           type: string
           description: Name of the resource.
-    RegisterDatabaseRequestV3:
-      type: object
-      required:
-      - classifier
-      - connectionProperties
-      - resources
-      - namespace
-      - type
-      - name
-      description: Request to add database to registration
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of database, it should not exist in registration, or the request would be ignored.
-        connectionProperties:
-          type: array
-          items:
-            type: object
-            additionalProperties: {}
-          description: Connection properties used to connect to database. It contains such keys as url, authDbName, username, password, port, host. Setting keys depends on the database type.
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/DbResource'
-          description: List of the resources needed to drop during database drop.
-        namespace:
-          type: string
-          description: Namespace where database is placed.
-        type:
-          type: string
-          description: The type of database, for example postgresql or mongodb.
-        adapterId:
-          type: string
-          description: Identifier of an adapter to work with database. If not specified then the default would be used.
-        name:
-          type: string
-          description: Name of database.
-        backupDisabled:
-          type: boolean
-          description: This parameter specifies if the DBaaS should except this database from backup/restore procedure. The parameter cannot be modified and it is installed only once during registration request.
-        physicalDatabaseId:
-          type: string
-          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
-        dbHost:
-          type: string
-          description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
   securitySchemes:
     SecurityScheme:
       type: http

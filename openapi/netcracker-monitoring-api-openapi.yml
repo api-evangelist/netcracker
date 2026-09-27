@@ -1,0 +1,59 @@
+openapi: 3.2.0
+info:
+  contact: {}
+  description: API for Maas Service.
+  title: Maas Service Monitoring API
+tags:
+- name: Monitoring
+paths:
+  /api/v2/monitoring/entity-distribution:
+    get:
+      description: Get Monitoring Entities
+      operationId: GetMonitoringEntities
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - manager
+      summary: Get Monitoring Entities using Manager Role
+      tags:
+      - Monitoring
+  /api/v2/monitoring/entity-request-audit:
+    get:
+      operationId: GetMonitoringEntityRequests
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      summary: Get Monitoring Entity Requests
+      tags:
+      - Monitoring
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic

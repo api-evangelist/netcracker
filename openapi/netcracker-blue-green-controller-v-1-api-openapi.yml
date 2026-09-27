@@ -406,15 +406,24 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    BgNamespaceRequest:
+    BgStateRequest:
       type: object
       properties:
-        peerNamespace:
-          type: string
-        originNamespace:
-          type: string
-        controllerNamespace:
-          type: string
+        BGState:
+          $ref: '#/components/schemas/BGState'
+    DeleteOrphansRequest:
+      type: object
+      required:
+      - namespaces
+      properties:
+        namespaces:
+          type: array
+          items:
+            type: string
+          description: List of namespaces orhan databases of which is needed to delete
+        delete:
+          type: boolean
+          description: confirmation parameter. If this is not passed or false then orhan database will not be deleted and response will contain orhan databases that are registered in DBaaS
     Date:
       type: string
       format: date
@@ -429,24 +438,6 @@ components:
           type: string
         version:
           type: string
-    DeleteOrphansRequest:
-      type: object
-      required:
-      - namespaces
-      properties:
-        namespaces:
-          type: array
-          items:
-            type: string
-          description: List of namespaces orhan databases of which is needed to delete
-        delete:
-          type: boolean
-          description: confirmation parameter. If this is not passed or false then orhan database will not be deleted and response will contain orhan databases that are registered in DBaaS
-    BgStateRequest:
-      type: object
-      properties:
-        BGState:
-          $ref: '#/components/schemas/BGState'
     BGState:
       type: object
       properties:
@@ -458,6 +449,15 @@ components:
           $ref: '#/components/schemas/BGStateNamespace'
         updateTime:
           $ref: '#/components/schemas/Date'
+    BgNamespaceRequest:
+      type: object
+      properties:
+        peerNamespace:
+          type: string
+        originNamespace:
+          type: string
+        controllerNamespace:
+          type: string
   securitySchemes:
     SecurityScheme:
       type: http

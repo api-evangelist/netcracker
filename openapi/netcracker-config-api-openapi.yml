@@ -1,0 +1,99 @@
+openapi: 3.2.0
+info:
+  contact: {}
+  description: API for Maas Service.
+  title: Maas Service Config API
+tags:
+- name: Config
+paths:
+  /api/v1/config:
+    post:
+      description: Apply Config
+      operationId: ApplyConfig
+      parameters:
+      - description: X-Origin-Namespace
+        in: header
+        name: X-Origin-Namespace
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Apply Config using Agent Role
+      tags:
+      - Config
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Request Body
+        required: true
+  /api/v2/config:
+    post:
+      description: Apply Config V2
+      operationId: ApplyConfigV2
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+      security:
+      - BasicAuth:
+        - agent
+      summary: Apply Config V2 using Agent Role
+      tags:
+      - Config
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Request Body
+        required: true
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
