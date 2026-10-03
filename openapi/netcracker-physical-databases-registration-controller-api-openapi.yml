@@ -174,101 +174,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    Metadata:
-      type: object
-      required:
-      - apiVersion
-      - supportedRoles
-      - features
-      properties:
-        apiVersion:
-          type: string
-          description: Adapter API version
-        apiVersions:
-          $ref: '#/components/schemas/ApiVersion'
-          type: object
-          description: Adapter API version
-        supportedRoles:
-          type: array
-          items:
-            type: string
-          description: list of supported roles
-        features:
-          type: object
-          additionalProperties:
-            type: boolean
-          description: Prohibition or permission of features
-        roHost:
-          type: string
-          description: Host of RO pod
-    Spec:
-      type: object
-      properties:
-        specRootUrl:
-          type: string
-          description: The root URL part for that API version
-        major:
-          type: integer
-          format: int32
-          description: The last adapter API major version
-        minor:
-          type: integer
-          format: int32
-          description: The last adapter API minor version
-        supportedMajors:
-          type: array
-          items:
-            type: integer
-            format: int32
-          description: Contains a list of supported adapter API major versions
-    HttpBasicCredentials:
-      type: object
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-          description: Basic authentication username.
-        password:
-          type: string
-          description: Basic authentication password.
-    PhysicalDatabaseRegistryRequestV3:
-      type: object
-      required:
-      - adapterAddress
-      - httpBasicCredentials
-      - metadata
-      - status
-      description: V3 Request model for sending physical database registration to DBaaS
-      properties:
-        adapterAddress:
-          type: string
-          description: Physical address of DBaaS adapter. The address is used for CRUD operation with logic databases.
-        httpBasicCredentials:
-          $ref: '#/components/schemas/HttpBasicCredentials'
-          type: object
-          description: Basic authentication username and password for requests from DBaaS Aggregator to DBaaS adapter.
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-          description: Additional information about physical database. It may be a version of database cluster, any labels, and etc.
-        metadata:
-          $ref: '#/components/schemas/Metadata'
-          type: object
-          description: Information about supported roles, adapter api version and features
-        status:
-          type: string
-          description: 'Adapter status: running or run'
-    RegisteredPhysicalDatabasesDTO:
-      type: object
-      properties:
-        identified:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
-          description: List of registered physical databases with with a known identifier
     ApiVersion:
       type: object
       properties:
@@ -319,6 +224,101 @@ components:
           type: array
           items:
             type: string
+    HttpBasicCredentials:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          description: Basic authentication username.
+        password:
+          type: string
+          description: Basic authentication password.
+    RegisteredPhysicalDatabasesDTO:
+      type: object
+      properties:
+        identified:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
+          description: List of registered physical databases with with a known identifier
+    Spec:
+      type: object
+      properties:
+        specRootUrl:
+          type: string
+          description: The root URL part for that API version
+        major:
+          type: integer
+          format: int32
+          description: The last adapter API major version
+        minor:
+          type: integer
+          format: int32
+          description: The last adapter API minor version
+        supportedMajors:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Contains a list of supported adapter API major versions
+    PhysicalDatabaseRegistryRequestV3:
+      type: object
+      required:
+      - adapterAddress
+      - httpBasicCredentials
+      - metadata
+      - status
+      description: V3 Request model for sending physical database registration to DBaaS
+      properties:
+        adapterAddress:
+          type: string
+          description: Physical address of DBaaS adapter. The address is used for CRUD operation with logic databases.
+        httpBasicCredentials:
+          $ref: '#/components/schemas/HttpBasicCredentials'
+          type: object
+          description: Basic authentication username and password for requests from DBaaS Aggregator to DBaaS adapter.
+        labels:
+          type: object
+          additionalProperties:
+            type: string
+          description: Additional information about physical database. It may be a version of database cluster, any labels, and etc.
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+          type: object
+          description: Information about supported roles, adapter api version and features
+        status:
+          type: string
+          description: 'Adapter status: running or run'
+    Metadata:
+      type: object
+      required:
+      - apiVersion
+      - supportedRoles
+      - features
+      properties:
+        apiVersion:
+          type: string
+          description: Adapter API version
+        apiVersions:
+          $ref: '#/components/schemas/ApiVersion'
+          type: object
+          description: Adapter API version
+        supportedRoles:
+          type: array
+          items:
+            type: string
+          description: list of supported roles
+        features:
+          type: object
+          additionalProperties:
+            type: boolean
+          description: Prohibition or permission of features
+        roHost:
+          type: string
+          description: Host of RO pod
   securitySchemes:
     SecurityScheme:
       type: http

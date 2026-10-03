@@ -69,10 +69,6 @@ components:
         physicalDatabaseId:
           type: string
           description: Specifies id of new physical database. The value can be found in dbaas-adapter env
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
     Date:
       type: string
       format: date
@@ -130,6 +126,10 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
     DbResource:
       type: object
       required:

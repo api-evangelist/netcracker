@@ -170,19 +170,20 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    GetOrCreateUserResponse:
+    SuccessfullRestore:
       type: object
-      required:
-      - userId
-      - connectionProperties
       properties:
-        userId:
-          type: string
-          description: The user identificator.
         connectionProperties:
           type: object
           additionalProperties: {}
-          description: The information about connection to database. It contains such keys as url, authDbName, username, password, port, host.Setting keys depends on the database type.
+    UnsuccessfulRestore:
+      type: object
+      properties:
+        connectionProperties:
+          type: object
+          additionalProperties: {}
+        errorMessage:
+          type: string
     RestoreUsersRequest:
       type: object
       required:
@@ -199,52 +200,6 @@ components:
         role:
           type: string
           description: User role
-    UserOperationRequest:
-      type: object
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
-        logicalUserId:
-          type: string
-          description: User uniq identifier. Using this field with classifier and type dbaas will determine to create or return created before user.
-        type:
-          type: string
-          description: The physical type of logical database. For example mongodb or postgresql
-        userId:
-          type: string
-          description: The user identificator.
-    SuccessfulRestoreUsersResponse:
-      type: object
-      properties:
-        message:
-          type: string
-    UnsuccessfulRestore:
-      type: object
-      properties:
-        connectionProperties:
-          type: object
-          additionalProperties: {}
-        errorMessage:
-          type: string
-    RestoreUsersResponse:
-      type: object
-      properties:
-        unsuccessfully:
-          type: array
-          items:
-            $ref: '#/components/schemas/UnsuccessfulRestore'
-        successfully:
-          type: array
-          items:
-            $ref: '#/components/schemas/SuccessfullRestore'
-    SuccessfullRestore:
-      type: object
-      properties:
-        connectionProperties:
-          type: object
-          additionalProperties: {}
     GetOrCreateUserRequest:
       type: object
       required:
@@ -271,6 +226,51 @@ components:
         userRole:
           type: string
           description: User role, for example admin, rw, ro
+    RestoreUsersResponse:
+      type: object
+      properties:
+        unsuccessfully:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnsuccessfulRestore'
+        successfully:
+          type: array
+          items:
+            $ref: '#/components/schemas/SuccessfullRestore'
+    GetOrCreateUserResponse:
+      type: object
+      required:
+      - userId
+      - connectionProperties
+      properties:
+        userId:
+          type: string
+          description: The user identificator.
+        connectionProperties:
+          type: object
+          additionalProperties: {}
+          description: The information about connection to database. It contains such keys as url, authDbName, username, password, port, host.Setting keys depends on the database type.
+    UserOperationRequest:
+      type: object
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        logicalUserId:
+          type: string
+          description: User uniq identifier. Using this field with classifier and type dbaas will determine to create or return created before user.
+        type:
+          type: string
+          description: The physical type of logical database. For example mongodb or postgresql
+        userId:
+          type: string
+          description: The user identificator.
+    SuccessfulRestoreUsersResponse:
+      type: object
+      properties:
+        message:
+          type: string
   securitySchemes:
     SecurityScheme:
       type: http

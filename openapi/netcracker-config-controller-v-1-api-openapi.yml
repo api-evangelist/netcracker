@@ -141,6 +141,13 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    OperationDetails:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDetails'
     OperationState:
       type: object
       properties:
@@ -148,6 +155,16 @@ components:
           type: string
         description:
           type: string
+    OperationStatusExtendedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          readOnly: true
+        message:
+          type: string
+        operationDetails:
+          $ref: '#/components/schemas/OperationDetails'
     DeclarativeResponse:
       type: object
       properties:
@@ -161,13 +178,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Condition'
-    OperationDetails:
-      type: object
-      properties:
-        tasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaskDetails'
     Condition:
       type: object
       properties:
@@ -183,16 +193,6 @@ components:
           type:
           - string
           - 'null'
-    OperationStatusExtendedResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          readOnly: true
-        message:
-          type: string
-        operationDetails:
-          $ref: '#/components/schemas/OperationDetails'
     TaskDetails:
       type: object
       properties:

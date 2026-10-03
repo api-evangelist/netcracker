@@ -50,15 +50,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    ServiceRole:
-      type: object
-      properties:
-        name:
-          type: string
-        roles:
-          type: array
-          items:
-            type: string
     AccessGrantsResponse:
       type: object
       properties:
@@ -75,6 +66,15 @@ components:
         disableGlobalPermissions:
           type: boolean
           description: Is global permissions disabled
+    ServiceRole:
+      type: object
+      properties:
+        name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
     PolicyRole:
       type: object
       properties:

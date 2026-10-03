@@ -561,12 +561,6 @@ paths:
       - Auth
 components:
   examples:
-    Unauthorized:
-      description: Unauthorized access
-      value:
-        status: 401
-        code: APIHUB-4101
-        message: Authentication required
     IncorrectInputParameters:
       description: Incorrect input parameters
       value:
@@ -580,6 +574,12 @@ components:
         code: APIHUB-8000
         reason: InternalServerError
         message: InternalServerError
+    Unauthorized:
+      description: Unauthorized access
+      value:
+        status: 401
+        code: APIHUB-4101
+        message: Authentication required
   schemas:
     ErrorResponse:
       description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
@@ -616,24 +616,6 @@ components:
           example: manager
           type: string
       type: object
-    model.ClientAccountDto:
-      properties:
-        namespace:
-          example: namespace
-          type: string
-        password:
-          example: client
-          type: string
-        roles:
-          example:
-          - agent
-          items:
-            type: string
-          type: array
-        username:
-          example: client
-          type: string
-      type: object
     model.Account:
       properties:
         domainNamespaces:
@@ -659,6 +641,24 @@ components:
           type: string
         username:
           example: manager
+          type: string
+      type: object
+    model.ClientAccountDto:
+      properties:
+        namespace:
+          example: namespace
+          type: string
+        password:
+          example: client
+          type: string
+        roles:
+          example:
+          - agent
+          items:
+            type: string
+          type: array
+        username:
+          example: client
           type: string
       type: object
   securitySchemes:

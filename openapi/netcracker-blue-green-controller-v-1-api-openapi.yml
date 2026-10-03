@@ -406,11 +406,20 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    BgStateRequest:
+    BGStateNamespace:
       type: object
       properties:
-        BGState:
-          $ref: '#/components/schemas/BGState'
+        name:
+          type: string
+        state:
+          type: string
+        version:
+          type: string
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
     DeleteOrphansRequest:
       type: object
       required:
@@ -424,20 +433,6 @@ components:
         delete:
           type: boolean
           description: confirmation parameter. If this is not passed or false then orhan database will not be deleted and response will contain orhan databases that are registered in DBaaS
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    BGStateNamespace:
-      type: object
-      properties:
-        name:
-          type: string
-        state:
-          type: string
-        version:
-          type: string
     BGState:
       type: object
       properties:
@@ -458,6 +453,11 @@ components:
           type: string
         controllerNamespace:
           type: string
+    BgStateRequest:
+      type: object
+      properties:
+        BGState:
+          $ref: '#/components/schemas/BGState'
   securitySchemes:
     SecurityScheme:
       type: http

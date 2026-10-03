@@ -525,26 +525,12 @@ paths:
       - Rabbit
 components:
   schemas:
-    model.VHostRegistrationResponse:
+    controller.VhostAndConfigResult:
       properties:
-        apiUrl:
-          example: http://127.0.0.1:15672/api
-          type: string
-        cnn:
-          example: amqp://127.0.0.1:5672/namespace.test12
-          type: string
-        password:
-          example: plain:504a449065924332b062c4a84e830cbe
-          type: string
-        username:
-          example: 9757343a78a04057a07ee4215f1b1355
-          type: string
-      type: object
-    controller.Instance:
-      properties:
-        id:
-          example: maas-rabbitmq-code-dev
-          type: string
+        entities:
+          $ref: '#/components/schemas/model.RabbitEntities'
+        vhost:
+          $ref: '#/components/schemas/model.VHostRegistrationResponse'
       type: object
     model.Classifier:
       properties:
@@ -557,6 +543,12 @@ components:
       required:
       - name
       - namespace
+      type: object
+    controller.Instance:
+      properties:
+        id:
+          example: maas-rabbitmq-code-dev
+          type: string
       type: object
     model.LazyBindingDto:
       properties:
@@ -600,23 +592,6 @@ components:
         vhost:
           type: string
       type: object
-    model.VHostRegistrationReqDto:
-      properties:
-        classifier:
-          $ref: '#/components/schemas/model.Classifier'
-        instance:
-          example: <[optional] rabbitmq instance for virtual host. if not specified default instance will be used>
-          type: string
-      required:
-      - classifier
-      type: object
-    controller.VhostAndConfigResult:
-      properties:
-        entities:
-          $ref: '#/components/schemas/model.RabbitEntities'
-        vhost:
-          $ref: '#/components/schemas/model.VHostRegistrationResponse'
-      type: object
     model.RabbitInstance:
       properties:
         amqpUrl:
@@ -636,6 +611,31 @@ components:
           type: string
         user:
           example: guest
+          type: string
+      type: object
+    model.VHostRegistrationReqDto:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          example: <[optional] rabbitmq instance for virtual host. if not specified default instance will be used>
+          type: string
+      required:
+      - classifier
+      type: object
+    model.VHostRegistrationResponse:
+      properties:
+        apiUrl:
+          example: http://127.0.0.1:15672/api
+          type: string
+        cnn:
+          example: amqp://127.0.0.1:5672/namespace.test12
+          type: string
+        password:
+          example: plain:504a449065924332b062c4a84e830cbe
+          type: string
+        username:
+          example: 9757343a78a04057a07ee4215f1b1355
           type: string
       type: object
   securitySchemes:

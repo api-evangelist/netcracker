@@ -414,272 +414,6 @@ paths:
                   $ref: '#/components/examples/InternalServerError'
 components:
   schemas:
-    AsyncAPIOperation:
-      description: AsyncAPI operation object.
-      title: AsyncAPIOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
-    AsyncAPIOperationMeta:
-      description: 'Specific parameters for AsyncAPI 3.0 operation.
-
-        An APIHUB Operation for AsyncAPI is the triple (channel, operation, message).
-
-        '
-      title: AsyncAPIOperationMeta
-      required:
-      - action
-      - channel
-      - protocol
-      - asyncOperationId
-      - messageId
-      type: object
-      properties:
-        action:
-          description: 'AsyncAPI operation action: send or receive.'
-          type: string
-          enum:
-          - send
-          - receive
-        channel:
-          description: 'AsyncAPI channel identifier.
-
-            Uses channel.title if available; otherwise uses channelId (key in the document''s root channels map).
-
-            '
-          type: string
-          example: User Signup Channel
-        protocol:
-          description: 'Communication protocol derived from the channel''s first server.
-
-            Expected values: kafka, amqp. Any other protocol value from the spec is displayed as-is.
-
-            If the channel has no server references or the protocol cannot be resolved, the value is "Unknown".
-
-            '
-          type: string
-          example: kafka
-        asyncOperationId:
-          description: 'AsyncAPI operationId as defined in the AsyncAPI specification.
-
-            The key in the root operations map that identifies the operation.
-
-            '
-          type: string
-          example: onUserSignUp
-        messageId:
-          description: 'AsyncAPI messageId as defined in the AsyncAPI specification.
-
-            The key in the channel''s messages map that identifies the message.
-
-            '
-          type: string
-          example: userSignedUp
-        customTags:
-          description: Custom tags.
-          type: object
-    RestOperation:
-      description: REST operation object.
-      title: RestOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/RestOperationMeta'
-    SearchResultPackage:
-      title: SearchResultPackage
-      description: 'Global search result for packages with kind = package; must be returned when searchLevel = package
-
-        * If search term matches the package id/name/description/service name, return the latest published version only.
-
-        * If search term matches the version name/label, return that version.
-
-        '
-      type: object
-      required:
-      - packageId
-      - name
-      - parentPackages
-      - createdAt
-      - version
-      - revision
-      - status
-      properties:
-        packageId:
-          description: Package unique string identifier (full alias)
-          type: string
-          example: QS.CloudQSS.CPQ.Q-TMF
-        name:
-          description: Package name
-          type: string
-          example: Quote TMF Service
-        description:
-          description: Package description
-          type: string
-        serviceName:
-          description: Service name that package belongs to. Should be equal to service deployment name in kubernetes.
-          type: string
-        parentPackages:
-          description: Array of parent package names
-          type: array
-          items:
-            type: string
-        version:
-          description: Package version name.
-          type: string
-          example: 2022.2@5
-        latestRevision:
-          description: 'true if revision is the latest one.
-
-            '
-          type: boolean
-          default: false
-        status:
-          $ref: '#/components/schemas/VersionStatusEnum'
-        createdAt:
-          description: Date of the package version publication
-          type: string
-          format: date-time
-        labels:
-          description: List of package version labels
-          type: array
-          items:
-            type: string
-    SearchResultDDLContract:
-      description: Global search result for a DDL table or view contract; returned when `searchLevel = ddl`.
-      title: SearchResultDDLContract
-      type: object
-      required:
-      - packageId
-      - name
-      - parentPackages
-      - version
-      - status
-      - tableId
-      - kind
-      properties:
-        packageId:
-          description: Package unique string identifier (full alias)
-          type: string
-          example: QS.CloudQSS.CPQ.Q-TMF
-        name:
-          description: Package name
-          type: string
-          example: Quote TMF Service
-        parentPackages:
-          description: Array of parent package names
-          type: array
-          items:
-            type: string
-        version:
-          description: Package version name
-          type: string
-          example: 2022.2@5
-        status:
-          $ref: '#/components/schemas/VersionStatusEnum'
-        tableId:
-          description: DDL table/view logical identifier.
-          type: string
-          example: public.users
-        kind:
-          $ref: '#/components/schemas/DdlContractKind'
-        schemaName:
-          description: SQL schema name.
-          type: string
-          example: public
-        tableName:
-          description: Unqualified table or view name.
-          type: string
-          example: users
-    ApiType:
-      title: apiType
-      type: string
-      enum:
-      - rest
-      - graphql
-      - protobuf
-      - asyncapi
-    GraphQLOperationMeta:
-      description: Specific parameters for GraphQL operation.
-      title: GraphQLOperationMeta
-      required:
-      - type
-      - method
-      type: object
-      properties:
-        type:
-          description: Operation type
-          type: string
-          enum:
-          - query
-          - mutation
-          - subscription
-        method:
-          description: GraphQL operation method.
-          type: string
-          example: getPaymentMethodSpecificationCore
-        title:
-          description: Operation summary/title.
-          type: string
-        customTags:
-          description: Custom tags.
-          type: object
-    RestOperationMeta:
-      description: Specific parameters for REST operation.
-      title: RestOperationMeta
-      required:
-      - path
-      - method
-      type: object
-      properties:
-        path:
-          description: Operation endpoint path.
-          type: string
-          example: /quoteManagement/v5/quote
-        method:
-          description: Operation method.
-          type: string
-          enum:
-          - post
-          - get
-          - put
-          - patch
-          - delete
-          - head
-          - options
-          - connect
-          - trace
-        title:
-          description: Operation summary/title.
-          type: string
-        customTags:
-          description: Custom tags.
-          type: object
-    ProtobufOperationMeta:
-      description: Specific parameters for Protobuf operation.
-      title: GraphQLOperationMeta
-      required:
-      - type
-      - method
-      type: object
-      properties:
-        type:
-          description: Operation type
-          type: string
-          enum:
-          - unary
-          - serverStreaming
-          - clientStreaming
-          - bidirectionalStreaming
-        method:
-          description: Protobuf method name.
-          type: string
-          example: ListActionLogItems
-        title:
-          description: Operation title (same as method name but with adding spaces between capital letters)
-          type: string
-          example: List Action Log Items
-        customTags:
-          description: Custom tags.
-          type: object
     SearchResultMCPContract:
       description: Global search result for an MCP contract entity; returned when `searchLevel = mcp`.
       title: SearchResultMCPContract
@@ -727,66 +461,37 @@ components:
           description: MCP endpoint URL.
           type: string
           example: https://api.example.com/mcp
-    SearchResultOperation:
-      description: 'Global search result for API operations; must be returned when searchLevel = operation
-
-        '
-      title: SearchResultOperation
-      allOf:
-      - oneOf:
-        - $ref: '#/components/schemas/RestOperation'
-        - $ref: '#/components/schemas/GraphQLOperation'
-        - $ref: '#/components/schemas/ProtobufOperation'
-        - $ref: '#/components/schemas/AsyncAPIOperation'
-      - type: object
-        required:
-        - packageId
-        - name
-        - parentPackages
-        - version
-        - status
-        properties:
-          packageId:
-            description: Package unique string identifier (full alias)
-            type: string
-            example: QS.CloudQSS.CPQ.Q-TMF
-          name:
-            description: Package name
-            type: string
-            example: Quote TMF Service
-          parentPackages:
-            description: Array of parent package names
-            type: array
-            items:
-              type: string
-          version:
-            description: Package version name
-            type: string
-            example: 2022.2@5
-          status:
-            $ref: '#/components/schemas/VersionStatusEnum'
-    ProtobufOperation:
-      description: Protobuf operation object.
-      title: ProtobufOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/ProtobufOperationMeta'
-    VersionStatusEnum:
-      description: Package version status
-      type: string
-      enum:
-      - draft
-      - release
-      - archived
-    McpContractKind:
-      title: MCP contract kind
-      description: MCP discovery contract entity kind.
-      type: string
-      enum:
-      - init
-      - tool
-      - prompt
-      - resource
+    RestOperationMeta:
+      description: Specific parameters for REST operation.
+      title: RestOperationMeta
+      required:
+      - path
+      - method
+      type: object
+      properties:
+        path:
+          description: Operation endpoint path.
+          type: string
+          example: /quoteManagement/v5/quote
+        method:
+          description: Operation method.
+          type: string
+          enum:
+          - post
+          - get
+          - put
+          - patch
+          - delete
+          - head
+          - options
+          - connect
+          - trace
+        title:
+          description: Operation summary/title.
+          type: string
+        customTags:
+          description: Custom tags.
+          type: object
     SearchResultDocument:
       description: Global search result for documents; must be returned when searchLevel = document
       title: SearchResultDocument
@@ -860,38 +565,162 @@ components:
             If document is empty, then this property will be empty.
 
             '
+    GraphQLOperationMeta:
+      description: Specific parameters for GraphQL operation.
+      title: GraphQLOperationMeta
+      required:
+      - type
+      - method
+      type: object
+      properties:
+        type:
+          description: Operation type
+          type: string
+          enum:
+          - query
+          - mutation
+          - subscription
+        method:
+          description: GraphQL operation method.
+          type: string
+          example: getPaymentMethodSpecificationCore
+        title:
+          description: Operation summary/title.
+          type: string
+        customTags:
+          description: Custom tags.
+          type: object
+    SearchResultPackage:
+      title: SearchResultPackage
+      description: 'Global search result for packages with kind = package; must be returned when searchLevel = package
+
+        * If search term matches the package id/name/description/service name, return the latest published version only.
+
+        * If search term matches the version name/label, return that version.
+
+        '
+      type: object
+      required:
+      - packageId
+      - name
+      - parentPackages
+      - createdAt
+      - version
+      - revision
+      - status
+      properties:
+        packageId:
+          description: Package unique string identifier (full alias)
+          type: string
+          example: QS.CloudQSS.CPQ.Q-TMF
+        name:
+          description: Package name
+          type: string
+          example: Quote TMF Service
+        description:
+          description: Package description
+          type: string
+        serviceName:
+          description: Service name that package belongs to. Should be equal to service deployment name in kubernetes.
+          type: string
+        parentPackages:
+          description: Array of parent package names
+          type: array
+          items:
+            type: string
+        version:
+          description: Package version name.
+          type: string
+          example: 2022.2@5
+        latestRevision:
+          description: 'true if revision is the latest one.
+
+            '
+          type: boolean
+          default: false
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        createdAt:
+          description: Date of the package version publication
+          type: string
+          format: date-time
+        labels:
+          description: List of package version labels
+          type: array
+          items:
+            type: string
     GraphQLOperation:
       description: GraphQL operation object.
       title: GraphQLOperation
       allOf:
       - $ref: '#/components/schemas/Operation'
       - $ref: '#/components/schemas/GraphQLOperationMeta'
-    ErrorResponse:
-      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+    ApiType:
+      title: apiType
+      type: string
+      enum:
+      - rest
+      - graphql
+      - protobuf
+      - asyncapi
+    AsyncAPIOperationMeta:
+      description: 'Specific parameters for AsyncAPI 3.0 operation.
+
+        An APIHUB Operation for AsyncAPI is the triple (channel, operation, message).
+
+        '
+      title: AsyncAPIOperationMeta
+      required:
+      - action
+      - channel
+      - protocol
+      - asyncOperationId
+      - messageId
       type: object
       properties:
-        status:
-          description: HTTP status code as an integer; expected to match the actual HTTP response status.
-          type: number
-        code:
-          description: Internal string error code. Mandatory in response.
+        action:
+          description: 'AsyncAPI operation action: send or receive.'
           type: string
-        message:
-          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          enum:
+          - send
+          - receive
+        channel:
+          description: 'AsyncAPI channel identifier.
+
+            Uses channel.title if available; otherwise uses channelId (key in the document''s root channels map).
+
+            '
           type: string
-        params:
+          example: User Signup Channel
+        protocol:
+          description: 'Communication protocol derived from the channel''s first server.
+
+            Expected values: kafka, amqp. Any other protocol value from the spec is displayed as-is.
+
+            If the channel has no server references or the protocol cannot be resolved, the value is "Unknown".
+
+            '
+          type: string
+          example: kafka
+        asyncOperationId:
+          description: 'AsyncAPI operationId as defined in the AsyncAPI specification.
+
+            The key in the root operations map that identifies the operation.
+
+            '
+          type: string
+          example: onUserSignUp
+        messageId:
+          description: 'AsyncAPI messageId as defined in the AsyncAPI specification.
+
+            The key in the channel''s messages map that identifies the message.
+
+            '
+          type: string
+          example: userSignedUp
+        customTags:
+          description: Custom tags.
           type: object
-          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
-          example:
-            id: 12345
-            type: string
-        debug:
-          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
-          type: string
-      required:
-      - status
-      - code
-      - message
     Operation:
       description: Operation object
       title: Operation
@@ -1003,6 +832,111 @@ components:
           type: string
           pattern: ^[a-z0-9-]
           example: qitmf-v5-11-ref-resolved-json
+    RestOperation:
+      description: REST operation object.
+      title: RestOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/RestOperationMeta'
+    SearchResultOperation:
+      description: 'Global search result for API operations; must be returned when searchLevel = operation
+
+        '
+      title: SearchResultOperation
+      allOf:
+      - oneOf:
+        - $ref: '#/components/schemas/RestOperation'
+        - $ref: '#/components/schemas/GraphQLOperation'
+        - $ref: '#/components/schemas/ProtobufOperation'
+        - $ref: '#/components/schemas/AsyncAPIOperation'
+      - type: object
+        required:
+        - packageId
+        - name
+        - parentPackages
+        - version
+        - status
+        properties:
+          packageId:
+            description: Package unique string identifier (full alias)
+            type: string
+            example: QS.CloudQSS.CPQ.Q-TMF
+          name:
+            description: Package name
+            type: string
+            example: Quote TMF Service
+          parentPackages:
+            description: Array of parent package names
+            type: array
+            items:
+              type: string
+          version:
+            description: Package version name
+            type: string
+            example: 2022.2@5
+          status:
+            $ref: '#/components/schemas/VersionStatusEnum'
+    SearchResultDDLContract:
+      description: Global search result for a DDL table or view contract; returned when `searchLevel = ddl`.
+      title: SearchResultDDLContract
+      type: object
+      required:
+      - packageId
+      - name
+      - parentPackages
+      - version
+      - status
+      - tableId
+      - kind
+      properties:
+        packageId:
+          description: Package unique string identifier (full alias)
+          type: string
+          example: QS.CloudQSS.CPQ.Q-TMF
+        name:
+          description: Package name
+          type: string
+          example: Quote TMF Service
+        parentPackages:
+          description: Array of parent package names
+          type: array
+          items:
+            type: string
+        version:
+          description: Package version name
+          type: string
+          example: 2022.2@5
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        tableId:
+          description: DDL table/view logical identifier.
+          type: string
+          example: public.users
+        kind:
+          $ref: '#/components/schemas/DdlContractKind'
+        schemaName:
+          description: SQL schema name.
+          type: string
+          example: public
+        tableName:
+          description: Unqualified table or view name.
+          type: string
+          example: users
+    ProtobufOperation:
+      description: Protobuf operation object.
+      title: ProtobufOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/ProtobufOperationMeta'
+    McpContractKind:
+      title: MCP contract kind
+      description: MCP discovery contract entity kind.
+      type: string
+      enum:
+      - init
+      - tool
+      - prompt
+      - resource
     DdlContractKind:
       title: DDL contract kind
       description: DDL contract entity kind.
@@ -1010,6 +944,72 @@ components:
       enum:
       - table
       - view
+    AsyncAPIOperation:
+      description: AsyncAPI operation object.
+      title: AsyncAPIOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+    VersionStatusEnum:
+      description: Package version status
+      type: string
+      enum:
+      - draft
+      - release
+      - archived
+    ProtobufOperationMeta:
+      description: Specific parameters for Protobuf operation.
+      title: GraphQLOperationMeta
+      required:
+      - type
+      - method
+      type: object
+      properties:
+        type:
+          description: Operation type
+          type: string
+          enum:
+          - unary
+          - serverStreaming
+          - clientStreaming
+          - bidirectionalStreaming
+        method:
+          description: Protobuf method name.
+          type: string
+          example: ListActionLogItems
+        title:
+          description: Operation title (same as method name but with adding spaces between capital letters)
+          type: string
+          example: List Action Log Items
+        customTags:
+          description: Custom tags.
+          type: object
   parameters:
     limit:
       name: limit

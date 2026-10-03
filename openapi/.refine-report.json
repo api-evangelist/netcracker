@@ -56,7 +56,7 @@
     "netcracker-tenants-api-openapi.yml"
   ],
   "archived": [
-    "deleted 4 superseded output(s) from the previous generation"
+    "deleted 2 superseded output(s) from the previous generation"
   ],
   "errors": [],
   "warnings": [
@@ -130,8 +130,8 @@
     "tag 'Admin' spans 2 source specs (netcracker-qubership-apihub-admin-openapi.yml, netcracker-qubership-apihub-registry-openapi.yml): per-path servers applied",
     "tag 'Roles' spans 2 source specs (netcracker-qubership-apihub-admin-openapi.yml, netcracker-qubership-apihub-registry-openapi.yml): per-path servers applied",
     "tag 'Auth' spans 2 source specs (netcracker-qubership-apihub-registry-openapi.yml, netcracker-qubership-maas-swagger.yml): per-path servers applied",
-    "superseded outputs removed: netcracker-backup-and-restore-api-openapi.yml, netcracker-internaldocuments-api-openapi.yml, netcracker-v1-api-openapi.yml, netcracker-v2-api-openapi.yml",
-    "apis.yml register: written (+11 apis, 47 total)"
+    "superseded outputs removed: netcracker-backup-and-restore-api-openapi.yml, netcracker-internaldocuments-api-openapi.yml",
+    "apis.yml register: written (+2 apis, 47 total)"
   ],
   "skipped": [
     "netcracker-admin-api-openapi.yml: previously refined output, superseded by openapi/_original/",
@@ -142,9 +142,12 @@
     "netcracker-backup-and-restore-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-backups-administration-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-balancing-rules-administration-v3-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "netcracker-bg-status-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-blue-green-controller-v-1-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-changes-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "netcracker-composite-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-composite-controller-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "netcracker-config-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-config-controller-v-1-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-contracts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-controller-database-administration-api-openapi.yml: previously refined output, superseded by openapi/_original/",
@@ -158,21 +161,25 @@
     "netcracker-export-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-global-database-operation-controller-v3-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-internaldocuments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "netcracker-kafka-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-microservice-controller-v3-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-migration-controller-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "netcracker-monitoring-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "netcracker-namespace-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-operation-groups-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-operations-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-packages-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-physical-databases-registration-controller-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-publish-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "netcracker-rabbit-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-roles-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-search-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "netcracker-synchronize-tenants-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "netcracker-tenants-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-transition-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-tryit-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-user-profile-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-users-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "netcracker-v1-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "netcracker-v2-api-openapi.yml: previously refined output, superseded by openapi/_original/",
     "netcracker-versions-api-openapi.yml: previously refined output, superseded by openapi/_original/"
   ]
 }

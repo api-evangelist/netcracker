@@ -231,66 +231,11 @@ components:
           type: string
         '@schemaLocation':
           type: string
-    ChangedDatabasesCursor:
-      type: object
-      description: Keyset cursor (lastRotatedAt, id) for the changed-databases feed. Seed the poll cursor from the high-water mark on the first (since-less) call; thereafter advance the cursor from the returned items.
-      properties:
-        lastRotatedAt:
-          $ref: '#/components/schemas/OffsetDateTime'
-          type: string
-          description: lastRotatedAt component of the cursor.
-        id:
-          type: string
-          description: Registry id component of the cursor (tie-breaker for equal timestamps).
-    OffsetDateTime:
-      type: string
-      format: date-time
-      examples:
-      - '2022-03-10T12:15:50-04:00'
-    CleanupMarkedForDropRequest:
-      type: object
-      required:
-      - namespaces
-      properties:
-        namespaces:
-          type: array
-          items:
-            type: string
-          description: A list of namespaces where the marked for drop databases should be cleaned
-        delete:
-          type: boolean
-          description: Confirmation parameter. If this is not passed or 'false' then marked for drop databases will not be deleted and response will contain marked for drop databases that are registered in DBaaS for the specified namespaces
-        force:
-          type: boolean
-          description: If this parameter is 'true', then deletion errors from physical adapters will be ignored
     Date:
       type: string
       format: date
       examples:
       - '2022-03-10'
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    TmfError:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
     DatabaseResponseV3ListCP:
       type: object
       required:
@@ -343,6 +288,37 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
+    TmfError:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
     ChangedDatabasesResponse:
       type: object
       description: Page of databases whose credentials changed since the requested keyset cursor, plus the current high-water mark used to seed the cursor.
@@ -356,18 +332,42 @@ components:
           $ref: '#/components/schemas/ChangedDatabasesCursor'
           type: object
           description: Latest (lastRotatedAt, id) currently known across all databases. Use it only to SEED the cursor on the first (since-less) call; null when nothing has rotated yet.
-    DbResource:
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    OffsetDateTime:
+      type: string
+      format: date-time
+      examples:
+      - '2022-03-10T12:15:50-04:00'
+    CleanupMarkedForDropRequest:
       type: object
       required:
-      - kind
-      - name
+      - namespaces
       properties:
-        kind:
+        namespaces:
+          type: array
+          items:
+            type: string
+          description: A list of namespaces where the marked for drop databases should be cleaned
+        delete:
+          type: boolean
+          description: Confirmation parameter. If this is not passed or 'false' then marked for drop databases will not be deleted and response will contain marked for drop databases that are registered in DBaaS for the specified namespaces
+        force:
+          type: boolean
+          description: If this parameter is 'true', then deletion errors from physical adapters will be ignored
+    ChangedDatabasesCursor:
+      type: object
+      description: Keyset cursor (lastRotatedAt, id) for the changed-databases feed. Seed the poll cursor from the high-water mark on the first (since-less) call; thereafter advance the cursor from the returned items.
+      properties:
+        lastRotatedAt:
+          $ref: '#/components/schemas/OffsetDateTime'
           type: string
-          description: The kind of resource. For example database or user
-        name:
+          description: lastRotatedAt component of the cursor.
+        id:
           type: string
-          description: Name of the resource.
+          description: Registry id component of the cursor (tie-breaker for equal timestamps).
     ChangedDatabaseResponse:
       type: object
       description: A database whose credentials changed (password rotation or restore). Carries only the identity needed to locate the consumer; connection properties are fetched separately.
