@@ -92,38 +92,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    RegisterDatabaseWithUserCreationRequest:
-      type: object
-      required:
-      - classifier
-      - type
-      - name
-      description: Request to add database to registration
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of database, it should not exist in registration, or the request would be ignored.
-        type:
-          type: string
-          description: The type of database, for example postgresql or mongodb.
-        name:
-          type: string
-          description: Name of database.
-        backupDisabled:
-          type: boolean
-          description: This parameter specifies if the DBaaS should except this database from backup/restore procedure. The parameter cannot be modified and it is installed only once during registration request.
-        physicalDatabaseId:
-          type: string
-          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
-        dbHost:
-          type: string
-          description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
     DatabaseResponseV3ListCP:
       type: object
       required:
@@ -188,33 +156,33 @@ components:
         name:
           type: string
           description: Name of the resource.
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    MigrationResult:
+    RegisterDatabaseWithUserCreationRequest:
       type: object
+      required:
+      - classifier
+      - type
+      - name
+      description: Request to add database to registration
       properties:
-        migrated:
-          type: array
-          items:
-            type: string
-        migratedDbInfo:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseResponseV3ListCP'
-        conflicted:
-          type: array
-          items:
-            type: string
-        failed:
-          type: array
-          items:
-            type: string
-        failureReasons:
-          type: array
-          items:
-            type: string
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of database, it should not exist in registration, or the request would be ignored.
+        type:
+          type: string
+          description: The type of database, for example postgresql or mongodb.
+        name:
+          type: string
+          description: Name of database.
+        backupDisabled:
+          type: boolean
+          description: This parameter specifies if the DBaaS should except this database from backup/restore procedure. The parameter cannot be modified and it is installed only once during registration request.
+        physicalDatabaseId:
+          type: string
+          description: Physical database identifier where the registered database should be located. If it is absent, adapter id may be used to identify the target physical database.
+        dbHost:
+          type: string
+          description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
     RegisterDatabaseRequestV3:
       type: object
       required:
@@ -262,6 +230,38 @@ components:
         dbHost:
           type: string
           description: 'Physical database host where the registered database is located. Must be in format: <service-name>.<namespace>, e.g.: pg-patroni.postgresql-core'
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    MigrationResult:
+      type: object
+      properties:
+        migrated:
+          type: array
+          items:
+            type: string
+        migratedDbInfo:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseResponseV3ListCP'
+        conflicted:
+          type: array
+          items:
+            type: string
+        failed:
+          type: array
+          items:
+            type: string
+        failureReasons:
+          type: array
+          items:
+            type: string
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
   securitySchemes:
     SecurityScheme:
       type: http

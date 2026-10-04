@@ -525,31 +525,6 @@ paths:
       - Rabbit
 components:
   schemas:
-    controller.VhostAndConfigResult:
-      properties:
-        entities:
-          $ref: '#/components/schemas/model.RabbitEntities'
-        vhost:
-          $ref: '#/components/schemas/model.VHostRegistrationResponse'
-      type: object
-    model.Classifier:
-      properties:
-        name:
-          type: string
-        namespace:
-          type: string
-        tenantId:
-          type: string
-      required:
-      - name
-      - namespace
-      type: object
-    controller.Instance:
-      properties:
-        id:
-          example: maas-rabbitmq-code-dev
-          type: string
-      type: object
     model.LazyBindingDto:
       properties:
         entity:
@@ -565,6 +540,21 @@ components:
           example: maas.core-dev.test
           type: string
       type: object
+    model.VHostRegistrationResponse:
+      properties:
+        apiUrl:
+          example: http://127.0.0.1:15672/api
+          type: string
+        cnn:
+          example: amqp://127.0.0.1:5672/namespace.test12
+          type: string
+        password:
+          example: plain:504a449065924332b062c4a84e830cbe
+          type: string
+        username:
+          example: 9757343a78a04057a07ee4215f1b1355
+          type: string
+      type: object
     model.RabbitEntities:
       properties:
         bindings:
@@ -577,6 +567,13 @@ components:
         queues:
           items: {}
           type: array
+      type: object
+    controller.VhostAndConfigResult:
+      properties:
+        entities:
+          $ref: '#/components/schemas/model.RabbitEntities'
+        vhost:
+          $ref: '#/components/schemas/model.VHostRegistrationResponse'
       type: object
     model.SearchForm:
       properties:
@@ -591,6 +588,24 @@ components:
           type: string
         vhost:
           type: string
+      type: object
+    controller.Instance:
+      properties:
+        id:
+          example: maas-rabbitmq-code-dev
+          type: string
+      type: object
+    model.Classifier:
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        tenantId:
+          type: string
+      required:
+      - name
+      - namespace
       type: object
     model.RabbitInstance:
       properties:
@@ -622,21 +637,6 @@ components:
           type: string
       required:
       - classifier
-      type: object
-    model.VHostRegistrationResponse:
-      properties:
-        apiUrl:
-          example: http://127.0.0.1:15672/api
-          type: string
-        cnn:
-          example: amqp://127.0.0.1:5672/namespace.test12
-          type: string
-        password:
-          example: plain:504a449065924332b062c4a84e830cbe
-          type: string
-        username:
-          example: 9757343a78a04057a07ee4215f1b1355
-          type: string
       type: object
   securitySchemes:
     BasicAuth:

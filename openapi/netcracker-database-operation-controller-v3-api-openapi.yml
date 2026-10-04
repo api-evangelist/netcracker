@@ -285,6 +285,95 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    PasswordChangeRequestV3:
+      type: object
+      required:
+      - type
+      properties:
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Composite database identifier.
+        type:
+          type: string
+          description: Database type.
+        userRole:
+          type: string
+          description: Indicates which grants should have user in connection properties
+    DatabaseRegistry:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - database
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed
+        type:
+          type: string
+          description: Type of database, for example postgresql or mongodb
+        database:
+          $ref: '#/components/schemas/Database'
+          description: It lists of database classifiers
+        dbState:
+          $ref: '#/components/schemas/DbState'
+        databaseRegistry:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+        oldClassifier:
+          type: object
+          additionalProperties: {}
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        adapterId:
+          type: string
+        name:
+          type: string
+        markedForDrop:
+          type: boolean
+        backupDisabled:
+          type: boolean
+        dbOwnerRoles:
+          type: array
+          items:
+            type: string
+        settings:
+          type: object
+          additionalProperties: {}
+        connectionDescription:
+          $ref: '#/components/schemas/ConnectionDescription'
+        warnings:
+          type: array
+          items:
+            type: string
+        externallyManageable:
+          type: boolean
+        bgVersion:
+          type: string
+        physicalDatabaseId:
+          type: string
     Database:
       type: object
       required:
@@ -375,6 +464,32 @@ components:
           description: It lists resource which will be deleted when sending the request for delete a database
         dbState:
           $ref: '#/components/schemas/DbState'
+    FieldDescription:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/FieldTypeEnum'
+    NotRecreated:
+      type: object
+      required:
+      - type
+      - classifier
+      - error
+      properties:
+        type:
+          type: string
+          description: Requested physical type of logical database. For example mongodb or postgresql
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Requested classifier
+        error:
+          type: string
+          description: Contains a message of error that occurred during recreating
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
     DatabaseResponse:
       type: object
       required:
@@ -460,6 +575,11 @@ components:
           items:
             $ref: '#/components/schemas/NotRecreated'
           description: The list contains requests from which an error occurred during recreating. For these requests databases were not recreated.
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
     LinkDatabasesRequest:
       type: object
       required:
@@ -475,28 +595,21 @@ components:
         targetNamespace:
           type: string
           description: Namespace, to which databases will be linked
-    FieldTypeEnum:
-      type: string
-      enum:
-      - PASSWORD
-    PasswordFailed:
+    DbState:
       type: object
-      required:
-      - classifier
-      - message
       properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Database composite identify key.
-        message:
+        id:
+          $ref: '#/components/schemas/UUID'
+        state:
+          $ref: '#/components/schemas/DatabaseStateStatus'
           type: string
-          description: Error message.
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
+          deprecated: true
+        databaseState:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+        description:
+          type: string
+        podName:
+          type: string
     DatabaseResponseV3ListCP:
       type: object
       required:
@@ -549,110 +662,57 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
-    DatabaseRegistry:
+    ConnectionDescription:
+      type: object
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldDescription'
+    PasswordFailed:
       type: object
       required:
       - classifier
-      - namespace
-      - type
-      - database
+      - message
       properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-          type: string
-          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
-        timeDbCreation:
-          $ref: '#/components/schemas/Date'
-          type: string
-          description: Time to create a database
         classifier:
           type: object
           additionalProperties: {}
-          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
-        namespace:
+          description: Database composite identify key.
+        message:
           type: string
-          description: Namespace where database is placed
-        type:
-          type: string
-          description: Type of database, for example postgresql or mongodb
-        database:
-          $ref: '#/components/schemas/Database'
-          description: It lists of database classifiers
-        dbState:
-          $ref: '#/components/schemas/DbState'
-        databaseRegistry:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseRegistry'
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/DbResource'
-        oldClassifier:
-          type: object
-          additionalProperties: {}
-        connectionProperties:
-          type: array
-          items:
-            type: object
-            additionalProperties: {}
-        adapterId:
-          type: string
-        name:
-          type: string
-        markedForDrop:
-          type: boolean
-        backupDisabled:
-          type: boolean
-        dbOwnerRoles:
-          type: array
-          items:
-            type: string
-        settings:
-          type: object
-          additionalProperties: {}
-        connectionDescription:
-          $ref: '#/components/schemas/ConnectionDescription'
-        warnings:
-          type: array
-          items:
-            type: string
-        externallyManageable:
-          type: boolean
-        bgVersion:
-          type: string
-        physicalDatabaseId:
-          type: string
-    DbResource:
+          description: Error message.
+    Recreated:
       type: object
       required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
-    RecreateDatabaseRequest:
-      type: object
-      required:
-      - type
       - classifier
-      - physicalDatabaseId
-      description: Request model for recreate existing database. The database will have the same settings and classifier as original
+      - type
+      - newDb
       properties:
-        type:
-          type: string
-          description: The physical type of logical database. For example mongodb or postgresql
         classifier:
           type: object
           additionalProperties: {}
-          description: The unique key of existing database. The list of all created databases in a specific namespace can be found by by 'List of all databases' API.
-        physicalDatabaseId:
+          description: Requested classifier
+        type:
           type: string
-          description: Specifies the identificator of physical database where a logical database will be recreated. You can get the list of all physical databases by "List registered physical databases" API.
+          description: Requested physical type of logical database. For example mongodb or postgresql
+        newDb:
+          $ref: '#/components/schemas/DatabaseResponse'
+          type: object
+          description: A recreated logical database. This database has the same classifier as a original but connection properties are different (url, dbname, username, password)
+    PasswordChangeResponse:
+      type: object
+      properties:
+        changed:
+          type: array
+          items:
+            $ref: '#/components/schemas/PasswordChanged'
+          description: List containing "classifier:connection" information with which the password was changed successfully.
+        failed:
+          type: array
+          items:
+            $ref: '#/components/schemas/PasswordFailed'
+          description: List containing fail information.
     UpdateConnectionPropertiesRequest:
       type: object
       required:
@@ -677,28 +737,40 @@ components:
         dbName:
           type: string
           description: Name of database.
-    DbState:
+    RecreateDatabaseRequest:
       type: object
+      required:
+      - type
+      - classifier
+      - physicalDatabaseId
+      description: Request model for recreate existing database. The database will have the same settings and classifier as original
       properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        state:
-          $ref: '#/components/schemas/DatabaseStateStatus'
+        type:
           type: string
-          deprecated: true
-        databaseState:
-          $ref: '#/components/schemas/DatabaseStateStatus'
-        description:
-          type: string
-        podName:
-          type: string
-    ConnectionDescription:
-      type: object
-      properties:
-        fields:
+          description: The physical type of logical database. For example mongodb or postgresql
+        classifier:
           type: object
-          additionalProperties:
-            $ref: '#/components/schemas/FieldDescription'
+          additionalProperties: {}
+          description: The unique key of existing database. The list of all created databases in a specific namespace can be found by by 'List of all databases' API.
+        physicalDatabaseId:
+          type: string
+          description: Specifies the identificator of physical database where a logical database will be recreated. You can get the list of all physical databases by "List registered physical databases" API.
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    FieldTypeEnum:
+      type: string
+      enum:
+      - PASSWORD
     PasswordChanged:
       type: object
       required:
@@ -747,78 +819,6 @@ components:
       - DELETING_FAILED
       - ARCHIVED
       - ORPHAN
-    PasswordChangeResponse:
-      type: object
-      properties:
-        changed:
-          type: array
-          items:
-            $ref: '#/components/schemas/PasswordChanged'
-          description: List containing "classifier:connection" information with which the password was changed successfully.
-        failed:
-          type: array
-          items:
-            $ref: '#/components/schemas/PasswordFailed'
-          description: List containing fail information.
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    PasswordChangeRequestV3:
-      type: object
-      required:
-      - type
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Composite database identifier.
-        type:
-          type: string
-          description: Database type.
-        userRole:
-          type: string
-          description: Indicates which grants should have user in connection properties
-    Recreated:
-      type: object
-      required:
-      - classifier
-      - type
-      - newDb
-      properties:
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Requested classifier
-        type:
-          type: string
-          description: Requested physical type of logical database. For example mongodb or postgresql
-        newDb:
-          $ref: '#/components/schemas/DatabaseResponse'
-          type: object
-          description: A recreated logical database. This database has the same classifier as a original but connection properties are different (url, dbname, username, password)
-    NotRecreated:
-      type: object
-      required:
-      - type
-      - classifier
-      - error
-      properties:
-        type:
-          type: string
-          description: Requested physical type of logical database. For example mongodb or postgresql
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Requested classifier
-        error:
-          type: string
-          description: Contains a message of error that occurred during recreating
-    FieldDescription:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/FieldTypeEnum'
   securitySchemes:
     SecurityScheme:
       type: http

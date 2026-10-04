@@ -51,6 +51,51 @@ paths:
         required: true
 components:
   schemas:
+    model.KafkaCredentials:
+      properties:
+        clientCert:
+          type: string
+        clientKey:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+        username:
+          type: string
+      type: object
+    model.SyncTenantsResp:
+      properties:
+        tenant:
+          $ref: '#/components/schemas/model.Tenant'
+        topics:
+          items:
+            $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+          type: array
+      type: object
+    model.Tenant:
+      properties:
+        externalId:
+          example: '101'
+          type: string
+        namespace:
+          type: string
+        tenantPresentation:
+          additionalProperties: true
+          type: object
+      type: object
+    model.Classifier:
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        tenantId:
+          type: string
+      required:
+      - name
+      - namespace
+      type: object
     model.TopicRegistrationRespDto:
       properties:
         actualSettings:
@@ -91,51 +136,6 @@ components:
         versioned:
           example: false
           type: boolean
-      type: object
-    model.SyncTenantsResp:
-      properties:
-        tenant:
-          $ref: '#/components/schemas/model.Tenant'
-        topics:
-          items:
-            $ref: '#/components/schemas/model.TopicRegistrationRespDto'
-          type: array
-      type: object
-    model.Classifier:
-      properties:
-        name:
-          type: string
-        namespace:
-          type: string
-        tenantId:
-          type: string
-      required:
-      - name
-      - namespace
-      type: object
-    model.KafkaCredentials:
-      properties:
-        clientCert:
-          type: string
-        clientKey:
-          type: string
-        password:
-          type: string
-        type:
-          type: string
-        username:
-          type: string
-      type: object
-    model.Tenant:
-      properties:
-        externalId:
-          example: '101'
-          type: string
-        namespace:
-          type: string
-        tenantPresentation:
-          additionalProperties: true
-          type: object
       type: object
     model.TopicSettings:
       properties:

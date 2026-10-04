@@ -52,13 +52,6 @@ paths:
           $ref: '#/components/examples/InternalServerError'
 components:
   examples:
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
     SystemInfo:
       description: Example of the system description
       value:
@@ -72,6 +65,13 @@ components:
         featureFlags:
           useV3Search: false
           previousVersionStatusValidation: true
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
   schemas:
     SystemInfo:
       description: Information about the APIHUB product

@@ -415,11 +415,36 @@ components:
           type: string
         version:
           type: string
+    BgStateRequest:
+      type: object
+      properties:
+        BGState:
+          $ref: '#/components/schemas/BGState'
+    BGState:
+      type: object
+      properties:
+        controllerNamespace:
+          type: string
+        originNamespace:
+          $ref: '#/components/schemas/BGStateNamespace'
+        peerNamespace:
+          $ref: '#/components/schemas/BGStateNamespace'
+        updateTime:
+          $ref: '#/components/schemas/Date'
     Date:
       type: string
       format: date
       examples:
       - '2022-03-10'
+    BgNamespaceRequest:
+      type: object
+      properties:
+        peerNamespace:
+          type: string
+        originNamespace:
+          type: string
+        controllerNamespace:
+          type: string
     DeleteOrphansRequest:
       type: object
       required:
@@ -433,31 +458,6 @@ components:
         delete:
           type: boolean
           description: confirmation parameter. If this is not passed or false then orhan database will not be deleted and response will contain orhan databases that are registered in DBaaS
-    BGState:
-      type: object
-      properties:
-        controllerNamespace:
-          type: string
-        originNamespace:
-          $ref: '#/components/schemas/BGStateNamespace'
-        peerNamespace:
-          $ref: '#/components/schemas/BGStateNamespace'
-        updateTime:
-          $ref: '#/components/schemas/Date'
-    BgNamespaceRequest:
-      type: object
-      properties:
-        peerNamespace:
-          type: string
-        originNamespace:
-          type: string
-        controllerNamespace:
-          type: string
-    BgStateRequest:
-      type: object
-      properties:
-        BGState:
-          $ref: '#/components/schemas/BGState'
   securitySchemes:
     SecurityScheme:
       type: http

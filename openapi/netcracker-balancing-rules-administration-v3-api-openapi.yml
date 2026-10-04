@@ -328,23 +328,30 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    DebugRulesRequest:
+    RuleOnMicroservice:
       type: object
       required:
-      - microservices
-      - rules
-      description: Debug rules request allows to validate a list of rules against a list of microservices to check what database is going to be assigned to each microservice
+      - label
+      description: Rule allows to define physical database for new logical databases on microservice
       properties:
-        microservices:
-          type: array
-          items:
-            type: string
-          description: List of microservices
-        rules:
-          type: array
-          items:
-            $ref: '#/components/schemas/OnMicroserviceRuleRequest'
-          description: List of rules
+        label:
+          type: string
+          description: Label uses to find physical DB which contains this label
+    RuleBody:
+      type: object
+      required:
+      - type
+      - config
+      description: Rule allows to define physical database for new logical databases
+      properties:
+        type:
+          $ref: '#/components/schemas/RuleType'
+          type: string
+          description: Type of rule is required, it defines what logic would be used when rule is applying.
+        config:
+          type: object
+          additionalProperties: {}
+          description: "Configuration contains rule-specific information: \n - perNamespace rule only expects phydbid (physical database identifier) to be specified in rule."
     PermanentPerNamespaceRuleDTO:
       type: object
       required:
@@ -385,29 +392,6 @@ components:
           items:
             type: string
           description: List of microservice names to which the specified rule has a place to be
-    PermanentPerNamespaceRuleDeleteDTO:
-      type: object
-      required:
-      - namespaces
-      properties:
-        dbType:
-          type: string
-          description: Db type for which rules should be deleted. If omitted all rules for specified namespaces will be deleted.
-        namespaces:
-          type: array
-          uniqueItems: true
-          items:
-            type: string
-          description: Namespaces for which rules should be deleted
-    RuleOnMicroservice:
-      type: object
-      required:
-      - label
-      description: Rule allows to define physical database for new logical databases on microservice
-      properties:
-        label:
-          type: string
-          description: Label uses to find physical DB which contains this label
     RuleRegistrationRequest:
       type: object
       required:
@@ -423,26 +407,42 @@ components:
           description: Type of database required. The rule would only work on logical databases of the specified type.
         rule:
           $ref: '#/components/schemas/RuleBody'
+    PermanentPerNamespaceRuleDeleteDTO:
+      type: object
+      required:
+      - namespaces
+      properties:
+        dbType:
+          type: string
+          description: Db type for which rules should be deleted. If omitted all rules for specified namespaces will be deleted.
+        namespaces:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+          description: Namespaces for which rules should be deleted
     RuleType:
       type: string
       enum:
       - perNamespace
       description: "Rule type specified what configuration applies to which logic. \n - perNamespace rule would just use specified physical database for any new logical database in namespace, where rule works"
-    RuleBody:
+    DebugRulesRequest:
       type: object
       required:
-      - type
-      - config
-      description: Rule allows to define physical database for new logical databases
+      - microservices
+      - rules
+      description: Debug rules request allows to validate a list of rules against a list of microservices to check what database is going to be assigned to each microservice
       properties:
-        type:
-          $ref: '#/components/schemas/RuleType'
-          type: string
-          description: Type of rule is required, it defines what logic would be used when rule is applying.
-        config:
-          type: object
-          additionalProperties: {}
-          description: "Configuration contains rule-specific information: \n - perNamespace rule only expects phydbid (physical database identifier) to be specified in rule."
+        microservices:
+          type: array
+          items:
+            type: string
+          description: List of microservices
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnMicroserviceRuleRequest'
+          description: List of rules
   securitySchemes:
     SecurityScheme:
       type: http

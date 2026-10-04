@@ -151,48 +151,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    DebugDatabaseDeclarativeConfigV3:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        settings:
-          type: object
-          additionalProperties: {}
-        lazy:
-          type: boolean
-        instantiationApproach:
-          type: string
-        versioningApproach:
-          type: string
-        versioningType:
-          type: string
-        classifier:
-          type: object
-          additionalProperties: {}
-        type:
-          type: string
-        namePrefix:
-          type: string
-        namespace:
-          type: string
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    PhysicalDatabaseInfo:
-      type: object
-      properties:
-        physicalDatabaseId:
-          type: string
-          description: Physical database identifier
-        healthStatus:
-          type: string
-          description: Adapter health status
-        logicalDbNumber:
-          type: string
-          description: Number of logical databases related to this physical database
     DatabaseResponseV3ListCP:
       type: object
       required:
@@ -245,10 +203,6 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
     DbResource:
       type: object
       required:
@@ -261,23 +215,42 @@ components:
         name:
           type: string
           description: Name of the resource.
-    GhostDatabasesResponse:
+    DumpResponseV3:
       type: object
-      required:
-      - physicalDatabaseId
-      - dbNames
+      properties:
+        rules:
+          type: array
+          items: {}
+        logicalDatabases:
+          type: array
+          items: {}
+        physicalDatabases:
+          type: array
+          items: {}
+        declarativeConfigurations:
+          type: array
+          items: {}
+        blueGreenDomains:
+          type: array
+          items: {}
+        backups:
+          type: array
+          items: {}
+        restores:
+          type: array
+          items: {}
+    PhysicalDatabaseInfo:
+      type: object
       properties:
         physicalDatabaseId:
           type: string
-          description: Physical database identificator.
-        dbNames:
-          type: array
-          items:
-            type: string
-          description: Ghost databases names related to adapter with this physical databases id.
-        errorMessage:
+          description: Physical database identifier
+        healthStatus:
           type: string
-          description: Error message from adapter.
+          description: Adapter health status
+        logicalDbNumber:
+          type: string
+          description: Number of logical databases related to this physical database
     DebugLogicalDatabaseV3:
       type: object
       properties:
@@ -305,30 +278,11 @@ components:
           type: string
         declaration:
           $ref: '#/components/schemas/DebugDatabaseDeclarativeConfigV3'
-    DumpResponseV3:
-      type: object
-      properties:
-        rules:
-          type: array
-          items: {}
-        logicalDatabases:
-          type: array
-          items: {}
-        physicalDatabases:
-          type: array
-          items: {}
-        declarativeConfigurations:
-          type: array
-          items: {}
-        blueGreenDomains:
-          type: array
-          items: {}
-        backups:
-          type: array
-          items: {}
-        restores:
-          type: array
-          items: {}
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
     OverallStatusResponse:
       type: object
       properties:
@@ -344,6 +298,52 @@ components:
           items:
             $ref: '#/components/schemas/PhysicalDatabaseInfo'
           description: Information about physical databases
+    DebugDatabaseDeclarativeConfigV3:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        settings:
+          type: object
+          additionalProperties: {}
+        lazy:
+          type: boolean
+        instantiationApproach:
+          type: string
+        versioningApproach:
+          type: string
+        versioningType:
+          type: string
+        classifier:
+          type: object
+          additionalProperties: {}
+        type:
+          type: string
+        namePrefix:
+          type: string
+        namespace:
+          type: string
+    GhostDatabasesResponse:
+      type: object
+      required:
+      - physicalDatabaseId
+      - dbNames
+      properties:
+        physicalDatabaseId:
+          type: string
+          description: Physical database identificator.
+        dbNames:
+          type: array
+          items:
+            type: string
+          description: Ghost databases names related to adapter with this physical databases id.
+        errorMessage:
+          type: string
+          description: Error message from adapter.
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
   securitySchemes:
     SecurityScheme:
       type: http

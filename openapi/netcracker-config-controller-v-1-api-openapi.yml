@@ -141,20 +141,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    OperationDetails:
-      type: object
-      properties:
-        tasks:
-          type: array
-          items:
-            $ref: '#/components/schemas/TaskDetails'
-    OperationState:
-      type: object
-      properties:
-        status:
-          type: string
-        description:
-          type: string
     OperationStatusExtendedResponse:
       type: object
       properties:
@@ -165,6 +151,24 @@ components:
           type: string
         operationDetails:
           $ref: '#/components/schemas/OperationDetails'
+    TaskDetails:
+      type: object
+      properties:
+        taskId:
+          type: string
+        taskName:
+          type: string
+        state:
+          $ref: '#/components/schemas/OperationState'
+        classifier:
+          type: object
+          additionalProperties: {}
+        type:
+          type: string
+        backupId:
+          type: string
+        restoreId:
+          type: string
     DeclarativeResponse:
       type: object
       properties:
@@ -193,23 +197,19 @@ components:
           type:
           - string
           - 'null'
-    TaskDetails:
+    OperationDetails:
       type: object
       properties:
-        taskId:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDetails'
+    OperationState:
+      type: object
+      properties:
+        status:
           type: string
-        taskName:
-          type: string
-        state:
-          $ref: '#/components/schemas/OperationState'
-        classifier:
-          type: object
-          additionalProperties: {}
-        type:
-          type: string
-        backupId:
-          type: string
-        restoreId:
+        description:
           type: string
   securitySchemes:
     SecurityScheme:

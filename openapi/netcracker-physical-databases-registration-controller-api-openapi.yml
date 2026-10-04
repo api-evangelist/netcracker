@@ -174,76 +174,33 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    ApiVersion:
-      type: object
-      properties:
-        specs:
-          type: array
-          items:
-            $ref: '#/components/schemas/Spec'
-          description: The root URL part for that API version
-    PhysicalDatabaseRegistrationResponseDTOV3:
+    Metadata:
       type: object
       required:
-      - type
-      - adapterId
-      - adapterAddress
-      - global
-      - labels
-      - supports
+      - apiVersion
+      - supportedRoles
+      - features
       properties:
-        type:
+        apiVersion:
           type: string
-          description: Adapter type.
-        adapterId:
-          type: string
-          description: Adapter identifier.
-        adapterAddress:
-          type: string
-          description: Adapter address.
-        global:
-          type: boolean
-          description: If physical database is global, it is used as a default for its database type.
-        labels:
+          description: Adapter API version
+        apiVersions:
+          $ref: '#/components/schemas/ApiVersion'
           type: object
-          additionalProperties:
-            type: string
-          description: Additional information that has been sent during physical database registration.
-        supports:
-          type: object
-          additionalProperties:
-            type: boolean
-          description: Information about features this adapter supports.
-        features:
-          type: object
-          additionalProperties:
-            type: boolean
-        supportedVersion:
-          type: string
+          description: Adapter API version
         supportedRoles:
           type: array
           items:
             type: string
-    HttpBasicCredentials:
-      type: object
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-          description: Basic authentication username.
-        password:
-          type: string
-          description: Basic authentication password.
-    RegisteredPhysicalDatabasesDTO:
-      type: object
-      properties:
-        identified:
+          description: list of supported roles
+        features:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
-          description: List of registered physical databases with with a known identifier
+            type: boolean
+          description: Prohibition or permission of features
+        roHost:
+          type: string
+          description: Host of RO pod
     Spec:
       type: object
       properties:
@@ -292,33 +249,76 @@ components:
         status:
           type: string
           description: 'Adapter status: running or run'
-    Metadata:
+    ApiVersion:
       type: object
-      required:
-      - apiVersion
-      - supportedRoles
-      - features
       properties:
-        apiVersion:
-          type: string
-          description: Adapter API version
-        apiVersions:
-          $ref: '#/components/schemas/ApiVersion'
-          type: object
-          description: Adapter API version
-        supportedRoles:
+        specs:
           type: array
           items:
+            $ref: '#/components/schemas/Spec'
+          description: The root URL part for that API version
+    RegisteredPhysicalDatabasesDTO:
+      type: object
+      properties:
+        identified:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
+          description: List of registered physical databases with with a known identifier
+    HttpBasicCredentials:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          description: Basic authentication username.
+        password:
+          type: string
+          description: Basic authentication password.
+    PhysicalDatabaseRegistrationResponseDTOV3:
+      type: object
+      required:
+      - type
+      - adapterId
+      - adapterAddress
+      - global
+      - labels
+      - supports
+      properties:
+        type:
+          type: string
+          description: Adapter type.
+        adapterId:
+          type: string
+          description: Adapter identifier.
+        adapterAddress:
+          type: string
+          description: Adapter address.
+        global:
+          type: boolean
+          description: If physical database is global, it is used as a default for its database type.
+        labels:
+          type: object
+          additionalProperties:
             type: string
-          description: list of supported roles
+          description: Additional information that has been sent during physical database registration.
+        supports:
+          type: object
+          additionalProperties:
+            type: boolean
+          description: Information about features this adapter supports.
         features:
           type: object
           additionalProperties:
             type: boolean
-          description: Prohibition or permission of features
-        roHost:
+        supportedVersion:
           type: string
-          description: Host of RO pod
+        supportedRoles:
+          type: array
+          items:
+            type: string
   securitySchemes:
     SecurityScheme:
       type: http

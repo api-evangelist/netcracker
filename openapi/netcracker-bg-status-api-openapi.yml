@@ -85,21 +85,6 @@ paths:
         required: true
 components:
   schemas:
-    model.CpDeploymentVersion:
-      properties:
-        createdWhen:
-          example: '2021-08-18T16:33:15.142354459Z'
-          type: string
-        stage:
-          example: ACTIVE
-          type: string
-        updatedWhen:
-          example: '2021-08-18T16:33:15.14235456Z'
-          type: string
-        version:
-          example: v1
-          type: string
-      type: object
     model.BgStatus:
       properties:
         active:
@@ -120,6 +105,21 @@ components:
           type: string
         timestamp:
           example: '2021-08-18T17:29:06.82837Z'
+          type: string
+      type: object
+    model.CpDeploymentVersion:
+      properties:
+        createdWhen:
+          example: '2021-08-18T16:33:15.142354459Z'
+          type: string
+        stage:
+          example: ACTIVE
+          type: string
+        updatedWhen:
+          example: '2021-08-18T16:33:15.14235456Z'
+          type: string
+        version:
+          example: v1
           type: string
       type: object
   securitySchemes:

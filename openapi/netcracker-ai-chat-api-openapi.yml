@@ -584,260 +584,165 @@ paths:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
 components:
-  schemas:
-    AiChatStreamErrorEvent:
-      description: 'Emitted when the turn cannot be completed. After this event the server closes the stream without sending `done`.
-
-        '
-      type: object
-      required:
-      - type
-      - code
-      - message
-      properties:
-        type:
-          type: string
-          enum:
-          - error
-        code:
-          description: "Stable error code for mid-turn failures (HTTP validation/auth errors use the same codes in a JSON body before any SSE frame). Known values:\n  * `APIHUB-AI-5001` — upstream LLM provider error;\n  * `APIHUB-AI-4001` — message validation failed mid-flight (rare);\n  * `APIHUB-AI-5000` — internal error.\nMCP tool failures are surfaced as `tool.completed` with `status: error` and do not terminate the stream with a dedicated error code.\n"
-          type: string
-          example: APIHUB-AI-5001
-        message:
-          type: string
-          example: Upstream LLM provider request failed
-    AiChatStreamToolCompletedEvent:
-      description: Paired with the corresponding `tool.started` event.
-      type: object
-      required:
-      - type
-      - toolCallId
-      - name
-      - status
-      properties:
-        type:
-          type: string
-          enum:
-          - tool.completed
-        toolCallId:
-          type: string
-          example: call_1a2b3c
-        name:
-          type: string
-          example: search_rest_api_operations
-        status:
-          type: string
-          enum:
-          - ok
-          - error
-        durationMs:
-          type: integer
-          minimum: 0
-          example: 214
+  examples:
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
     AiChatSendMessageResponse:
-      description: Non-streaming response after a user message has been processed.
-      type: object
-      required:
-      - userMessage
-      - assistantMessage
-      properties:
+      description: Non-streaming response after a user message has been answered.
+      value:
         userMessage:
-          $ref: '#/components/schemas/AiChatMessage'
+          messageId: 1a0bcd12-0000-4000-8000-000000000001
+          clientMessageId: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
+          role: user
+          content: List all REST operations in package QS.QSS.PRG.APIHUB.
+          createdAt: '2026-04-19T15:44:03Z'
         assistantMessage:
-          $ref: '#/components/schemas/AiChatMessage'
-    AiChatStreamAssistantStartEvent:
-      description: Emitted once, right before the first `message.assistant.delta` event.
-      type: object
-      required:
-      - type
-      - messageId
-      properties:
-        type:
-          type: string
-          enum:
-          - message.assistant.start
-        messageId:
-          type: string
-          format: uuid
-    AiChatUpdateRequest:
-      description: 'Partial update of a chat. Only fields present in the request are modified. At least one field must be supplied.
-
-        '
-      type: object
-      minProperties: 1
-      properties:
-        title:
-          description: New title for the chat.
-          type: string
-          minLength: 1
-          maxLength: 120
-          example: Tenant-aware search questions
-        pinned:
-          description: 'If true, pins the chat. Pinning is rejected with `400` when the user already has the maximum allowed number of pinned chats (hard-coded to 3 on both client and server).
-
-            If false, unpins the chat.
-
-            '
-          type: boolean
-          example: true
-    AiChatStreamToolStartedEvent:
-      description: 'Emitted when the assistant decides to call an MCP tool. Multiple tool events may appear between `message.assistant.start` and `message.assistant.completed`.
-
-        '
-      type: object
-      required:
-      - type
-      - toolCallId
-      - name
-      properties:
-        type:
-          type: string
-          enum:
-          - tool.started
-        toolCallId:
-          description: Opaque identifier correlating `tool.started` with `tool.completed`.
-          type: string
-          example: call_1a2b3c
-        name:
-          type: string
-          example: search_rest_api_operations
-    AiChatSendMessageRequest:
-      description: 'Request body for sending a new user message. The body carries **only the new message** — never the full history.
-
-        '
-      type: object
-      required:
-      - content
-      properties:
-        content:
-          description: 'User message text (plain text, not markdown). Length limit is hard-coded identically on the client (validation) and on the server (enforcement) to the value of `maxLength` below.
-
-            '
-          type: string
-          minLength: 1
-          maxLength: 32000
-          example: List all REST operations in package QS.QSS.PRG.APIHUB and export them as CSV.
-        clientMessageId:
-          description: 'Optional idempotency key supplied by the client. If the server sees a duplicate `clientMessageId` for the same chat it returns the previous assistant response instead of re-sending to the LLM.
-
-            '
-          type: string
-          format: uuid
-          example: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
-    AiChatStreamEvent:
-      description: 'Documentation-only schema describing the shape of a single SSE event payload. The wire format is not JSON — each event is framed as:
+          messageId: 2f5a8c6b-8c11-4b1a-9c6a-1c2e4d5f6a7b
+          role: assistant
+          content: Here are the operations I found...
+          createdAt: '2026-04-19T15:44:12Z'
+          toolInvocations:
+          - name: search_rest_api_operations
+            status: ok
+            durationMs: 312
+    AiChatPinLimitExceeded:
+      description: User attempts to pin more chats than allowed.
+      value:
+        status: 400
+        code: APIHUB-AI-4003
+        message: 'Cannot pin chat: user already has 3 pinned chats (the limit is 3)'
+    AiChatValidationFailed:
+      description: AI chat request validation failed (empty content, message too long, invalid cursor, malformed JSON body, etc.).
+      value:
+        status: 400
+        code: APIHUB-AI-4001
+        message: Message exceeds maximum length of 32000 characters
+        params:
+          max: 32000
+    Unauthorized:
+      description: Unauthorized access
+      value:
+        status: 401
+        code: APIHUB-4101
+        message: Authentication required
+    AiChatStreamEvents:
+      summary: Full SSE turn — context compaction + tool call + delta chunks + done
+      description: 'Example of a full SSE response body. Each event is framed as `event: <type>\ndata: <json>\n\n`.
 
 
         ```
 
-        event: <type>
+        event: context.compacted
 
-        data: <json>
+        data: {"type":"context.compacted","compactedUpTo":"2026-04-19T15:40:00Z","summaryPreview":"The user asked about REST operations in package QS.QSS.PRG.APIHUB…","messagesBefore":48,"messagesKeptRaw":8}
 
+
+        event: message.assistant.start
+
+        data: {"type":"message.assistant.start","messageId":"2f5a8c6b-8c11-4b1a-9c6a-1c2e4d5f6a7b"}
+
+
+        event: tool.started
+
+        data: {"type":"tool.started","toolCallId":"call_1","name":"search_rest_api_operations"}
+
+
+        event: tool.completed
+
+        data: {"type":"tool.completed","toolCallId":"call_1","name":"search_rest_api_operations","status":"ok","durationMs":312}
+
+
+        event: message.assistant.delta
+
+        data: {"type":"message.assistant.delta","delta":"Here are the operations I found:\n\n"}
+
+
+        event: message.assistant.completed
+
+        data: {"type":"message.assistant.completed","message":{"messageId":"2f5a8c6b-8c11-4b1a-9c6a-1c2e4d5f6a7b","role":"assistant","content":"Here are the operations I found:\n\n","createdAt":"2026-04-19T15:44:12Z","toolInvocations":[{"name":"search_rest_api_operations","status":"ok","durationMs":312}]}}
+
+
+        event: done
+
+        data: {"type":"done"}
 
         ```
 
-
-        where the `<json>` line conforms to one of the variants below, selected by the `type` field.
-
         '
-      type: object
-      required:
-      - type
-      discriminator:
-        propertyName: type
-        mapping:
-          message.assistant.start: '#/components/schemas/AiChatStreamAssistantStartEvent'
-          message.assistant.delta: '#/components/schemas/AiChatStreamAssistantDeltaEvent'
-          message.assistant.completed: '#/components/schemas/AiChatStreamAssistantCompletedEvent'
-          tool.started: '#/components/schemas/AiChatStreamToolStartedEvent'
-          tool.completed: '#/components/schemas/AiChatStreamToolCompletedEvent'
-          context.compacted: '#/components/schemas/AiChatStreamContextCompactedEvent'
-          error: '#/components/schemas/AiChatStreamErrorEvent'
-          done: '#/components/schemas/AiChatStreamDoneEvent'
-      oneOf:
-      - $ref: '#/components/schemas/AiChatStreamAssistantStartEvent'
-      - $ref: '#/components/schemas/AiChatStreamAssistantDeltaEvent'
-      - $ref: '#/components/schemas/AiChatStreamAssistantCompletedEvent'
-      - $ref: '#/components/schemas/AiChatStreamToolStartedEvent'
-      - $ref: '#/components/schemas/AiChatStreamToolCompletedEvent'
-      - $ref: '#/components/schemas/AiChatStreamContextCompactedEvent'
-      - $ref: '#/components/schemas/AiChatStreamErrorEvent'
-      - $ref: '#/components/schemas/AiChatStreamDoneEvent'
-    AiChatCreateRequest:
-      description: Optional payload for creating a new chat.
-      type: object
-      properties:
-        title:
-          description: Explicit chat title. If omitted, the title will be derived from the first user message.
-          type: string
-          maxLength: 120
-          example: Playground checklist
-    AiChatStreamAssistantDeltaEvent:
-      description: 'Incremental markdown chunk for the assistant message. The client is expected to simply concatenate `delta` values in the order received.
+      value:
+        type: done
+    AiChatMessagesList:
+      description: Last page of messages in a chat (newest first).
+      value:
+        messages:
+        - messageId: 2f5a8c6b-8c11-4b1a-9c6a-1c2e4d5f6a7b
+          role: assistant
+          content: 'Here are the operations I found:
 
-        '
-      type: object
-      required:
-      - type
-      - delta
-      properties:
-        type:
-          type: string
-          enum:
-          - message.assistant.delta
-        delta:
-          type: string
-          example: 'Here are the operations I found:
+
+            | Operation | Method | Path |
+
+            | --- | --- | --- |
+
+            | [get-packages-list](/portal/packages/QS.QSS.PRG.APIHUB/2026.1/operations/rest/get-packages-list) | GET | /api/v2/packages |
+
+
+            And a CSV export: [operations-report.csv](/api/v1/ephemeral-files/7b6f4f87-4c8f-4d69-a66e-4a3c8a1b2c55?token=eyJhbGciOi...)
 
             '
-    AiChatToolInvocation:
-      description: 'Minimal, UI-facing descriptor of an MCP tool call that happened while producing an assistant message. The server intentionally does not expose tool arguments or raw results in order to keep the contract stable and avoid leaking internal data.
-
-        '
-      type: object
-      required:
-      - name
-      - status
-      properties:
-        name:
-          description: MCP tool name (e.g. `search_rest_api_operations`).
-          type: string
-          example: search_rest_api_operations
-        status:
-          description: Final status of the tool invocation.
-          type: string
-          enum:
-          - ok
-          - error
-        durationMs:
-          description: Wall-clock execution time in milliseconds.
-          type: integer
-          minimum: 0
-          example: 312
-    AiChatStreamDoneEvent:
-      description: Terminal marker. Always the last event on a successful stream.
-      type: object
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          enum:
-          - done
-    AiChatStreamAssistantCompletedEvent:
-      description: Terminal event for the assistant message. Carries the full final markdown (including any inline links to generated files).
-      type: object
-      required:
-      - type
-      - message
-      properties:
-        type:
-          type: string
-          enum:
-          - message.assistant.completed
-        message:
-          $ref: '#/components/schemas/AiChatMessage'
+          createdAt: '2026-04-19T15:44:12Z'
+          toolInvocations:
+          - name: search_rest_api_operations
+            status: ok
+            durationMs: 312
+        - messageId: 1a0bcd12-0000-4000-8000-000000000001
+          clientMessageId: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
+          role: user
+          content: List all REST operations in package QS.QSS.PRG.APIHUB.
+          createdAt: '2026-04-19T15:44:03Z'
+        hasMore: true
+    AiChatNotFound:
+      description: Chat not found by id. Response for the 404 error.
+      value:
+        status: 404
+        code: APIHUB-AI-3001
+        message: chat with chatId = $chatId not found
+    AiChat:
+      description: Single chat metadata
+      value:
+        chatId: e1a9f6d2-4a17-4a3b-9b91-4d7e9e8a0f11
+        title: How do I paginate REST operations?
+        createdAt: '2026-04-12T08:01:07Z'
+        lastMessageAt: '2026-04-19T15:44:12Z'
+        messagesCount: 42
+    AiChatsList:
+      description: A page of the user's chats
+      value:
+        chats:
+        - chatId: a1111111-1111-1111-1111-111111111111
+          title: 'Pinned: release checklist'
+          pinned: true
+          createdAt: '2026-04-01T07:00:00Z'
+          lastMessageAt: '2026-04-19T10:22:01Z'
+          messagesCount: 18
+        - chatId: e1a9f6d2-4a17-4a3b-9b91-4d7e9e8a0f11
+          title: How do I paginate REST operations?
+          createdAt: '2026-04-12T08:01:07Z'
+          lastMessageAt: '2026-04-19T15:44:12Z'
+          messagesCount: 42
+        hasMore: true
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
+  schemas:
     AiChatStreamContextCompactedEvent:
       description: 'Emitted at most once per turn, before the assistant starts streaming, if the server had to auto-compact earlier history. The client may use this signal to visually indicate that the older portion of the conversation is now represented by a summary stored server-side (`ai_chat.compaction_summary`). The number of messages actually folded into that summary is `messagesBefore - messagesKeptRaw`.
 
@@ -877,32 +782,141 @@ components:
           type: integer
           minimum: 0
           example: 8
-    ErrorResponse:
-      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+    AiChatStreamAssistantDeltaEvent:
+      description: 'Incremental markdown chunk for the assistant message. The client is expected to simply concatenate `delta` values in the order received.
+
+        '
+      type: object
+      required:
+      - type
+      - delta
+      properties:
+        type:
+          type: string
+          enum:
+          - message.assistant.delta
+        delta:
+          type: string
+          example: 'Here are the operations I found:
+
+            '
+    AiChatStreamAssistantStartEvent:
+      description: Emitted once, right before the first `message.assistant.delta` event.
+      type: object
+      required:
+      - type
+      - messageId
+      properties:
+        type:
+          type: string
+          enum:
+          - message.assistant.start
+        messageId:
+          type: string
+          format: uuid
+    AiChatStreamToolCompletedEvent:
+      description: Paired with the corresponding `tool.started` event.
+      type: object
+      required:
+      - type
+      - toolCallId
+      - name
+      - status
+      properties:
+        type:
+          type: string
+          enum:
+          - tool.completed
+        toolCallId:
+          type: string
+          example: call_1a2b3c
+        name:
+          type: string
+          example: search_rest_api_operations
+        status:
+          type: string
+          enum:
+          - ok
+          - error
+        durationMs:
+          type: integer
+          minimum: 0
+          example: 214
+    AiChatCreateRequest:
+      description: Optional payload for creating a new chat.
       type: object
       properties:
-        status:
-          description: HTTP status code as an integer; expected to match the actual HTTP response status.
-          type: number
-        code:
-          description: Internal string error code. Mandatory in response.
+        title:
+          description: Explicit chat title. If omitted, the title will be derived from the first user message.
           type: string
-        message:
-          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
-          type: string
-        params:
-          type: object
-          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
-          example:
-            id: 12345
-            type: string
-        debug:
-          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
-          type: string
+          maxLength: 120
+          example: Playground checklist
+    AiChatToolInvocation:
+      description: 'Minimal, UI-facing descriptor of an MCP tool call that happened while producing an assistant message. The server intentionally does not expose tool arguments or raw results in order to keep the contract stable and avoid leaking internal data.
+
+        '
+      type: object
       required:
+      - name
       - status
-      - code
-      - message
+      properties:
+        name:
+          description: MCP tool name (e.g. `search_rest_api_operations`).
+          type: string
+          example: search_rest_api_operations
+        status:
+          description: Final status of the tool invocation.
+          type: string
+          enum:
+          - ok
+          - error
+        durationMs:
+          description: Wall-clock execution time in milliseconds.
+          type: integer
+          minimum: 0
+          example: 312
+    AiChatStreamToolStartedEvent:
+      description: 'Emitted when the assistant decides to call an MCP tool. Multiple tool events may appear between `message.assistant.start` and `message.assistant.completed`.
+
+        '
+      type: object
+      required:
+      - type
+      - toolCallId
+      - name
+      properties:
+        type:
+          type: string
+          enum:
+          - tool.started
+        toolCallId:
+          description: Opaque identifier correlating `tool.started` with `tool.completed`.
+          type: string
+          example: call_1a2b3c
+        name:
+          type: string
+          example: search_rest_api_operations
+    AiChatUpdateRequest:
+      description: 'Partial update of a chat. Only fields present in the request are modified. At least one field must be supplied.
+
+        '
+      type: object
+      minProperties: 1
+      properties:
+        title:
+          description: New title for the chat.
+          type: string
+          minLength: 1
+          maxLength: 120
+          example: Tenant-aware search questions
+        pinned:
+          description: 'If true, pins the chat. Pinning is rejected with `400` when the user already has the maximum allowed number of pinned chats (hard-coded to 3 on both client and server).
+
+            If false, unpins the chat.
+
+            '
+          type: boolean
+          example: true
     AiChatMessage:
       description: 'A single chat message visible to the client.
 
@@ -956,6 +970,150 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AiChatToolInvocation'
+    AiChatSendMessageResponse:
+      description: Non-streaming response after a user message has been processed.
+      type: object
+      required:
+      - userMessage
+      - assistantMessage
+      properties:
+        userMessage:
+          $ref: '#/components/schemas/AiChatMessage'
+        assistantMessage:
+          $ref: '#/components/schemas/AiChatMessage'
+    AiChatSendMessageRequest:
+      description: 'Request body for sending a new user message. The body carries **only the new message** — never the full history.
+
+        '
+      type: object
+      required:
+      - content
+      properties:
+        content:
+          description: 'User message text (plain text, not markdown). Length limit is hard-coded identically on the client (validation) and on the server (enforcement) to the value of `maxLength` below.
+
+            '
+          type: string
+          minLength: 1
+          maxLength: 32000
+          example: List all REST operations in package QS.QSS.PRG.APIHUB and export them as CSV.
+        clientMessageId:
+          description: 'Optional idempotency key supplied by the client. If the server sees a duplicate `clientMessageId` for the same chat it returns the previous assistant response instead of re-sending to the LLM.
+
+            '
+          type: string
+          format: uuid
+          example: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+    AiChatStreamAssistantCompletedEvent:
+      description: Terminal event for the assistant message. Carries the full final markdown (including any inline links to generated files).
+      type: object
+      required:
+      - type
+      - message
+      properties:
+        type:
+          type: string
+          enum:
+          - message.assistant.completed
+        message:
+          $ref: '#/components/schemas/AiChatMessage'
+    AiChatStreamDoneEvent:
+      description: Terminal marker. Always the last event on a successful stream.
+      type: object
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+          - done
+    AiChatStreamEvent:
+      description: 'Documentation-only schema describing the shape of a single SSE event payload. The wire format is not JSON — each event is framed as:
+
+
+        ```
+
+        event: <type>
+
+        data: <json>
+
+
+        ```
+
+
+        where the `<json>` line conforms to one of the variants below, selected by the `type` field.
+
+        '
+      type: object
+      required:
+      - type
+      discriminator:
+        propertyName: type
+        mapping:
+          message.assistant.start: '#/components/schemas/AiChatStreamAssistantStartEvent'
+          message.assistant.delta: '#/components/schemas/AiChatStreamAssistantDeltaEvent'
+          message.assistant.completed: '#/components/schemas/AiChatStreamAssistantCompletedEvent'
+          tool.started: '#/components/schemas/AiChatStreamToolStartedEvent'
+          tool.completed: '#/components/schemas/AiChatStreamToolCompletedEvent'
+          context.compacted: '#/components/schemas/AiChatStreamContextCompactedEvent'
+          error: '#/components/schemas/AiChatStreamErrorEvent'
+          done: '#/components/schemas/AiChatStreamDoneEvent'
+      oneOf:
+      - $ref: '#/components/schemas/AiChatStreamAssistantStartEvent'
+      - $ref: '#/components/schemas/AiChatStreamAssistantDeltaEvent'
+      - $ref: '#/components/schemas/AiChatStreamAssistantCompletedEvent'
+      - $ref: '#/components/schemas/AiChatStreamToolStartedEvent'
+      - $ref: '#/components/schemas/AiChatStreamToolCompletedEvent'
+      - $ref: '#/components/schemas/AiChatStreamContextCompactedEvent'
+      - $ref: '#/components/schemas/AiChatStreamErrorEvent'
+      - $ref: '#/components/schemas/AiChatStreamDoneEvent'
+    AiChatStreamErrorEvent:
+      description: 'Emitted when the turn cannot be completed. After this event the server closes the stream without sending `done`.
+
+        '
+      type: object
+      required:
+      - type
+      - code
+      - message
+      properties:
+        type:
+          type: string
+          enum:
+          - error
+        code:
+          description: "Stable error code for mid-turn failures (HTTP validation/auth errors use the same codes in a JSON body before any SSE frame). Known values:\n  * `APIHUB-AI-5001` — upstream LLM provider error;\n  * `APIHUB-AI-4001` — message validation failed mid-flight (rare);\n  * `APIHUB-AI-5000` — internal error.\nMCP tool failures are surfaced as `tool.completed` with `status: error` and do not terminate the stream with a dedicated error code.\n"
+          type: string
+          example: APIHUB-AI-5001
+        message:
+          type: string
+          example: Upstream LLM provider request failed
     AiChat:
       description: AI chat metadata (messages are not included).
       type: object
@@ -1001,164 +1159,6 @@ components:
           type: integer
           minimum: 0
           example: 42
-  examples:
-    AiChatMessagesList:
-      description: Last page of messages in a chat (newest first).
-      value:
-        messages:
-        - messageId: 2f5a8c6b-8c11-4b1a-9c6a-1c2e4d5f6a7b
-          role: assistant
-          content: 'Here are the operations I found:
-
-
-            | Operation | Method | Path |
-
-            | --- | --- | --- |
-
-            | [get-packages-list](/portal/packages/QS.QSS.PRG.APIHUB/2026.1/operations/rest/get-packages-list) | GET | /api/v2/packages |
-
-
-            And a CSV export: [operations-report.csv](/api/v1/ephemeral-files/7b6f4f87-4c8f-4d69-a66e-4a3c8a1b2c55?token=eyJhbGciOi...)
-
-            '
-          createdAt: '2026-04-19T15:44:12Z'
-          toolInvocations:
-          - name: search_rest_api_operations
-            status: ok
-            durationMs: 312
-        - messageId: 1a0bcd12-0000-4000-8000-000000000001
-          clientMessageId: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
-          role: user
-          content: List all REST operations in package QS.QSS.PRG.APIHUB.
-          createdAt: '2026-04-19T15:44:03Z'
-        hasMore: true
-    AiChatStreamEvents:
-      summary: Full SSE turn — context compaction + tool call + delta chunks + done
-      description: 'Example of a full SSE response body. Each event is framed as `event: <type>\ndata: <json>\n\n`.
-
-
-        ```
-
-        event: context.compacted
-
-        data: {"type":"context.compacted","compactedUpTo":"2026-04-19T15:40:00Z","summaryPreview":"The user asked about REST operations in package QS.QSS.PRG.APIHUB…","messagesBefore":48,"messagesKeptRaw":8}
-
-
-        event: message.assistant.start
-
-        data: {"type":"message.assistant.start","messageId":"2f5a8c6b-8c11-4b1a-9c6a-1c2e4d5f6a7b"}
-
-
-        event: tool.started
-
-        data: {"type":"tool.started","toolCallId":"call_1","name":"search_rest_api_operations"}
-
-
-        event: tool.completed
-
-        data: {"type":"tool.completed","toolCallId":"call_1","name":"search_rest_api_operations","status":"ok","durationMs":312}
-
-
-        event: message.assistant.delta
-
-        data: {"type":"message.assistant.delta","delta":"Here are the operations I found:\n\n"}
-
-
-        event: message.assistant.completed
-
-        data: {"type":"message.assistant.completed","message":{"messageId":"2f5a8c6b-8c11-4b1a-9c6a-1c2e4d5f6a7b","role":"assistant","content":"Here are the operations I found:\n\n","createdAt":"2026-04-19T15:44:12Z","toolInvocations":[{"name":"search_rest_api_operations","status":"ok","durationMs":312}]}}
-
-
-        event: done
-
-        data: {"type":"done"}
-
-        ```
-
-        '
-      value:
-        type: done
-    AiChatNotFound:
-      description: Chat not found by id. Response for the 404 error.
-      value:
-        status: 404
-        code: APIHUB-AI-3001
-        message: chat with chatId = $chatId not found
-    AiChatPinLimitExceeded:
-      description: User attempts to pin more chats than allowed.
-      value:
-        status: 400
-        code: APIHUB-AI-4003
-        message: 'Cannot pin chat: user already has 3 pinned chats (the limit is 3)'
-    AiChatValidationFailed:
-      description: AI chat request validation failed (empty content, message too long, invalid cursor, malformed JSON body, etc.).
-      value:
-        status: 400
-        code: APIHUB-AI-4001
-        message: Message exceeds maximum length of 32000 characters
-        params:
-          max: 32000
-    AiChatSendMessageResponse:
-      description: Non-streaming response after a user message has been answered.
-      value:
-        userMessage:
-          messageId: 1a0bcd12-0000-4000-8000-000000000001
-          clientMessageId: 9c8e9045-dd9c-4946-b9e4-e05e3f41c4cc
-          role: user
-          content: List all REST operations in package QS.QSS.PRG.APIHUB.
-          createdAt: '2026-04-19T15:44:03Z'
-        assistantMessage:
-          messageId: 2f5a8c6b-8c11-4b1a-9c6a-1c2e4d5f6a7b
-          role: assistant
-          content: Here are the operations I found...
-          createdAt: '2026-04-19T15:44:12Z'
-          toolInvocations:
-          - name: search_rest_api_operations
-            status: ok
-            durationMs: 312
-    AiChatsList:
-      description: A page of the user's chats
-      value:
-        chats:
-        - chatId: a1111111-1111-1111-1111-111111111111
-          title: 'Pinned: release checklist'
-          pinned: true
-          createdAt: '2026-04-01T07:00:00Z'
-          lastMessageAt: '2026-04-19T10:22:01Z'
-          messagesCount: 18
-        - chatId: e1a9f6d2-4a17-4a3b-9b91-4d7e9e8a0f11
-          title: How do I paginate REST operations?
-          createdAt: '2026-04-12T08:01:07Z'
-          lastMessageAt: '2026-04-19T15:44:12Z'
-          messagesCount: 42
-        hasMore: true
-    IncorrectInputParameters:
-      description: Incorrect input parameters
-      value:
-        status: 400
-        code: APIHUB-COMMON-4001
-        message: Incorrect input parameters
-    Unauthorized:
-      description: Unauthorized access
-      value:
-        status: 401
-        code: APIHUB-4101
-        message: Authentication required
-    AiChat:
-      description: Single chat metadata
-      value:
-        chatId: e1a9f6d2-4a17-4a3b-9b91-4d7e9e8a0f11
-        title: How do I paginate REST operations?
-        createdAt: '2026-04-12T08:01:07Z'
-        lastMessageAt: '2026-04-19T15:44:12Z'
-        messagesCount: 42
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
   parameters:
     chatId:
       name: chatId
