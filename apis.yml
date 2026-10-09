@@ -2056,6 +2056,8 @@ common:
   url: https://www.netcracker.com/portfolio/products/netcracker-api-management-integration
 - type: Portfolio
   url: https://www.netcracker.com/portfolio
+- type: SpectralRules
+  url: https://github.com/Netcracker/qubership-api-linter-service/blob/08730a6744a3efab7521aae436dbf0c9ff1a54d5/qubership-api-linter-service/resources/vacuum/rules/rules.yaml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
