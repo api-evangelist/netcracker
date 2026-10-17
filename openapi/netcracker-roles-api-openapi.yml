@@ -1002,7 +1002,44 @@ paths:
           - staging.apihub
           default: apihub
 components:
+  examples:
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
+    PackageNotFound:
+      description: Package not found by ID. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3020
+        message: package with packageId = $packageId not found
   schemas:
+    Role:
+      description: Represents a role with its identifier, display name, and assigned permissions.
+      type: object
+      title: Role
+      required:
+      - roleId
+      - role
+      - permissions
+      properties:
+        roleId:
+          type: string
+          description: Unique role identifier. The value is the slug of role name.
+          example: editor
+        role:
+          type: string
+          description: Role name.
+          example: Editor
     ErrorResponse:
       description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
       type: object
@@ -1029,29 +1066,6 @@ components:
       - status
       - code
       - message
-    User:
-      description: Represents an APIHUB user returned by administration endpoints.
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          description: Unique user login (username) used to authenticate the user.
-          type: string
-          example: user1221
-        name:
-          description: Name of the user
-          type: string
-          example: John Doe
-        email:
-          description: Email address of the user
-          type: string
-          format: email
-          example: john.doe@example.com
-        avatarUrl:
-          description: URL of the user avatar image.
-          type: string
-          format: URL
     RoleCreate:
       description: Payload for creating a role, including the role name and the permissions to assign.
       type: object
@@ -1087,60 +1101,8 @@ components:
       - user_access_management
       - access_token_management
       example: read
-    Role:
-      description: Represents a role with its identifier, display name, and assigned permissions.
-      type: object
-      title: Role
-      required:
-      - roleId
-      - role
-      - permissions
-      properties:
-        roleId:
-          type: string
-          description: Unique role identifier. The value is the slug of role name.
-          example: editor
-        role:
-          type: string
-          description: Role name.
-          example: Editor
-    Member:
-      description: User and assigned role
-      type: object
-      title: Member
-      required:
-      - user
-      - roles
-      properties:
-        user:
-          $ref: '#/components/schemas/User_2'
-        roles:
-          type: array
-          description: List of user roles in the package.
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Role'
-            - type: object
-              properties:
-                inheritance:
-                  type: object
-                  description: Role was inherited from this package
-                  properties:
-                    packageId:
-                      description: Package unique string identifier (full alias)
-                      type: string
-                    kind:
-                      description: Package kind
-                      type: string
-                      enum:
-                      - workspace
-                      - group
-                    name:
-                      description: Name of the package
-                      type: string
-                      example: qubership
-    User_2:
-      description: Represents an APIHUB user with identity and profile information returned by API endpoints.
+    User:
+      description: Represents an APIHUB user returned by administration endpoints.
       type: object
       required:
       - id
@@ -1188,6 +1150,41 @@ components:
           - editor
           - viewer
           - none
+    Member:
+      description: User and assigned role
+      type: object
+      title: Member
+      required:
+      - user
+      - roles
+      properties:
+        user:
+          $ref: '#/components/schemas/User_2'
+        roles:
+          type: array
+          description: List of user roles in the package.
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Role'
+            - type: object
+              properties:
+                inheritance:
+                  type: object
+                  description: Role was inherited from this package
+                  properties:
+                    packageId:
+                      description: Package unique string identifier (full alias)
+                      type: string
+                    kind:
+                      description: Package kind
+                      type: string
+                      enum:
+                      - workspace
+                      - group
+                    name:
+                      description: Name of the package
+                      type: string
+                      example: qubership
     Permission_2:
       description: Permission
       type: string
@@ -1201,26 +1198,29 @@ components:
       - user_access_management
       - access_token_management
       example: read
-  examples:
-    IncorrectInputParameters:
-      description: Incorrect input parameters
-      value:
-        status: 400
-        code: APIHUB-COMMON-4001
-        message: Incorrect input parameters
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
-    PackageNotFound:
-      description: Package not found by ID. Response for the 404 error
-      value:
-        status: 404
-        code: APIHUB-3020
-        message: package with packageId = $packageId not found
+    User_2:
+      description: Represents an APIHUB user with identity and profile information returned by API endpoints.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          description: Unique user login (username) used to authenticate the user.
+          type: string
+          example: user1221
+        name:
+          description: Name of the user
+          type: string
+          example: John Doe
+        email:
+          description: Email address of the user
+          type: string
+          format: email
+          example: john.doe@example.com
+        avatarUrl:
+          description: URL of the user avatar image.
+          type: string
+          format: URL
   parameters:
     packageId:
       name: packageId

@@ -876,59 +876,6 @@ paths:
       - Kafka
 components:
   schemas:
-    model.Classifier:
-      properties:
-        name:
-          type: string
-        namespace:
-          type: string
-        tenantId:
-          type: string
-      required:
-      - name
-      - namespace
-      type: object
-    model.TopicDeletionError:
-      properties:
-        message:
-          example: <error message>
-          type: string
-        topic:
-          $ref: '#/components/schemas/model.TopicRegistrationRespDto'
-      type: object
-    model.KafkaCredentials:
-      properties:
-        clientCert:
-          type: string
-        clientKey:
-          type: string
-        password:
-          type: string
-        type:
-          type: string
-        username:
-          type: string
-      type: object
-    model.TopicSearchRequest:
-      properties:
-        classifier:
-          $ref: '#/components/schemas/model.Classifier'
-        instance:
-          example: <id of kafka instance where topics are created>
-          type: string
-        leaveRealTopicIntact:
-          type: boolean
-        namespace:
-          example: <namespace to which topics belong>
-          type: string
-        template:
-          type: integer
-        topic:
-          example: <exact topic name in kafka>
-          type: string
-        versioned:
-          type: boolean
-      type: object
     model.TopicRegistrationRespDto:
       properties:
         actualSettings:
@@ -981,26 +928,6 @@ components:
             $ref: '#/components/schemas/model.TopicDeletionError'
           type: array
       type: object
-    model.KafkaTopicSyncReport:
-      properties:
-        classifier:
-          $ref: '#/components/schemas/model.Classifier'
-        errMsg:
-          example: can not get topic info
-          type: string
-        name:
-          example: maas.local.test-topic-0
-          type: string
-        status:
-          example: added
-          type: string
-      type: object
-    controller.Instance:
-      properties:
-        id:
-          example: maas-rabbitmq-code-dev
-          type: string
-      type: object
     model.TopicTemplate:
       properties:
         configs:
@@ -1032,6 +959,59 @@ components:
           example: true
           type: boolean
       type: object
+    model.Classifier:
+      properties:
+        name:
+          type: string
+        namespace:
+          type: string
+        tenantId:
+          type: string
+      required:
+      - name
+      - namespace
+      type: object
+    model.TopicDeletionError:
+      properties:
+        message:
+          example: <error message>
+          type: string
+        topic:
+          $ref: '#/components/schemas/model.TopicRegistrationRespDto'
+      type: object
+    model.TopicSearchRequest:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        instance:
+          example: <id of kafka instance where topics are created>
+          type: string
+        leaveRealTopicIntact:
+          type: boolean
+        namespace:
+          example: <namespace to which topics belong>
+          type: string
+        template:
+          type: integer
+        topic:
+          example: <exact topic name in kafka>
+          type: string
+        versioned:
+          type: boolean
+      type: object
+    model.KafkaCredentials:
+      properties:
+        clientCert:
+          type: string
+        clientKey:
+          type: string
+        password:
+          type: string
+        type:
+          type: string
+        username:
+          type: string
+      type: object
     model.DiscrepancyReportItem:
       properties:
         classifier:
@@ -1042,6 +1022,31 @@ components:
         status:
           example: ok
           type: string
+      type: object
+    model.TopicSettings:
+      properties:
+        configs:
+          additionalProperties:
+            type: string
+          type: object
+        minNumPartitions:
+          example: 1
+          type: integer
+        numPartitions:
+          example: 1
+          type: integer
+        replicaAssignment:
+          additionalProperties:
+            items:
+              type: integer
+            type: array
+          type: object
+        replicationFactor:
+          example: 1
+          type: integer
+        versioned:
+          example: true
+          type: boolean
       type: object
     model.KafkaInstance:
       properties:
@@ -1070,30 +1075,25 @@ components:
           example: SASL_PLAINTEXT
           type: string
       type: object
-    model.TopicSettings:
+    controller.Instance:
       properties:
-        configs:
-          additionalProperties:
-            type: string
-          type: object
-        minNumPartitions:
-          example: 1
-          type: integer
-        numPartitions:
-          example: 1
-          type: integer
-        replicaAssignment:
-          additionalProperties:
-            items:
-              type: integer
-            type: array
-          type: object
-        replicationFactor:
-          example: 1
-          type: integer
-        versioned:
-          example: true
-          type: boolean
+        id:
+          example: maas-rabbitmq-code-dev
+          type: string
+      type: object
+    model.KafkaTopicSyncReport:
+      properties:
+        classifier:
+          $ref: '#/components/schemas/model.Classifier'
+        errMsg:
+          example: can not get topic info
+          type: string
+        name:
+          example: maas.local.test-topic-0
+          type: string
+        status:
+          example: added
+          type: string
       type: object
   securitySchemes:
     BasicAuth:

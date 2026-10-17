@@ -114,6 +114,38 @@ paths:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
 components:
+  examples:
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
+    EphemeralFileNotFound:
+      description: Ephemeral file not found or already cleaned up.
+      value:
+        status: 404
+        code: APIHUB-EF-3001
+        message: ephemeral file with fileId = $fileId not found
+    EphemeralFileTokenInvalid:
+      description: Download token invalid or not valid for the requested file.
+      value:
+        status: 401
+        code: APIHUB-EF-3002
+        message: Invalid download token
+    EphemeralFileTokenExpired:
+      description: Signed download token expired.
+      value:
+        status: 410
+        code: APIHUB-EF-4101
+        message: download token expired, please request the file again
+    EphemeralFileTokenMissing:
+      description: Download token query parameter missing.
+      value:
+        status: 401
+        code: APIHUB-EF-3003
+        message: Missing token query parameter
   schemas:
     ErrorResponse:
       description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
@@ -141,38 +173,6 @@ components:
       - status
       - code
       - message
-  examples:
-    EphemeralFileNotFound:
-      description: Ephemeral file not found or already cleaned up.
-      value:
-        status: 404
-        code: APIHUB-EF-3001
-        message: ephemeral file with fileId = $fileId not found
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
-    EphemeralFileTokenMissing:
-      description: Download token query parameter missing.
-      value:
-        status: 401
-        code: APIHUB-EF-3003
-        message: Missing token query parameter
-    EphemeralFileTokenExpired:
-      description: Signed download token expired.
-      value:
-        status: 410
-        code: APIHUB-EF-4101
-        message: download token expired, please request the file again
-    EphemeralFileTokenInvalid:
-      description: Download token invalid or not valid for the requested file.
-      value:
-        status: 401
-        code: APIHUB-EF-3002
-        message: Invalid download token
   securitySchemes:
     BearerAuth:
       type: http

@@ -2778,6 +2778,69 @@ paths:
                 InternalServerError:
                   $ref: '#/components/examples/InternalServerError'
 components:
+  examples:
+    InternalServerError:
+      description: 'Example: default internal server error response'
+      value:
+        status: 500
+        code: APIHUB-8000
+        reason: InternalServerError
+        message: InternalServerError
+    VersionStatusChangePreviousVersionNotRelease:
+      description: Version status cannot be changed to 'release' when the previous version is a draft
+      value:
+        status: 400
+        code: '8600'
+        message: Version 2024.2 for package QS.group.my-package cannot be changed to the 'release' status because previous version 2024.1 for package QS.group.previous-package is in the 'draft' status. Change the previous version to 'release', then retry.
+        params:
+          version: '2024.2'
+          packageId: QS.group.my-package
+          previousVersion: '2024.1'
+          previousVersionPackageId: QS.group.previous-package
+    FileNotFound:
+      description: File not found by slug. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3043
+        message: File for path $fileId not found
+    VersionReferencedByDashboard:
+      description: Version cannot be deleted because one or more dashboard versions reference it.
+      value:
+        status: 409
+        code: '8500'
+        message: 'Cannot delete version $version of package $packageId: it is referenced by these dashboard versions: $dashboards. Remove the references or delete the dashboards, then retry.'
+        params:
+          packageId: sample.package
+          version: '2024.1'
+          dashboards: sample.dashboard|2024.2@3, other.dashboard|2024.1@1
+    VersionNotFound:
+      description: Version not found by number. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3050
+        message: Published version $version not found
+    PackageNotFound:
+      description: Package not found by ID. Response for the 404 error
+      value:
+        status: 404
+        code: APIHUB-3020
+        message: package with packageId = $packageId not found
+    VersionReferencedAsPreviousByRelease:
+      description: Version cannot be changed to 'draft' because a released version uses it as its previous version
+      value:
+        status: 400
+        code: '8600'
+        message: 'Version 2024.1 for package QS.group.my-package cannot be changed to the ''draft'' status because it is the previous version of released versions: QS.group.other-package|2024.2@1'
+        params:
+          version: '2024.1'
+          packageId: QS.group.my-package
+          releaseVersions: QS.group.other-package|2024.2@1
+    IncorrectInputParameters:
+      description: Incorrect input parameters
+      value:
+        status: 400
+        code: APIHUB-COMMON-4001
+        message: Incorrect input parameters
   schemas:
     Operation:
       description: Operation object
@@ -2890,99 +2953,114 @@ components:
           type: string
           pattern: ^[a-z0-9-]
           example: qitmf-v5-11-ref-resolved-json
-    VersionContractsSummary:
-      description: 'Summary of contract entities published in a package version, keyed by contract type.
+    ProtobufOperationMeta:
+      description: Specific parameters for Protobuf operation.
+      title: GraphQLOperationMeta
+      required:
+      - type
+      - method
+      type: object
+      properties:
+        type:
+          description: Operation type
+          type: string
+          enum:
+          - unary
+          - serverStreaming
+          - clientStreaming
+          - bidirectionalStreaming
+        method:
+          description: Protobuf method name.
+          type: string
+          example: ListActionLogItems
+        title:
+          description: Operation title (same as method name but with adding spaces between capital letters)
+          type: string
+          example: List Action Log Items
+        customTags:
+          description: Custom tags.
+          type: object
+    ErrorResponse:
+      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+      type: object
+      properties:
+        status:
+          description: HTTP status code as an integer; expected to match the actual HTTP response status.
+          type: number
+        code:
+          description: Internal string error code. Mandatory in response.
+          type: string
+        message:
+          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
+          type: string
+        params:
+          type: object
+          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
+          example:
+            id: 12345
+            type: string
+        debug:
+          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
+          type: string
+      required:
+      - status
+      - code
+      - message
+    PackagesMap:
+      description: 'A map of referenced package versions to the package version objects.
+
+        The key is `packageId@version@revision` — three `@`-separated segments (note: the `version` field
+
+        of each value is `version@revision`, only two segments).
+
+        '
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/PackageVersionRef'
+      example:
+        QS.CloudQSS.CPQ.Q-TMF@2023.2@3:
+          refId: QS.CloudQSS.CPQ.Q-TMF
+          kind: package
+          name: Quote Management TMF648
+          version: 2023.2@3
+          status: release
+          parentPackages:
+          - qubership
+          - Qubership JSS
+          - Sample Management
+          deletedAt: '2023-05-30T17:17:11.755146Z'
+          deletedBy: user1221
+          notLatestRevision: true
+    ChangeSummary:
+      description: 'Numbers of changes between the current and previous published version.
 
         '
       type: object
       properties:
-        ddl:
-          type: object
-          properties:
-            tablesCount:
-              type: integer
-              default: 0
-              description: Number of DDL table entities published in the version.
-            changesSummary:
-              allOf:
-              - $ref: '#/components/schemas/ChangeSummary'
-              - type: object
-                description: Number of declarative DDL changes in the version (compared to the previous release version). Present only when the version has a previous version to compare against.
-            numberOfImpactedEntities:
-              allOf:
-              - $ref: '#/components/schemas/ChangeSummary'
-              - type: object
-                description: Number of DDL entities impacted by each severity type. Present only when the version has a previous version to compare against.
-        mcp:
-          description: MCP summary keyed by MCP endpoint (one entry per published MCP endpoint in this version).
-          type: object
-          additionalProperties:
-            type: object
-            properties:
-              toolsCount:
-                type: integer
-                default: 0
-              promptsCount:
-                type: integer
-                default: 0
-              resourcesCount:
-                type: integer
-                default: 0
-          example:
-            /mcp:
-              toolsCount: 3
-              promptsCount: 1
-              resourcesCount: 2
-    ProtobufOperation:
-      description: Protobuf operation object.
-      title: ProtobufOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/ProtobufOperationMeta'
-    CreateOperationGroup:
-      description: Version group.
-      type: object
-      required:
-      - groupName
-      - apiType
-      - isPrefixGroup
-      properties:
-        groupName:
-          type: string
-          description: Unique group name.
-          example: New_operation_group
-        apiType:
-          $ref: '#/components/schemas/ApiType'
-        description:
-          type: string
-          description: Description of group.
-        isPrefixGroup:
-          type: boolean
-          description: true - if the group created automatically via restGroupingPrefix.
-          example: false
-        exportTemplateFileName:
-          type: string
-          description: The name of the export template file, if there is one.
-          example: template123.json
-    ApiKey:
-      title: ApiKey
-      type: object
-      required:
-      - id
-      - name
-      properties:
-        id:
-          description: ApiKey unique identifier
-          type: string
-        name:
-          description: ApiKey name
-          type: string
-    GraphQLOperation:
-      description: GraphQL operation object.
-      title: GraphQLOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/GraphQLOperationMeta'
+        breaking:
+          description: Number of changes, breaking the backward compatibility.
+          type: integer
+          default: 0
+        semi-breaking:
+          description: Number of changes, breaking the backward compatibility in a legal way. For example, deleting correctly deprecated endpoint.
+          type: integer
+          default: 0
+        deprecated:
+          description: Number of deprecated endpoints.
+          type: integer
+          default: 0
+        non-breaking:
+          description: Number of non-breaking changes.
+          type: integer
+          default: 0
+        annotation:
+          description: Number of annotation changes.
+          type: integer
+          default: 0
+        unclassified:
+          description: Number of unclassified changes.
+          type: integer
+          default: 0
     InternalDocumentMetadata:
       type: object
       required:
@@ -2998,93 +3076,6 @@ components:
           type: string
           description: File name (slug+extension).
           example: qitmf-v5.11.json
-    User:
-      description: Represents an APIHUB user with identity and profile information returned by API endpoints.
-      type: object
-      required:
-      - id
-      properties:
-        id:
-          description: Unique user login (username) used to authenticate the user.
-          type: string
-          example: user1221
-        name:
-          description: Name of the user
-          type: string
-          example: John Doe
-        email:
-          description: Email address of the user
-          type: string
-          format: email
-          example: john.doe@example.com
-        avatarUrl:
-          description: URL of the user avatar image.
-          type: string
-          format: URL
-    ApiType:
-      title: apiType
-      type: string
-      enum:
-      - rest
-      - graphql
-      - protobuf
-      - asyncapi
-    OperationInfoFromDifferentVersionsV2:
-      description: Operation info from previous/current version.
-      type: object
-      required:
-      - operationId
-      - title
-      - apiKind
-      - documentId
-      - apiAudience
-      properties:
-        operationId:
-          description: Operation unique identifier (for rest api this operationId is not the same as operationId field from the OpenAPI file).
-          type: string
-          example: get-quoteManagement-v5-quote
-        documentId:
-          description: Unique string identifier of the document from which the operation is originated
-          type: string
-          pattern: ^[a-z0-9-]
-          example: qitmf-v5-11-json
-        title:
-          description: Operation summary/title.
-          type: string
-        apiKind:
-          type: string
-          enum:
-          - bwc
-          - no-bwc
-          - experimental
-        apiAudience:
-          description: 'Operation''s target audience:
-
-            * internal - APIs are available for integration within product application.
-
-            * external - APIs exposed outside the boundary of product application: solution delivery integrations, 3rd party integrations, customer integrations.
-
-            * unknown - If any value other than internal or external is used, the API is considered as unknown.
-
-            '
-          type: string
-          enum:
-          - internal
-          - external
-          - unknown
-        tags:
-          description: Tags of operation. For rest - tag is taken from OAS, for graphql - tag is root schema type (query, mutation, subscription).
-          type: array
-          items:
-            type: string
-          example:
-          - Access Control API, Address Management API
-        packageRef:
-          description: 'Parent package and version link. Created by the concatenation of the packageId and version name with At sign.
-
-            '
-          type: string
-          example: QS.CloudQSS.CPQ.Q-TMF@2023.2
     SpecificationType:
       title: type
       description: Type of the specification notation.
@@ -3103,95 +3094,6 @@ components:
       - ddl
       - mcp
       - unknown
-    RestOperationInfoFromDifferentVersions:
-      description: Operation info from previous/current version.
-      allOf:
-      - $ref: '#/components/schemas/OperationInfoFromDifferentVersionsV2'
-      - type: object
-        required:
-        - path
-        - method
-        properties:
-          path:
-            description: Operation endpoint path.
-            type: string
-            example: /quoteManagement/v5/quote
-          method:
-            description: Operation method.
-            type: string
-            enum:
-            - post
-            - get
-            - put
-            - patch
-            - delete
-            - head
-            - options
-            - connect
-            - trace
-    VersionStatusEnum:
-      description: Package version status
-      type: string
-      enum:
-      - draft
-      - release
-      - archived
-    RestOperationMeta:
-      description: Specific parameters for REST operation.
-      title: RestOperationMeta
-      required:
-      - path
-      - method
-      type: object
-      properties:
-        path:
-          description: Operation endpoint path.
-          type: string
-          example: /quoteManagement/v5/quote
-        method:
-          description: Operation method.
-          type: string
-          enum:
-          - post
-          - get
-          - put
-          - patch
-          - delete
-          - head
-          - options
-          - connect
-          - trace
-        title:
-          description: Operation summary/title.
-          type: string
-        customTags:
-          description: Custom tags.
-          type: object
-    GraphQLOperationMeta:
-      description: Specific parameters for GraphQL operation.
-      title: GraphQLOperationMeta
-      required:
-      - type
-      - method
-      type: object
-      properties:
-        type:
-          description: Operation type
-          type: string
-          enum:
-          - query
-          - mutation
-          - subscription
-        method:
-          description: GraphQL operation method.
-          type: string
-          example: getPaymentMethodSpecificationCore
-        title:
-          description: Operation summary/title.
-          type: string
-        customTags:
-          description: Custom tags.
-          type: object
     PackageVersionRef:
       description: Package version reference
       type: object
@@ -3240,297 +3142,25 @@ components:
         notLatestRevision:
           type: boolean
           default: false
-    PackageVersionContent:
-      description: Published package version content
-      type: object
-      required:
-      - packageId
-      - version
-      - createdAt
-      - createdBy
-      - summary
-      - revision
-      - revisionsCount
-      - status
-      - apiProcessorVerson
-      properties:
-        packageId:
-          description: Package unique string identifier (full alias)
-          type: string
-          example: QS.CloudQSS.CPQ.Q-TMF
-        version:
-          description: Package version name.The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2022.2@5
-        createdAt:
-          description: Date of the package version publication.
-          type: string
-          format: date-time
-        createdBy:
-          $ref: '#/components/schemas/Principal'
-        previousVersion:
-          description: Name of the previous published version.The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2022.2@5
-        previousVersionPackageId:
-          description: Package id of the previous version to compare with. Required for agent snapshots.
-          type: string
-          example: QS.GRP.SOMEPKG
-        versionLabels:
-          description: List of version labels.
-          type: array
-          items:
-            type: string
-          example:
-          - part-of:CloudQSS-CPQBE
-        notLatestRevision:
-          type: boolean
-          default: false
-        revisionsCount:
-          description: Total number of revisions in the version.
-          type: integer
-          format: int32
-          example: 3
-        status:
-          $ref: '#/components/schemas/VersionStatusEnum'
-        apiProcessorVerson:
-          description: Version of api-processor with which current version was built.
-          type: string
-    PackageVersionFile:
-      description: Parameters of published file in package version
-      type: object
-      title: Package version file
-      required:
-      - fileId
-      - filename
-      - slug
-      - type
-      - format
-      - title
-      properties:
-        fileId:
-          type: string
-          description: File name.
-          example: qitmf-v5.11.json
-        filename:
-          type: string
-          description: File name (slug+extension).
-          example: qitmf-v5.11.json
-        slug:
-          description: Published file slug
-          type: string
-          pattern: ^[a-z0-9-]
-          example: qitmf-v5-11-json
-        type:
-          $ref: '#/components/schemas/SpecificationType'
-        format:
-          $ref: '#/components/schemas/DocumentFormat'
-        title:
-          description: Name/title of the document.
-          type: string
-          example: Quote Integration TMForum Service
-        version:
-          description: Document version
-          type: string
-          example: 1.0.1
-        labels:
-          description: List of file labels.
-          type: array
-          items:
-            type: string
-          example:
-          - TMF
-        shareabilityStatus:
-          description: Document shareability status
-          type: string
-          enum:
-          - shareable
-          - non-shareable
-          - unknown
-          default: unknown
-          example: unknown
-    PackageVersion:
-      description: Base parameters of published version (without content)
-      type: object
-      title: PackageVersion
-      required:
-      - version
-      - status
-      - createdAt
-      - createdBy
-      properties:
-        version:
-          description: Package version name.The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2022.3@5
-        status:
-          $ref: '#/components/schemas/VersionStatusEnum'
-        createdBy:
-          $ref: '#/components/schemas/Principal'
-        createdAt:
-          type: string
-          description: Date of package creation.
-          format: datetime
-        versionLabels:
-          description: List of version labels.
-          type: array
-          items:
-            type: string
-          example:
-          - part-of:CloudQSS-CPQBE
-        previousVersion:
-          description: previous package version name.The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2022.2@5
-        previousVersionPackageId:
-          description: Package id of the previous version. Can be empty if the value is equal to the package id.
-          type: string
-          example: QS.GRP.SOMEPKG
-        notLatestRevision:
-          type: boolean
-          default: false
-        apiProcessorVerson:
-          description: Version of api-processor with which current version was built.
-          type: string
-    DeprecatedItems:
-      description: List of deprecated items in the operation.
-      type: array
-      items:
-        type: object
-        properties:
-          deprecatedInPreviousVersions:
-            description: List of previous release versions where item was also deprecated
-            type: array
-            items:
-              type: string
-            example:
-            - '2022.2'
-            - 2022,1
-            - '2021.4'
-          declarationJsonPaths:
-            description: Declarative path to deprecated item.
-            type: array
-            items:
-              type: array
-              items:
-                anyOf:
-                - type: string
-                - type: integer
-            example:
-            - - paths
-              - /post/saml/
-              - test
-              - 1
-            - - paths
-              - /post/saml/
-              - test
-              - 22
-          description:
-            description: Human-readable description of deprecated item.
-            type: string
-            example: '[Deprecated] query parameter ''petId'''
-          deprecatedInfo:
-            description: "Additional information about single deprecated item:\n* for REST API it is value of 'x-deprecated-meta' extension (value of extension must be string), which is defined for deprecated item.\n* for GraphQL API it is value of 'reason' argument of @deprecated directive.\n* for AsyncAPI 3.0: \"[Deprecated] message {name}\" (name = message.title or messageId),\n  or \"[Deprecated] channel {name}\" (name = channel.title or channelId).\n"
-            type: string
-          tolerantHash:
-            description: Tolerant hash for Schema object or Parameter object that has been deprecated. It is needed to identify that the same schema/parameter was deprecated in previous version.
-            type: string
-          hash:
-            description: Hash (full) for Schema object or Parameter object that has been deprecated, it is needed to detect semi-breaking changes in UI.
-            type: string
-    RestOperation:
-      description: REST operation object.
-      title: RestOperation
+    DocumentFormat:
+      title: format
+      description: Format of the specification document.
+      type: string
+      enum:
+      - json
+      - yaml
+      - md
+      - graphql
+      - gql
+      - proto
+      - sql
+      - unknown
+    ProtobufOperation:
+      description: Protobuf operation object.
+      title: ProtobufOperation
       allOf:
       - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/RestOperationMeta'
-    AsyncAPIOperation:
-      description: AsyncAPI operation object.
-      title: AsyncAPIOperation
-      allOf:
-      - $ref: '#/components/schemas/Operation'
-      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
-    PackageVersionRevision:
-      description: Version revision parameters.
-      type: object
-      title: PackageVersionRevision
-      required:
-      - version
-      - revision
-      - status
-      - createdAt
-      - createdBy
-      properties:
-        version:
-          description: Package version name. The <version>@<revision> mask is used to return the revision number.
-          type: string
-          example: 2023.1@5
-        revision:
-          description: Number of the revision.
-          type: integer
-          format: int32
-          example: 3
-        status:
-          $ref: '#/components/schemas/VersionStatusEnum'
-        createdBy:
-          $ref: '#/components/schemas/Principal'
-        createdAt:
-          type: string
-          description: Date of revision creation.
-          format: datetime
-        notLatestRevision:
-          type: boolean
-          default: false
-        revisionLabels:
-          description: List of revision labels.
-          type: array
-          items:
-            type: string
-          example:
-          - part-of:CloudQSS-CPQBE
-        publishMeta:
-          additionalProperties: true
-          description: Publish metadata.
-          type: object
-          properties:
-            commitId:
-              description: Last Git commit ID of the version.
-              type: string
-              example: a5d45af7
-            repositoryUrl:
-              description: Url of the Git repository.
-              type: string
-              format: URI
-              example: https://<git_group_link>/apihub-registry
-            cloudName:
-              description: Name of the cloud for publication from Agent.
-              type: string
-              example: k8s-apps2
-            cloudUrl:
-              description: Full address of the cloud from Agent.
-              type: string
-              format: URI
-              example: https://k8s-apps2.k8s.sdntest.qubership.org
-            namespace:
-              description: Namespace of Agent's publication.
-              type: string
-              example: cloudQSS-release2
-    Principal:
-      description: User or API key
-      allOf:
-      - oneOf:
-        - $ref: '#/components/schemas/User'
-        - $ref: '#/components/schemas/ApiKey'
-      - type: object
-        required:
-        - type
-        properties:
-          type:
-            description: Identifies whether principal is user or API key
-            type: string
-            enum:
-            - user
-            - apiKey
+      - $ref: '#/components/schemas/ProtobufOperationMeta'
     AsyncAPIOperationMeta:
       description: 'Specific parameters for AsyncAPI 3.0 operation.
 
@@ -3589,36 +3219,198 @@ components:
         customTags:
           description: Custom tags.
           type: object
-    ChangeSummary:
-      description: 'Numbers of changes between the current and previous published version.
+    RestOperationInfoFromDifferentVersions:
+      description: Operation info from previous/current version.
+      allOf:
+      - $ref: '#/components/schemas/OperationInfoFromDifferentVersionsV2'
+      - type: object
+        required:
+        - path
+        - method
+        properties:
+          path:
+            description: Operation endpoint path.
+            type: string
+            example: /quoteManagement/v5/quote
+          method:
+            description: Operation method.
+            type: string
+            enum:
+            - post
+            - get
+            - put
+            - patch
+            - delete
+            - head
+            - options
+            - connect
+            - trace
+    OperationInfoFromDifferentVersionsV2:
+      description: Operation info from previous/current version.
+      type: object
+      required:
+      - operationId
+      - title
+      - apiKind
+      - documentId
+      - apiAudience
+      properties:
+        operationId:
+          description: Operation unique identifier (for rest api this operationId is not the same as operationId field from the OpenAPI file).
+          type: string
+          example: get-quoteManagement-v5-quote
+        documentId:
+          description: Unique string identifier of the document from which the operation is originated
+          type: string
+          pattern: ^[a-z0-9-]
+          example: qitmf-v5-11-json
+        title:
+          description: Operation summary/title.
+          type: string
+        apiKind:
+          type: string
+          enum:
+          - bwc
+          - no-bwc
+          - experimental
+        apiAudience:
+          description: 'Operation''s target audience:
+
+            * internal - APIs are available for integration within product application.
+
+            * external - APIs exposed outside the boundary of product application: solution delivery integrations, 3rd party integrations, customer integrations.
+
+            * unknown - If any value other than internal or external is used, the API is considered as unknown.
+
+            '
+          type: string
+          enum:
+          - internal
+          - external
+          - unknown
+        tags:
+          description: Tags of operation. For rest - tag is taken from OAS, for graphql - tag is root schema type (query, mutation, subscription).
+          type: array
+          items:
+            type: string
+          example:
+          - Access Control API, Address Management API
+        packageRef:
+          description: 'Parent package and version link. Created by the concatenation of the packageId and version name with At sign.
+
+            '
+          type: string
+          example: QS.CloudQSS.CPQ.Q-TMF@2023.2
+    VersionContractsSummary:
+      description: 'Summary of contract entities published in a package version, keyed by contract type.
 
         '
       type: object
       properties:
-        breaking:
-          description: Number of changes, breaking the backward compatibility.
-          type: integer
-          default: 0
-        semi-breaking:
-          description: Number of changes, breaking the backward compatibility in a legal way. For example, deleting correctly deprecated endpoint.
-          type: integer
-          default: 0
-        deprecated:
-          description: Number of deprecated endpoints.
-          type: integer
-          default: 0
-        non-breaking:
-          description: Number of non-breaking changes.
-          type: integer
-          default: 0
-        annotation:
-          description: Number of annotation changes.
-          type: integer
-          default: 0
-        unclassified:
-          description: Number of unclassified changes.
-          type: integer
-          default: 0
+        ddl:
+          type: object
+          properties:
+            tablesCount:
+              type: integer
+              default: 0
+              description: Number of DDL table entities published in the version.
+            changesSummary:
+              allOf:
+              - $ref: '#/components/schemas/ChangeSummary'
+              - type: object
+                description: Number of declarative DDL changes in the version (compared to the previous release version). Present only when the version has a previous version to compare against.
+            numberOfImpactedEntities:
+              allOf:
+              - $ref: '#/components/schemas/ChangeSummary'
+              - type: object
+                description: Number of DDL entities impacted by each severity type. Present only when the version has a previous version to compare against.
+        mcp:
+          description: MCP summary keyed by MCP endpoint (one entry per published MCP endpoint in this version).
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              toolsCount:
+                type: integer
+                default: 0
+              promptsCount:
+                type: integer
+                default: 0
+              resourcesCount:
+                type: integer
+                default: 0
+          example:
+            /mcp:
+              toolsCount: 3
+              promptsCount: 1
+              resourcesCount: 2
+    Principal:
+      description: User or API key
+      allOf:
+      - oneOf:
+        - $ref: '#/components/schemas/User'
+        - $ref: '#/components/schemas/ApiKey'
+      - type: object
+        required:
+        - type
+        properties:
+          type:
+            description: Identifies whether principal is user or API key
+            type: string
+            enum:
+            - user
+            - apiKey
+    RestOperation:
+      description: REST operation object.
+      title: RestOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/RestOperationMeta'
+    GqlOperationInfoFromDifferentVersions:
+      description: Operation info from previous/current version.
+      allOf:
+      - $ref: '#/components/schemas/OperationInfoFromDifferentVersionsV2'
+      - type: object
+        required:
+        - type
+        - method
+        properties:
+          type:
+            description: Operation type
+            type: string
+            enum:
+            - query
+            - mutation
+            - subscription
+          method:
+            description: GraphQL operation method.
+            type: string
+            example: getPaymentMethodSpecificationCore
+    CreateOperationGroup:
+      description: Version group.
+      type: object
+      required:
+      - groupName
+      - apiType
+      - isPrefixGroup
+      properties:
+        groupName:
+          type: string
+          description: Unique group name.
+          example: New_operation_group
+        apiType:
+          $ref: '#/components/schemas/ApiType'
+        description:
+          type: string
+          description: Description of group.
+        isPrefixGroup:
+          type: boolean
+          description: true - if the group created automatically via restGroupingPrefix.
+          example: false
+        exportTemplateFileName:
+          type: string
+          description: The name of the export template file, if there is one.
+          example: template123.json
     AsyncAPIOperationInfoFromDifferentVersions:
       description: AsyncAPI 3.0 operation info from previous/current version.
       allOf:
@@ -3671,32 +3463,49 @@ components:
               '
             type: string
             example: userSignedUp
-    ErrorResponse:
-      description: Standard error response returned for failed requests. Includes HTTP status, internal error code, human-readable message, optional message parameters, and optional debug details (non-production only).
+    PackageVersion:
+      description: Base parameters of published version (without content)
       type: object
-      properties:
-        status:
-          description: HTTP status code as an integer; expected to match the actual HTTP response status.
-          type: number
-        code:
-          description: Internal string error code. Mandatory in response.
-          type: string
-        message:
-          description: Human-readable error message describing what went wrong; intended for diagnostics and safe client display.
-          type: string
-        params:
-          type: object
-          description: Optional key/value parameters used to format or contextualize the error message (for example, identifiers or field names).
-          example:
-            id: 12345
-            type: string
-        debug:
-          description: Optional debug details (for example, stack traces). Returned only in development/test environments when verbose logging is enabled; do not rely on this field in production because it may contain sensitive data.
-          type: string
+      title: PackageVersion
       required:
+      - version
       - status
-      - code
-      - message
+      - createdAt
+      - createdBy
+      properties:
+        version:
+          description: Package version name.The <version>@<revision> mask is used to return the revision number.
+          type: string
+          example: 2022.3@5
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        createdBy:
+          $ref: '#/components/schemas/Principal'
+        createdAt:
+          type: string
+          description: Date of package creation.
+          format: datetime
+        versionLabels:
+          description: List of version labels.
+          type: array
+          items:
+            type: string
+          example:
+          - part-of:CloudQSS-CPQBE
+        previousVersion:
+          description: previous package version name.The <version>@<revision> mask is used to return the revision number.
+          type: string
+          example: 2022.2@5
+        previousVersionPackageId:
+          description: Package id of the previous version. Can be empty if the value is equal to the package id.
+          type: string
+          example: QS.GRP.SOMEPKG
+        notLatestRevision:
+          type: boolean
+          default: false
+        apiProcessorVerson:
+          description: Version of api-processor with which current version was built.
+          type: string
     PackageTransformationFile:
       description: Parameters of published file in package version
       type: object
@@ -3764,53 +3573,294 @@ components:
           - unknown
           default: unknown
           example: unknown
-    PackagesMap:
-      description: 'A map of referenced package versions to the package version objects.
-
-        The key is `packageId@version@revision` — three `@`-separated segments (note: the `version` field
-
-        of each value is `version@revision`, only two segments).
-
-        '
-      type: object
-      additionalProperties:
-        $ref: '#/components/schemas/PackageVersionRef'
-      example:
-        QS.CloudQSS.CPQ.Q-TMF@2023.2@3:
-          refId: QS.CloudQSS.CPQ.Q-TMF
-          kind: package
-          name: Quote Management TMF648
-          version: 2023.2@3
-          status: release
-          parentPackages:
-          - qubership
-          - Qubership JSS
-          - Sample Management
-          deletedAt: '2023-05-30T17:17:11.755146Z'
-          deletedBy: user1221
-          notLatestRevision: true
-    GqlOperationInfoFromDifferentVersions:
-      description: Operation info from previous/current version.
+    GraphQLOperation:
+      description: GraphQL operation object.
+      title: GraphQLOperation
       allOf:
-      - $ref: '#/components/schemas/OperationInfoFromDifferentVersionsV2'
-      - type: object
-        required:
-        - type
-        - method
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/GraphQLOperationMeta'
+    DeprecatedItems:
+      description: List of deprecated items in the operation.
+      type: array
+      items:
+        type: object
         properties:
-          type:
-            description: Operation type
+          deprecatedInPreviousVersions:
+            description: List of previous release versions where item was also deprecated
+            type: array
+            items:
+              type: string
+            example:
+            - '2022.2'
+            - 2022,1
+            - '2021.4'
+          declarationJsonPaths:
+            description: Declarative path to deprecated item.
+            type: array
+            items:
+              type: array
+              items:
+                anyOf:
+                - type: string
+                - type: integer
+            example:
+            - - paths
+              - /post/saml/
+              - test
+              - 1
+            - - paths
+              - /post/saml/
+              - test
+              - 22
+          description:
+            description: Human-readable description of deprecated item.
             type: string
-            enum:
-            - query
-            - mutation
-            - subscription
-          method:
-            description: GraphQL operation method.
+            example: '[Deprecated] query parameter ''petId'''
+          deprecatedInfo:
+            description: "Additional information about single deprecated item:\n* for REST API it is value of 'x-deprecated-meta' extension (value of extension must be string), which is defined for deprecated item.\n* for GraphQL API it is value of 'reason' argument of @deprecated directive.\n* for AsyncAPI 3.0: \"[Deprecated] message {name}\" (name = message.title or messageId),\n  or \"[Deprecated] channel {name}\" (name = channel.title or channelId).\n"
             type: string
-            example: getPaymentMethodSpecificationCore
-    ProtobufOperationMeta:
-      description: Specific parameters for Protobuf operation.
+          tolerantHash:
+            description: Tolerant hash for Schema object or Parameter object that has been deprecated. It is needed to identify that the same schema/parameter was deprecated in previous version.
+            type: string
+          hash:
+            description: Hash (full) for Schema object or Parameter object that has been deprecated, it is needed to detect semi-breaking changes in UI.
+            type: string
+    RestOperationMeta:
+      description: Specific parameters for REST operation.
+      title: RestOperationMeta
+      required:
+      - path
+      - method
+      type: object
+      properties:
+        path:
+          description: Operation endpoint path.
+          type: string
+          example: /quoteManagement/v5/quote
+        method:
+          description: Operation method.
+          type: string
+          enum:
+          - post
+          - get
+          - put
+          - patch
+          - delete
+          - head
+          - options
+          - connect
+          - trace
+        title:
+          description: Operation summary/title.
+          type: string
+        customTags:
+          description: Custom tags.
+          type: object
+    PackageVersionFile:
+      description: Parameters of published file in package version
+      type: object
+      title: Package version file
+      required:
+      - fileId
+      - filename
+      - slug
+      - type
+      - format
+      - title
+      properties:
+        fileId:
+          type: string
+          description: File name.
+          example: qitmf-v5.11.json
+        filename:
+          type: string
+          description: File name (slug+extension).
+          example: qitmf-v5.11.json
+        slug:
+          description: Published file slug
+          type: string
+          pattern: ^[a-z0-9-]
+          example: qitmf-v5-11-json
+        type:
+          $ref: '#/components/schemas/SpecificationType'
+        format:
+          $ref: '#/components/schemas/DocumentFormat'
+        title:
+          description: Name/title of the document.
+          type: string
+          example: Quote Integration TMForum Service
+        version:
+          description: Document version
+          type: string
+          example: 1.0.1
+        labels:
+          description: List of file labels.
+          type: array
+          items:
+            type: string
+          example:
+          - TMF
+        shareabilityStatus:
+          description: Document shareability status
+          type: string
+          enum:
+          - shareable
+          - non-shareable
+          - unknown
+          default: unknown
+          example: unknown
+    User:
+      description: Represents an APIHUB user with identity and profile information returned by API endpoints.
+      type: object
+      required:
+      - id
+      properties:
+        id:
+          description: Unique user login (username) used to authenticate the user.
+          type: string
+          example: user1221
+        name:
+          description: Name of the user
+          type: string
+          example: John Doe
+        email:
+          description: Email address of the user
+          type: string
+          format: email
+          example: john.doe@example.com
+        avatarUrl:
+          description: URL of the user avatar image.
+          type: string
+          format: URL
+    PackageVersionContent:
+      description: Published package version content
+      type: object
+      required:
+      - packageId
+      - version
+      - createdAt
+      - createdBy
+      - summary
+      - revision
+      - revisionsCount
+      - status
+      - apiProcessorVerson
+      properties:
+        packageId:
+          description: Package unique string identifier (full alias)
+          type: string
+          example: QS.CloudQSS.CPQ.Q-TMF
+        version:
+          description: Package version name.The <version>@<revision> mask is used to return the revision number.
+          type: string
+          example: 2022.2@5
+        createdAt:
+          description: Date of the package version publication.
+          type: string
+          format: date-time
+        createdBy:
+          $ref: '#/components/schemas/Principal'
+        previousVersion:
+          description: Name of the previous published version.The <version>@<revision> mask is used to return the revision number.
+          type: string
+          example: 2022.2@5
+        previousVersionPackageId:
+          description: Package id of the previous version to compare with. Required for agent snapshots.
+          type: string
+          example: QS.GRP.SOMEPKG
+        versionLabels:
+          description: List of version labels.
+          type: array
+          items:
+            type: string
+          example:
+          - part-of:CloudQSS-CPQBE
+        notLatestRevision:
+          type: boolean
+          default: false
+        revisionsCount:
+          description: Total number of revisions in the version.
+          type: integer
+          format: int32
+          example: 3
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        apiProcessorVerson:
+          description: Version of api-processor with which current version was built.
+          type: string
+    PackageVersionRevision:
+      description: Version revision parameters.
+      type: object
+      title: PackageVersionRevision
+      required:
+      - version
+      - revision
+      - status
+      - createdAt
+      - createdBy
+      properties:
+        version:
+          description: Package version name. The <version>@<revision> mask is used to return the revision number.
+          type: string
+          example: 2023.1@5
+        revision:
+          description: Number of the revision.
+          type: integer
+          format: int32
+          example: 3
+        status:
+          $ref: '#/components/schemas/VersionStatusEnum'
+        createdBy:
+          $ref: '#/components/schemas/Principal'
+        createdAt:
+          type: string
+          description: Date of revision creation.
+          format: datetime
+        notLatestRevision:
+          type: boolean
+          default: false
+        revisionLabels:
+          description: List of revision labels.
+          type: array
+          items:
+            type: string
+          example:
+          - part-of:CloudQSS-CPQBE
+        publishMeta:
+          additionalProperties: true
+          description: Publish metadata.
+          type: object
+          properties:
+            commitId:
+              description: Last Git commit ID of the version.
+              type: string
+              example: a5d45af7
+            repositoryUrl:
+              description: Url of the Git repository.
+              type: string
+              format: URI
+              example: https://<git_group_link>/apihub-registry
+            cloudName:
+              description: Name of the cloud for publication from Agent.
+              type: string
+              example: k8s-apps2
+            cloudUrl:
+              description: Full address of the cloud from Agent.
+              type: string
+              format: URI
+              example: https://k8s-apps2.k8s.sdntest.qubership.org
+            namespace:
+              description: Namespace of Agent's publication.
+              type: string
+              example: cloudQSS-release2
+    AsyncAPIOperation:
+      description: AsyncAPI operation object.
+      title: AsyncAPIOperation
+      allOf:
+      - $ref: '#/components/schemas/Operation'
+      - $ref: '#/components/schemas/AsyncAPIOperationMeta'
+    GraphQLOperationMeta:
+      description: Specific parameters for GraphQL operation.
       title: GraphQLOperationMeta
       required:
       - type
@@ -3821,21 +3871,40 @@ components:
           description: Operation type
           type: string
           enum:
-          - unary
-          - serverStreaming
-          - clientStreaming
-          - bidirectionalStreaming
+          - query
+          - mutation
+          - subscription
         method:
-          description: Protobuf method name.
+          description: GraphQL operation method.
           type: string
-          example: ListActionLogItems
+          example: getPaymentMethodSpecificationCore
         title:
-          description: Operation title (same as method name but with adding spaces between capital letters)
+          description: Operation summary/title.
           type: string
-          example: List Action Log Items
         customTags:
           description: Custom tags.
           type: object
+    ApiType:
+      title: apiType
+      type: string
+      enum:
+      - rest
+      - graphql
+      - protobuf
+      - asyncapi
+    ApiKey:
+      title: ApiKey
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          description: ApiKey unique identifier
+          type: string
+        name:
+          description: ApiKey name
+          type: string
     BuildConfig:
       type: object
       description: 'Configuration of the source files.
@@ -4074,83 +4143,33 @@ components:
 
                   '
                 type: boolean
-    DocumentFormat:
-      title: format
-      description: Format of the specification document.
+    VersionStatusEnum:
+      description: Package version status
       type: string
       enum:
-      - json
-      - yaml
-      - md
-      - graphql
-      - gql
-      - proto
-      - sql
-      - unknown
-  examples:
-    IncorrectInputParameters:
-      description: Incorrect input parameters
-      value:
-        status: 400
-        code: APIHUB-COMMON-4001
-        message: Incorrect input parameters
-    VersionReferencedByDashboard:
-      description: Version cannot be deleted because one or more dashboard versions reference it.
-      value:
-        status: 409
-        code: '8500'
-        message: 'Cannot delete version $version of package $packageId: it is referenced by these dashboard versions: $dashboards. Remove the references or delete the dashboards, then retry.'
-        params:
-          packageId: sample.package
-          version: '2024.1'
-          dashboards: sample.dashboard|2024.2@3, other.dashboard|2024.1@1
-    FileNotFound:
-      description: File not found by slug. Response for the 404 error
-      value:
-        status: 404
-        code: APIHUB-3043
-        message: File for path $fileId not found
-    VersionReferencedAsPreviousByRelease:
-      description: Version cannot be changed to 'draft' because a released version uses it as its previous version
-      value:
-        status: 400
-        code: '8600'
-        message: 'Version 2024.1 for package QS.group.my-package cannot be changed to the ''draft'' status because it is the previous version of released versions: QS.group.other-package|2024.2@1'
-        params:
-          version: '2024.1'
-          packageId: QS.group.my-package
-          releaseVersions: QS.group.other-package|2024.2@1
-    VersionNotFound:
-      description: Version not found by number. Response for the 404 error
-      value:
-        status: 404
-        code: APIHUB-3050
-        message: Published version $version not found
-    InternalServerError:
-      description: 'Example: default internal server error response'
-      value:
-        status: 500
-        code: APIHUB-8000
-        reason: InternalServerError
-        message: InternalServerError
-    VersionStatusChangePreviousVersionNotRelease:
-      description: Version status cannot be changed to 'release' when the previous version is a draft
-      value:
-        status: 400
-        code: '8600'
-        message: Version 2024.2 for package QS.group.my-package cannot be changed to the 'release' status because previous version 2024.1 for package QS.group.previous-package is in the 'draft' status. Change the previous version to 'release', then retry.
-        params:
-          version: '2024.2'
-          packageId: QS.group.my-package
-          previousVersion: '2024.1'
-          previousVersionPackageId: QS.group.previous-package
-    PackageNotFound:
-      description: Package not found by ID. Response for the 404 error
-      value:
-        status: 404
-        code: APIHUB-3020
-        message: package with packageId = $packageId not found
+      - draft
+      - release
+      - archived
   parameters:
+    packageId:
+      name: packageId
+      in: path
+      description: Package unique identifier (full alias)
+      required: true
+      schema:
+        type: string
+        example: QS.CloudQSS.CPQ.Q-TMF
+    asyncapiChannel:
+      name: asyncapiChannel
+      in: query
+      description: 'Filter operations by AsyncAPI channel identifier (comma-separated).
+
+        Applicable only when apiType = asyncapi; ignored for other API types.
+
+        '
+      schema:
+        type: string
+        example: userSignup,orderCreated
     limit:
       name: limit
       in: query
@@ -4160,24 +4179,21 @@ components:
         default: 100
         maximum: 100
         minimum: 1
-    previousVersionPackageId:
-      name: previousVersionPackageId
+    apiTypeQueryParam:
+      name: apiType
       in: query
-      description: 'Package unique identifier for previous version.
+      description: 'Filter documents by type of the API.
 
-        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+        Mutually exclusive with `contractType`: specify at most one of `apiType` / `contractType` (if both are specified then 400 will be returned).
 
         '
       schema:
         type: string
-        example: QS.RUNENV.K8S-SERVER.CJM-QSS-DEV-2.Q-TMF
-    page:
-      name: page
-      in: query
-      description: Page number
-      schema:
-        type: number
-        default: 0
+        enum:
+        - rest
+        - graphql
+        - protobuf
+        - asyncapi
     apiAudience:
       name: apiAudience
       in: query
@@ -4198,102 +4214,13 @@ components:
         - external
         - unknown
         default: all
-    packageId:
-      name: packageId
-      in: path
-      description: Package unique identifier (full alias)
-      required: true
-      schema:
-        type: string
-        example: QS.CloudQSS.CPQ.Q-TMF
-    previousVersion:
-      name: previousVersion
+    page:
+      name: page
       in: query
-      description: 'Package previous version.
-
-        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
-
-        '
+      description: Page number
       schema:
-        type: string
-        example: '2022.3'
-    apiType:
-      name: apiType
-      description: Type of the API.
-      in: path
-      required: true
-      schema:
-        type: string
-        enum:
-        - rest
-        - graphql
-        - protobuf
-        - asyncapi
-    slug:
-      name: slug
-      in: path
-      description: File unique string identifier
-      required: true
-      schema:
-        type: string
-        pattern: ^[a-z0-9-]
-        example: qitmf-v5-11-json
-    apiTypeQueryParam:
-      name: apiType
-      in: query
-      description: 'Filter documents by type of the API.
-
-        Mutually exclusive with `contractType`: specify at most one of `apiType` / `contractType` (if both are specified then 400 will be returned).
-
-        '
-      schema:
-        type: string
-        enum:
-        - rest
-        - graphql
-        - protobuf
-        - asyncapi
-    groupName:
-      name: groupName
-      in: path
-      description: Version Group
-      required: true
-      schema:
-        type: string
-    version:
-      name: version
-      in: path
-      description: Package version
-      required: true
-      schema:
-        type: string
-        example: '2022.3'
-    asyncapiProtocol:
-      name: asyncapiProtocol
-      in: query
-      description: 'Filter operations by communication protocol.
-
-        Applicable only when apiType = asyncapi; ignored for other API types.
-
-        The value is the protocol string from the channel''s server (e.g. kafka, amqp).
-
-        Use "Unknown" for operations where the protocol could not be resolved.
-
-        '
-      schema:
-        type: string
-        example: kafka
-    asyncapiChannel:
-      name: asyncapiChannel
-      in: query
-      description: 'Filter operations by AsyncAPI channel identifier (comma-separated).
-
-        Applicable only when apiType = asyncapi; ignored for other API types.
-
-        '
-      schema:
-        type: string
-        example: userSignup,orderCreated
+        type: number
+        default: 0
     severity:
       name: severity
       in: query
@@ -4309,6 +4236,79 @@ components:
           - semi-breaking
           - annotation
           - unclassified
+    groupName:
+      name: groupName
+      in: path
+      description: Version Group
+      required: true
+      schema:
+        type: string
+    previousVersionPackageId:
+      name: previousVersionPackageId
+      in: query
+      description: 'Package unique identifier for previous version.
+
+        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+
+        '
+      schema:
+        type: string
+        example: QS.RUNENV.K8S-SERVER.CJM-QSS-DEV-2.Q-TMF
+    asyncapiProtocol:
+      name: asyncapiProtocol
+      in: query
+      description: 'Filter operations by communication protocol.
+
+        Applicable only when apiType = asyncapi; ignored for other API types.
+
+        The value is the protocol string from the channel''s server (e.g. kafka, amqp).
+
+        Use "Unknown" for operations where the protocol could not be resolved.
+
+        '
+      schema:
+        type: string
+        example: kafka
+    apiType:
+      name: apiType
+      description: Type of the API.
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+        - rest
+        - graphql
+        - protobuf
+        - asyncapi
+    version:
+      name: version
+      in: path
+      description: Package version
+      required: true
+      schema:
+        type: string
+        example: '2022.3'
+    slug:
+      name: slug
+      in: path
+      description: File unique string identifier
+      required: true
+      schema:
+        type: string
+        pattern: ^[a-z0-9-]
+        example: qitmf-v5-11-json
+    previousVersion:
+      name: previousVersion
+      in: query
+      description: 'Package previous version.
+
+        If both previousVersion and previousVersionPackageId are not specified, then the previous **release** version will be used.
+
+        '
+      schema:
+        type: string
+        example: '2022.3'
   securitySchemes:
     BearerAuth:
       type: http

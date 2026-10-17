@@ -204,6 +204,23 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    DbResource:
+      type: object
+      required:
+      - kind
+      - name
+      properties:
+        kind:
+          type: string
+          description: The kind of resource. For example database or user
+        name:
+          type: string
+          description: Name of the resource.
+    OffsetDateTime:
+      type: string
+      format: date-time
+      examples:
+      - '2022-03-10T12:15:50-04:00'
     ChangedDatabaseResponse:
       type: object
       description: A database whose credentials changed (password rotation or restore). Carries only the identity needed to locate the consumer; connection properties are fetched separately.
@@ -225,6 +242,85 @@ components:
           $ref: '#/components/schemas/OffsetDateTime'
           type: string
           description: Timestamp of the credential change; also serves as the poll cursor.
+    ChangedDatabasesCursor:
+      type: object
+      description: Keyset cursor (lastRotatedAt, id) for the changed-databases feed. Seed the poll cursor from the high-water mark on the first (since-less) call; thereafter advance the cursor from the returned items.
+      properties:
+        lastRotatedAt:
+          $ref: '#/components/schemas/OffsetDateTime'
+          type: string
+          description: lastRotatedAt component of the cursor.
+        id:
+          type: string
+          description: Registry id component of the cursor (tie-breaker for equal timestamps).
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    ChangedDatabasesResponse:
+      type: object
+      description: Page of databases whose credentials changed since the requested keyset cursor, plus the current high-water mark used to seed the cursor.
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChangedDatabaseResponse'
+          description: Databases changed after the requested cursor, ordered by (lastRotatedAt, id) ascending. Advance the cursor from the last item.
+        highWaterMark:
+          $ref: '#/components/schemas/ChangedDatabasesCursor'
+          type: object
+          description: Latest (lastRotatedAt, id) currently known across all databases. Use it only to SEED the cursor on the first (since-less) call; null when nothing has rotated yet.
+    TmfErrorResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/TmfError'
+        '@type':
+          type: string
+        '@schemaLocation':
+          type: string
+    TmfError:
+      type: object
+      properties:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
     CleanupMarkedForDropRequest:
       type: object
       required:
@@ -293,102 +389,6 @@ components:
         resources:
           $ref: '#/components/schemas/DbResource'
           description: list of resources is necessary for bulk drop resources operation. Specified if you add query parameter "withResources" = true to request
-    DbResource:
-      type: object
-      required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
-    TmfError:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
-    ChangedDatabasesCursor:
-      type: object
-      description: Keyset cursor (lastRotatedAt, id) for the changed-databases feed. Seed the poll cursor from the high-water mark on the first (since-less) call; thereafter advance the cursor from the returned items.
-      properties:
-        lastRotatedAt:
-          $ref: '#/components/schemas/OffsetDateTime'
-          type: string
-          description: lastRotatedAt component of the cursor.
-        id:
-          type: string
-          description: Registry id component of the cursor (tie-breaker for equal timestamps).
-    TmfErrorResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
-        errors:
-          type: array
-          items:
-            $ref: '#/components/schemas/TmfError'
-        '@type':
-          type: string
-        '@schemaLocation':
-          type: string
-    ChangedDatabasesResponse:
-      type: object
-      description: Page of databases whose credentials changed since the requested keyset cursor, plus the current high-water mark used to seed the cursor.
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChangedDatabaseResponse'
-          description: Databases changed after the requested cursor, ordered by (lastRotatedAt, id) ascending. Advance the cursor from the last item.
-        highWaterMark:
-          $ref: '#/components/schemas/ChangedDatabasesCursor'
-          type: object
-          description: Latest (lastRotatedAt, id) currently known across all databases. Use it only to SEED the cursor on the first (since-less) call; null when nothing has rotated yet.
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    OffsetDateTime:
-      type: string
-      format: date-time
-      examples:
-      - '2022-03-10T12:15:50-04:00'
   securitySchemes:
     SecurityScheme:
       type: http

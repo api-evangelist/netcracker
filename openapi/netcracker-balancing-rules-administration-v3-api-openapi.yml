@@ -328,50 +328,25 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    RuleOnMicroservice:
+    RuleType:
+      type: string
+      enum:
+      - perNamespace
+      description: "Rule type specified what configuration applies to which logic. \n - perNamespace rule would just use specified physical database for any new logical database in namespace, where rule works"
+    PermanentPerNamespaceRuleDeleteDTO:
       type: object
       required:
-      - label
-      description: Rule allows to define physical database for new logical databases on microservice
-      properties:
-        label:
-          type: string
-          description: Label uses to find physical DB which contains this label
-    RuleBody:
-      type: object
-      required:
-      - type
-      - config
-      description: Rule allows to define physical database for new logical databases
-      properties:
-        type:
-          $ref: '#/components/schemas/RuleType'
-          type: string
-          description: Type of rule is required, it defines what logic would be used when rule is applying.
-        config:
-          type: object
-          additionalProperties: {}
-          description: "Configuration contains rule-specific information: \n - perNamespace rule only expects phydbid (physical database identifier) to be specified in rule."
-    PermanentPerNamespaceRuleDTO:
-      type: object
-      required:
-      - dbType
-      - physicalDatabaseId
       - namespaces
-      description: Rule allows to define in which physical database new logical databases should be created
       properties:
         dbType:
           type: string
-          description: Physical db type (ex. postgresql, mongodb, etc), for which rule should be applied.
-        physicalDatabaseId:
-          type: string
-          description: Identifier of physical database where newly created logical databases should be placed.
+          description: Db type for which rules should be deleted. If omitted all rules for specified namespaces will be deleted.
         namespaces:
           type: array
           uniqueItems: true
           items:
             type: string
-          description: Namespaces for which rules should be applied
+          description: Namespaces for which rules should be deleted
     OnMicroserviceRuleRequest:
       type: object
       required:
@@ -392,40 +367,41 @@ components:
           items:
             type: string
           description: List of microservice names to which the specified rule has a place to be
-    RuleRegistrationRequest:
+    PermanentPerNamespaceRuleDTO:
       type: object
       required:
-      - type
-      description: Rule registration request allows to add a new rule for the specific type of logical databases, which would be applied in specific order.
-      properties:
-        order:
-          type: integer
-          format: int64
-          description: Inside namespace+type domain, order defines which rule would be used first. Thelesser order takes precedence. The order is optional; if not specified then the maximum over namespace+type domain would be calculated.
-        type:
-          type: string
-          description: Type of database required. The rule would only work on logical databases of the specified type.
-        rule:
-          $ref: '#/components/schemas/RuleBody'
-    PermanentPerNamespaceRuleDeleteDTO:
-      type: object
-      required:
+      - dbType
+      - physicalDatabaseId
       - namespaces
+      description: Rule allows to define in which physical database new logical databases should be created
       properties:
         dbType:
           type: string
-          description: Db type for which rules should be deleted. If omitted all rules for specified namespaces will be deleted.
+          description: Physical db type (ex. postgresql, mongodb, etc), for which rule should be applied.
+        physicalDatabaseId:
+          type: string
+          description: Identifier of physical database where newly created logical databases should be placed.
         namespaces:
           type: array
           uniqueItems: true
           items:
             type: string
-          description: Namespaces for which rules should be deleted
-    RuleType:
-      type: string
-      enum:
-      - perNamespace
-      description: "Rule type specified what configuration applies to which logic. \n - perNamespace rule would just use specified physical database for any new logical database in namespace, where rule works"
+          description: Namespaces for which rules should be applied
+    RuleBody:
+      type: object
+      required:
+      - type
+      - config
+      description: Rule allows to define physical database for new logical databases
+      properties:
+        type:
+          $ref: '#/components/schemas/RuleType'
+          type: string
+          description: Type of rule is required, it defines what logic would be used when rule is applying.
+        config:
+          type: object
+          additionalProperties: {}
+          description: "Configuration contains rule-specific information: \n - perNamespace rule only expects phydbid (physical database identifier) to be specified in rule."
     DebugRulesRequest:
       type: object
       required:
@@ -443,6 +419,30 @@ components:
           items:
             $ref: '#/components/schemas/OnMicroserviceRuleRequest'
           description: List of rules
+    RuleOnMicroservice:
+      type: object
+      required:
+      - label
+      description: Rule allows to define physical database for new logical databases on microservice
+      properties:
+        label:
+          type: string
+          description: Label uses to find physical DB which contains this label
+    RuleRegistrationRequest:
+      type: object
+      required:
+      - type
+      description: Rule registration request allows to add a new rule for the specific type of logical databases, which would be applied in specific order.
+      properties:
+        order:
+          type: integer
+          format: int64
+          description: Inside namespace+type domain, order defines which rule would be used first. Thelesser order takes precedence. The order is optional; if not specified then the maximum over namespace+type domain would be calculated.
+        type:
+          type: string
+          description: Type of database required. The rule would only work on logical databases of the specified type.
+        rule:
+          $ref: '#/components/schemas/RuleBody'
   securitySchemes:
     SecurityScheme:
       type: http

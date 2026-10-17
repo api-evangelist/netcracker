@@ -174,6 +174,26 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    Spec:
+      type: object
+      properties:
+        specRootUrl:
+          type: string
+          description: The root URL part for that API version
+        major:
+          type: integer
+          format: int32
+          description: The last adapter API major version
+        minor:
+          type: integer
+          format: int32
+          description: The last adapter API minor version
+        supportedMajors:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Contains a list of supported adapter API major versions
     Metadata:
       type: object
       required:
@@ -201,26 +221,6 @@ components:
         roHost:
           type: string
           description: Host of RO pod
-    Spec:
-      type: object
-      properties:
-        specRootUrl:
-          type: string
-          description: The root URL part for that API version
-        major:
-          type: integer
-          format: int32
-          description: The last adapter API major version
-        minor:
-          type: integer
-          format: int32
-          description: The last adapter API minor version
-        supportedMajors:
-          type: array
-          items:
-            type: integer
-            format: int32
-          description: Contains a list of supported adapter API major versions
     PhysicalDatabaseRegistryRequestV3:
       type: object
       required:
@@ -249,34 +249,6 @@ components:
         status:
           type: string
           description: 'Adapter status: running or run'
-    ApiVersion:
-      type: object
-      properties:
-        specs:
-          type: array
-          items:
-            $ref: '#/components/schemas/Spec'
-          description: The root URL part for that API version
-    RegisteredPhysicalDatabasesDTO:
-      type: object
-      properties:
-        identified:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
-          description: List of registered physical databases with with a known identifier
-    HttpBasicCredentials:
-      type: object
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-          description: Basic authentication username.
-        password:
-          type: string
-          description: Basic authentication password.
     PhysicalDatabaseRegistrationResponseDTOV3:
       type: object
       required:
@@ -319,6 +291,34 @@ components:
           type: array
           items:
             type: string
+    RegisteredPhysicalDatabasesDTO:
+      type: object
+      properties:
+        identified:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PhysicalDatabaseRegistrationResponseDTOV3'
+          description: List of registered physical databases with with a known identifier
+    HttpBasicCredentials:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          description: Basic authentication username.
+        password:
+          type: string
+          description: Basic authentication password.
+    ApiVersion:
+      type: object
+      properties:
+        specs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Spec'
+          description: The root URL part for that API version
   securitySchemes:
     SecurityScheme:
       type: http

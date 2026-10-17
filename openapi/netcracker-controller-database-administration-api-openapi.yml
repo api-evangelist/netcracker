@@ -352,95 +352,32 @@ components:
         updateConnectionProperties:
           type: boolean
           description: Is connection properties update required. False by default. If true, then old connection properties will be replaced by the new ones provided.
-    DatabaseRegistry:
+    DbResource:
       type: object
       required:
-      - classifier
-      - namespace
-      - type
-      - database
+      - kind
+      - name
       properties:
-        id:
-          $ref: '#/components/schemas/UUID'
+        kind:
           type: string
-          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
-        timeDbCreation:
-          $ref: '#/components/schemas/Date'
-          type: string
-          description: Time to create a database
-        classifier:
-          type: object
-          additionalProperties: {}
-          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
-        namespace:
-          type: string
-          description: Namespace where database is placed
-        type:
-          type: string
-          description: Type of database, for example postgresql or mongodb
-        database:
-          $ref: '#/components/schemas/Database'
-          description: It lists of database classifiers
-        dbState:
-          $ref: '#/components/schemas/DbState'
-        databaseRegistry:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseRegistry'
-        resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/DbResource'
-        oldClassifier:
-          type: object
-          additionalProperties: {}
-        connectionProperties:
-          type: array
-          items:
-            type: object
-            additionalProperties: {}
-        adapterId:
-          type: string
+          description: The kind of resource. For example database or user
         name:
           type: string
-        markedForDrop:
-          type: boolean
-        backupDisabled:
-          type: boolean
-        dbOwnerRoles:
-          type: array
-          items:
-            type: string
-        settings:
-          type: object
-          additionalProperties: {}
-        connectionDescription:
-          $ref: '#/components/schemas/ConnectionDescription'
-        warnings:
-          type: array
-          items:
-            type: string
-        externallyManageable:
-          type: boolean
-        bgVersion:
-          type: string
-        physicalDatabaseId:
-          type: string
-    DatabasesRegistrationInfo:
+          description: Name of the resource.
+    DatabaseStateStatus:
+      type: string
+      enum:
+      - PROCESSING
+      - CREATED
+      - DELETING
+      - DELETING_FAILED
+      - ARCHIVED
+      - ORPHAN
+    DatabaseInfo:
       type: object
       properties:
-        totalDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseInfo'
-        lostDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseInfo'
-        ghostDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseInfo'
+        name:
+          type: string
     DatabaseCreateRequestV3:
       type: object
       required:
@@ -474,6 +411,11 @@ components:
         userRole:
           type: string
           description: Indicates connection properties with which user role should be returned to a client
+    FieldDescription:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/FieldTypeEnum'
     Database:
       type: object
       required:
@@ -564,30 +506,6 @@ components:
           description: It lists resource which will be deleted when sending the request for delete a database
         dbState:
           $ref: '#/components/schemas/DbState'
-    FieldDescription:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/FieldTypeEnum'
-    UUID:
-      type: string
-      format: uuid
-      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
-    DatabasesInfoSegment:
-      type: object
-      properties:
-        name:
-          type: string
-        totalDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseInfo'
-        registration:
-          $ref: '#/components/schemas/DatabasesRegistrationInfo'
-        deletingDatabases:
-          type: array
-          items:
-            $ref: '#/components/schemas/DatabaseInfo'
     Date:
       type: string
       format: date
@@ -608,15 +526,155 @@ components:
         userRole:
           type: string
           description: Indicates connection properties with which user role should be returned to a client
-    DatabasesInfo:
+    TmfError:
       type: object
       properties:
-        global:
-          $ref: '#/components/schemas/DatabasesInfoSegment'
-        perAdapters:
+        id:
+          type: string
+        referenceError:
+          type: string
+        code:
+          type: string
+        reason:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        source: {}
+        meta:
+          type: object
+          additionalProperties: {}
+    DatabasesRegistrationInfo:
+      type: object
+      properties:
+        totalDatabases:
           type: array
           items:
-            $ref: '#/components/schemas/DatabasesInfoSegment'
+            $ref: '#/components/schemas/DatabaseInfo'
+        lostDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+        ghostDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+    ConnectionDescription:
+      type: object
+      properties:
+        fields:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/FieldDescription'
+    DatabaseRegistry:
+      type: object
+      required:
+      - classifier
+      - namespace
+      - type
+      - database
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+          type: string
+          description: A unique identifier of the document in the database. This field may not be used when searching by classifier for security purpose. In appears in response when Create database API is executed.
+        timeDbCreation:
+          $ref: '#/components/schemas/Date'
+          type: string
+          description: Time to create a database
+        classifier:
+          type: object
+          additionalProperties: {}
+          description: Classifier describes the purpose of the database and distinguishes this database from other database in the same namespase. It contains such keys as dbClassifier, scope, microserviceName, namespace. Setting keys depends on the database type.
+        namespace:
+          type: string
+          description: Namespace where database is placed
+        type:
+          type: string
+          description: Type of database, for example postgresql or mongodb
+        database:
+          $ref: '#/components/schemas/Database'
+          description: It lists of database classifiers
+        dbState:
+          $ref: '#/components/schemas/DbState'
+        databaseRegistry:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseRegistry'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DbResource'
+        oldClassifier:
+          type: object
+          additionalProperties: {}
+        connectionProperties:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        adapterId:
+          type: string
+        name:
+          type: string
+        markedForDrop:
+          type: boolean
+        backupDisabled:
+          type: boolean
+        dbOwnerRoles:
+          type: array
+          items:
+            type: string
+        settings:
+          type: object
+          additionalProperties: {}
+        connectionDescription:
+          $ref: '#/components/schemas/ConnectionDescription'
+        warnings:
+          type: array
+          items:
+            type: string
+        externallyManageable:
+          type: boolean
+        bgVersion:
+          type: string
+        physicalDatabaseId:
+          type: string
+    UUID:
+      type: string
+      format: uuid
+      pattern: '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'
+    DbState:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        state:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+          type: string
+          deprecated: true
+        databaseState:
+          $ref: '#/components/schemas/DatabaseStateStatus'
+        description:
+          type: string
+        podName:
+          type: string
+    DatabasesInfoSegment:
+      type: object
+      properties:
+        name:
+          type: string
+        totalDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
+        registration:
+          $ref: '#/components/schemas/DatabasesRegistrationInfo'
+        deletingDatabases:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseInfo'
     TmfErrorResponse:
       type: object
       properties:
@@ -644,77 +702,19 @@ components:
           type: string
         '@schemaLocation':
           type: string
-    DbState:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/UUID'
-        state:
-          $ref: '#/components/schemas/DatabaseStateStatus'
-          type: string
-          deprecated: true
-        databaseState:
-          $ref: '#/components/schemas/DatabaseStateStatus'
-        description:
-          type: string
-        podName:
-          type: string
-    ConnectionDescription:
-      type: object
-      properties:
-        fields:
-          type: object
-          additionalProperties:
-            $ref: '#/components/schemas/FieldDescription'
-    TmfError:
-      type: object
-      properties:
-        id:
-          type: string
-        referenceError:
-          type: string
-        code:
-          type: string
-        reason:
-          type: string
-        message:
-          type: string
-        status:
-          type: string
-        source: {}
-        meta:
-          type: object
-          additionalProperties: {}
-    DbResource:
-      type: object
-      required:
-      - kind
-      - name
-      properties:
-        kind:
-          type: string
-          description: The kind of resource. For example database or user
-        name:
-          type: string
-          description: Name of the resource.
     FieldTypeEnum:
       type: string
       enum:
       - PASSWORD
-    DatabaseInfo:
+    DatabasesInfo:
       type: object
       properties:
-        name:
-          type: string
-    DatabaseStateStatus:
-      type: string
-      enum:
-      - PROCESSING
-      - CREATED
-      - DELETING
-      - DELETING_FAILED
-      - ARCHIVED
-      - ORPHAN
+        global:
+          $ref: '#/components/schemas/DatabasesInfoSegment'
+        perAdapters:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabasesInfoSegment'
   securitySchemes:
     SecurityScheme:
       type: http

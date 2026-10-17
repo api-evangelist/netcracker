@@ -415,6 +415,11 @@ components:
           type: string
         version:
           type: string
+    Date:
+      type: string
+      format: date
+      examples:
+      - '2022-03-10'
     BgStateRequest:
       type: object
       properties:
@@ -431,11 +436,6 @@ components:
           $ref: '#/components/schemas/BGStateNamespace'
         updateTime:
           $ref: '#/components/schemas/Date'
-    Date:
-      type: string
-      format: date
-      examples:
-      - '2022-03-10'
     BgNamespaceRequest:
       type: object
       properties:

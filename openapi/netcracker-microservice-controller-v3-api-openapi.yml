@@ -66,6 +66,15 @@ components:
         disableGlobalPermissions:
           type: boolean
           description: Is global permissions disabled
+    ServiceRole:
+      type: object
+      properties:
+        name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
     PolicyRole:
       type: object
       properties:
@@ -74,15 +83,6 @@ components:
         defaultRole:
           type: string
         additionalRole:
-          type: array
-          items:
-            type: string
-    ServiceRole:
-      type: object
-      properties:
-        name:
-          type: string
-        roles:
           type: array
           items:
             type: string
