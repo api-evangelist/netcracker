@@ -1,4 +1,4 @@
-# Netcracker (netcracker)
+# Netcracker
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -64,119 +64,180 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Netcracker Technology is a Waltham, Massachusetts-based BSS/OSS and digital business software vendor and a wholly owned subsidiary of NEC Corporation. It sells cloud BSS, digital commerce and monetization, convergent charging, service and network orchestration, and API management and integration software to communications service providers worldwide — it is a supplier to carriers rather than a carrier itself, sitting one layer behind the operator in the telecom value chain.
+Netcracker Technology is a Waltham, Massachusetts-based BSS/OSS and digital business software vendor and a wholly owned subsidiary of NEC Corporation. It sells cloud BSS, digital commerce and monetization, convergent charging, service and network orchestration, and API management and integration software to communications service providers worldwide — it is a supplier to carriers rather than a carrier itself, sitting one layer behind the operator in the telecom value chain and never touching a public developer directly. Netcracker is a long-standing TM Forum participant, claims the TM Forum Platinum Badge for Open API and "Ready for ODA" certification for its BSS/OSS portfolio, and contributed conformance toolkits to the TM Forum Open API program. Its API posture toward the outside world is honestly partner-gated: netcracker.com publishes no developer portal (developer., developers., docs., api. subdomains do not resolve; /developer, /developers and /api all return 404), no product OpenAPI is downloadable, and every commercial API — the TM Forum Open APIs its products implement — reaches integrators only through a customer or partner engagement. The one genuinely public, self-serve API surface Netcracker publishes is Qubership, its open-source cloud platform at github.com/Netcracker and netcracker.github.io, which ships real, downloadable OpenAPI contracts for its APIHUB API registry, integration, messaging and database services. On CAMARA, Netcracker names the standard in product marketing alongside TM Forum, MEF, ETSI, 3GPP and O-RAN and says CSPs can monetize "plug and play developer APIs, such as those from CAMARA" — but no CAMARA API is implemented, specified or callable anywhere in its public surface. That is a positioning statement, not an implementation.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/netcracker/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/netcracker/refs/heads/main/apis.yml)
+**Areas:** Telecommunications · United States · BSS · OSS · Network Vendor · API Management · TM Forum · OpenAPI · CAMARA · Standards · Orchestration · Monetization
 
-## The honest API posture
+## Netcracker on APIs.io
 
-Netcracker publishes **no developer portal**. `developer.netcracker.com`, `developers.netcracker.com`, `docs.netcracker.com`, `api.netcracker.com`, `opengateway.netcracker.com` and `portal.netcracker.com` do not resolve. `/developer`, `/developers`, `/api`, `/openapi.json`, `/swagger.json`, `/api-docs` and `/graphql` on `www.netcracker.com` all return 404. The only API-related page on the corporate site is a product marketing page selling an API management platform to carriers — a company that sells an API exposure platform while exposing none of its own.
+Everything profiled for Netcracker is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/netcracker/](https://apis.io/providers/netcracker/)** — or go straight to one of the APIs or properties below.
 
-Its commercial telecom APIs — the TM Forum Open APIs its BSS/OSS products implement — reach integrators only through a customer or partner engagement.
+### APIs (47)
 
-The one genuinely public, self-serve surface is **Qubership**, Netcracker's open-source cloud platform at [github.com/Netcracker](https://github.com/Netcracker) (verified org, 287 public repositories) and [netcracker.github.io](https://netcracker.github.io/). Four real OpenAPI/Swagger definitions were harvested verbatim from it. They describe platform-engineering components — an API registry, messaging, DBaaS — not telecom network or BSS APIs.
+- [Netcracker Admin API](https://apis.io/apis/netcracker/netcracker-admin-api/) — APIs for technical administration.
+- [Netcracker Aggregated Database Administration No Namespace Controller V 3 API](https://apis.io/apis/netcracker/netcracker-aggregated-database-administration-no-namespace-controller-v-3-api/) — The Aggregated Database Administration No Namespace Controller V 3 API from Netcracker — 3 operation(s) for aggregated database administration no namespace…
+- [Netcracker AI Chat API](https://apis.io/apis/netcracker/netcracker-ai-chat-api/) — APIs for AI chat assistant. Each user has their own chat list; chats are persisted on the server with a configurable TTL and pinning support. Conversations…
+- [Netcracker API version controller API](https://apis.io/apis/netcracker/netcracker-api-version-controller-api/) — Providing API version info
+- [Netcracker Auth API](https://apis.io/apis/netcracker/netcracker-auth-api/) — APIs for auth integrations.
+- [Netcracker Backups administration API](https://apis.io/apis/netcracker/netcracker-backups-administration-api/) — Allows to get list of available backups, trigger backup collector and restore some specific backup. All backup management is per namespace.
+- [Netcracker Balancing Rules Administration V3 API](https://apis.io/apis/netcracker/netcracker-balancing-rules-administration-v3-api/) — Allows to configure a logic of balancing logical databases over physical.
+- [Netcracker Blue Green Controller V 1 API](https://apis.io/apis/netcracker/netcracker-blue-green-controller-v-1-api/) — The Blue Green Controller V 1 API from Netcracker — 12 operation(s) for blue green controller v 1.
+- [Netcracker Changes API](https://apis.io/apis/netcracker/netcracker-changes-api/) — Changes APIs.
+- [Netcracker Composite Controller API](https://apis.io/apis/netcracker/netcracker-composite-controller-api/) — The Composite Controller API from Netcracker — 3 operation(s) for composite controller.
+- [Netcracker Config Controller V 1 API](https://apis.io/apis/netcracker/netcracker-config-controller-v-1-api/) — The Config Controller V 1 API from Netcracker — 4 operation(s) for config controller v 1.
+- [Netcracker Contracts API](https://apis.io/apis/netcracker/netcracker-contracts-api/) — DDL and MCP contract APIs.
+- [Netcracker Controller Database administration API](https://apis.io/apis/netcracker/netcracker-controller-database-administration-api/) — Allows to create, access and drop databases. This API uses classifier as a key to create and retrieve databases. Classifier is an abstract key that could be…
+- [Netcracker Controller for debug operations API](https://apis.io/apis/netcracker/netcracker-controller-for-debug-operations-api/) — The Controller for debug operations API from Netcracker — 5 operation(s) for controller for debug operations.
+- [Netcracker Custom API](https://apis.io/apis/netcracker/netcracker-custom-api/) — Custom APIs.
+- [Netcracker Database operation controller v3 API](https://apis.io/apis/netcracker/netcracker-database-operation-controller-v3-api/) — This controller contains API for operations with already created databases, users.
+- [Netcracker Database users controller v3 API](https://apis.io/apis/netcracker/netcracker-database-users-controller-v3-api/) — This controller contains API for operations with database users.
+- [Netcracker Declarative Controller API](https://apis.io/apis/netcracker/netcracker-declarative-controller-api/) — The Declarative Controller API from Netcracker — 2 operation(s) for declarative controller.
+- [Netcracker Documents API](https://apis.io/apis/netcracker/netcracker-documents-api/) — Documents APIs.
+- [Netcracker Ephemeral Files API](https://apis.io/apis/netcracker/netcracker-ephemeral-files-api/) — APIs for short-lived file downloads. Files are stored temporarily on the server and accessed via signed tokens embedded in producer responses (e.g. AI chat…
+- [Netcracker Export API](https://apis.io/apis/netcracker/netcracker-export-api/) — Export API documentation.
+- [Netcracker Global Database Operation Controller v3 API](https://apis.io/apis/netcracker/netcracker-global-database-operation-controller-v3-api/) — This controller provides APIs for performing operations on existing databases and users without requiring a specific namespace in the endpoints.
+- [Netcracker Microservice controller v3 API](https://apis.io/apis/netcracker/netcracker-microservice-controller-v3-api/) — This controller contains APIs based on microservice value.
+- [Netcracker Migration controller API](https://apis.io/apis/netcracker/netcracker-migration-controller-api/) — Provides API to migrate: database registration from another source, database passwords to external system.
+- [Netcracker Operation groups API](https://apis.io/apis/netcracker/netcracker-operation-groups-api/) — Operation groups
+- [Netcracker Operations API](https://apis.io/apis/netcracker/netcracker-operations-api/) — Operations APIs.
+- [Netcracker Packages API](https://apis.io/apis/netcracker/netcracker-packages-api/) — APIs for the package management.
+- [Netcracker Physical databases registration controller API](https://apis.io/apis/netcracker/netcracker-physical-databases-registration-controller-api/) — Provides API to register new physical databases
+- [Netcracker Publish API](https://apis.io/apis/netcracker/netcracker-publish-api/) — Publish version API
+- [Netcracker Roles API](https://apis.io/apis/netcracker/netcracker-roles-api/) — APIs for role management.
+- [Netcracker Search API](https://apis.io/apis/netcracker/netcracker-search-api/) — Search functions.
+- [Netcracker Transition API](https://apis.io/apis/netcracker/netcracker-transition-api/) — Operations to move packages
+- [Netcracker Try It API](https://apis.io/apis/netcracker/netcracker-tryit-api/) — API for 'try it' functionality
+- [Netcracker User profile API](https://apis.io/apis/netcracker/netcracker-user-profile-api/) — APIs for user's personal settings.
+- [Netcracker Users API](https://apis.io/apis/netcracker/netcracker-users-api/) — APIs for the user operations.
+- [Netcracker Versions API](https://apis.io/apis/netcracker/netcracker-versions-api/) — Published package versions API.
+- [Netcracker Bg Status API](https://apis.io/apis/netcracker/netcracker-bg-status-api/) — The Bg Status API from Netcracker — 1 operation(s) for bg status.
+- [Netcracker Composite API](https://apis.io/apis/netcracker/netcracker-composite-api/) — The Composite API from Netcracker — 3 operation(s) for composite.
+- [Netcracker Config API](https://apis.io/apis/netcracker/netcracker-config-api/) — The Config API from Netcracker — 2 operation(s) for config.
+- [Netcracker Kafka API](https://apis.io/apis/netcracker/netcracker-kafka-api/) — The Kafka API from Netcracker — 13 operation(s) for kafka.
+- [Netcracker Monitoring API](https://apis.io/apis/netcracker/netcracker-monitoring-api/) — The Monitoring API from Netcracker — 2 operation(s) for monitoring.
+- [Netcracker Namespace API](https://apis.io/apis/netcracker/netcracker-namespace-api/) — The Namespace API from Netcracker — 1 operation(s) for namespace.
+- [Netcracker Rabbit API](https://apis.io/apis/netcracker/netcracker-rabbit-api/) — The Rabbit API from Netcracker — 7 operation(s) for rabbit.
+- [Netcracker Synchronize Tenants API](https://apis.io/apis/netcracker/netcracker-synchronize-tenants-api/) — The Synchronize Tenants API from Netcracker — 1 operation(s) for synchronize tenants.
+- [Netcracker Tenants API](https://apis.io/apis/netcracker/netcracker-tenants-api/) — The Tenants API from Netcracker — 1 operation(s) for tenants.
+- [Netcracker Backup And Restore API](https://apis.io/apis/netcracker/netcracker-backup-and-restore-api/) — Backup & Restore operations for DBaaS
+- [Netcracker Internaldocuments API](https://apis.io/apis/netcracker/netcracker-internaldocuments-api/) — APIs for internal documents management.
 
-## CAMARA posture
+### Published properties
 
-**Named in marketing, implemented nowhere.** The API Management product page lists CAMARA among the standards Netcracker aligns with, and says CSPs can monetize "plug and play developer APIs, such as those from CAMARA." No CAMARA API is specified, implemented or callable anywhere in Netcracker's public surface. The string "camara" appears zero times in the site sitemap, no CAMARA API name appears anywhere, and a GitHub search for "netcracker" across `org:camaraproject` returns zero results. A press release is not an implementation, and here there is not even a press release.
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-**GSMA Open Gateway:** no evidence of participation. Netcracker is a vendor, not an operator. **Aduna:** no mention found.
+#### MCP servers (1)
 
-## TM Forum
+Model Context Protocol servers that expose the API to agents.
 
-Netcracker holds real, published TM Forum credentials — and discloses none of the specs behind them:
+- [netcracker-mcp.yml](https://apis.io/servers/netcracker/netcracker-mcp-yml/)
 
-- **TM Forum Platinum Badge for Open API** and **ODA Compliance at "Ready for ODA" Level 6** (product page)
-- **Ready for ODA status for its BSS/OSS portfolio** (2023-12-13) — "one of the first vendors to be certified as Ready for ODA by TM Forum"
-- **2019 TM Forum Excellence Award for Open API adoption** — for "adopting the broadest range of TM Forum Open APIs" and "contributing multiple conformance toolkits to the Open API program"
+#### Agentic access (1)
 
-No TMF API numbers, conformance certificates or specifications are published where a developer could read them.
+Which operations an agent can call, which act, and which need a human in the loop.
 
-## Tags
+- [Netcracker Agentic Access](https://apis.io/agentic-access/netcracker/netcracker-agentic-access/)
 
-- Telecommunications
-- United States
-- BSS
-- OSS
-- Network Vendor
-- API Management
-- TM Forum
-- Open API
-- CAMARA
-- Standards
-- Orchestration
-- Monetization
-- Open Source
+#### Collections (4)
 
-## Timestamps
+Postman and Open Collection request collections.
 
-- **Created:** 2026-07-25
-- **Modified:** 2026-07-25
+- [APIHUB system administrators API – External](https://apis.io/collections/netcracker/open-netcracker-qubership-apihub-admin/)
+- [APIHUB Registry – External API](https://apis.io/collections/netcracker/open-netcracker-qubership-apihub-registry/)
+- [DBaaS Aggregator API](https://apis.io/collections/netcracker/open-netcracker-qubership-dbaas/)
+- [Maas Service API](https://apis.io/collections/netcracker/open-netcracker-qubership-maas-swagger/)
 
-## APIs
+#### Overlays (4)
 
-### Qubership APIHUB Registry API
+OpenAPI overlays, including conversational phrasing for each operation.
 
-The external, public-facing API contract for APIHUB — Netcracker's open-source API registry and developer portal product. OpenAPI 3.0.3, version 2026.1, 111 documented paths.
+- [Netcracker Qubership Apihub Admin Overlay](https://apis.io/overlays/netcracker/netcracker-qubership-apihub-admin-overlay/)
+- [Netcracker Qubership Apihub Registry Overlay](https://apis.io/overlays/netcracker/netcracker-qubership-apihub-registry-overlay/)
+- [Netcracker Qubership Dbaas Overlay](https://apis.io/overlays/netcracker/netcracker-qubership-dbaas-overlay/)
+- [Netcracker Qubership Maas Overlay](https://apis.io/overlays/netcracker/netcracker-qubership-maas-overlay/)
 
-- **Human URL:** [https://netcracker.github.io/apihub/](https://netcracker.github.io/apihub/)
-- **Base URL:** `https://{apihub}.qubership.org` (self-hosted template — `qubership.org` does not resolve publicly)
+#### Governance rules (1)
 
-#### Properties
+Spectral rulesets for the provider's contracts.
 
-- [OpenAPI](openapi/netcracker-qubership-apihub-registry-openapi.yml)
-- [Documentation](https://netcracker.github.io/apihub/)
-- [API Reference](https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/APIHUB_API.yaml)
-- [Source Code](https://github.com/Netcracker/qubership-apihub-backend)
+- [Netcracker — qubership api linter service rules](https://apis.io/rules/netcracker/netcracker-qubership-api-linter-service-spectral-rules/)
 
-### Qubership APIHUB System Administrators API
+#### Security (4)
 
-The external administration API contract for APIHUB — package transitions, system operations, role and administrator management. OpenAPI 3.0.3, version 2026.1, 18 documented paths.
+Authentication, trust centre, and vulnerability disclosure.
 
-- **Human URL:** [https://netcracker.github.io/apihub/](https://netcracker.github.io/apihub/)
+- [Netcracker Authentication](https://apis.io/security/netcracker/netcracker-authentication/)
+- [Netcracker Domain Security](https://apis.io/security/netcracker/netcracker-domain-security/)
+- [Netcracker Trust Center](https://apis.io/security/netcracker/netcracker-trust-center/)
+- [Netcracker Vulnerability Disclosure](https://apis.io/security/netcracker/netcracker-vulnerability-disclosure/)
 
-#### Properties
+## Where to find this API
 
-- [OpenAPI](openapi/netcracker-qubership-apihub-admin-openapi.yml)
-- [Documentation](https://netcracker.github.io/apihub/)
-- [API Reference](https://github.com/Netcracker/qubership-apihub-backend/blob/develop/docs/api/Admin%20API.yaml)
-- [Source Code](https://github.com/Netcracker/qubership-apihub-backend)
-
-### Qubership MaaS (Messaging as a Service) API
-
-REST API for Qubership MaaS, which provisions and manages Kafka topics and RabbitMQ virtual hosts for microservices on the Qubership platform. Swagger 2.0, 35 documented paths, HTTP Basic auth.
-
-- **Human URL:** [https://github.com/Netcracker/qubership-maas](https://github.com/Netcracker/qubership-maas)
-
-#### Properties
-
-- [OpenAPI](openapi/netcracker-qubership-maas-swagger.yml)
-- [Documentation](https://github.com/Netcracker/qubership-maas)
-- [API Reference](https://github.com/Netcracker/qubership-maas/blob/main/maas/maas-service/docs/swagger.yaml)
-
-### Qubership DBaaS Aggregator API
-
-REST API for Qubership DBaaS, an aggregator that routes managed-database requests to the right adapter and tracks every database in a cloud project. OpenAPI 3.1.0, version 6.13.2, 73 documented paths, Bearer JWT auth.
-
-- **Human URL:** [https://github.com/Netcracker/qubership-dbaas](https://github.com/Netcracker/qubership-dbaas)
-
-#### Properties
-
-- [OpenAPI](openapi/netcracker-qubership-dbaas-openapi.json)
-- [Documentation](https://github.com/Netcracker/qubership-dbaas)
-- [API Reference](https://github.com/Netcracker/qubership-dbaas/blob/main/docs/OpenAPI.json)
-
-## Common Properties
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
 
 - [Website](https://www.netcracker.com/)
 - [Documentation](https://netcracker.github.io/)
-- [GitHub Organization](https://github.com/Netcracker)
-- [LinkedIn](https://www.linkedin.com/company/netcracker-technology)
+- [Getting started](https://netcracker.github.io/apihub/deploy/)
+- [Support](https://github.com/Netcracker/qubership-apihub/issues)
+- [Changelog](https://netcracker.github.io/apihub/releases/)
 - [Blog](https://www.netcracker.com/blog)
-- [Press Releases](https://www.netcracker.com/news/press-releases)
-- [Product Page](https://www.netcracker.com/portfolio/products/netcracker-api-management-integration)
-- [Portfolio](https://www.netcracker.com/portfolio)
+- [Security](https://github.com/Netcracker/qubership-apihub/blob/main/SECURITY.md)
+- [Compliance](https://www.netcracker.com/portfolio/services/netcracker-cybersecurity)
+- [Terms of service](https://www.netcracker.com/terms-of-use)
+- [Privacy policy](https://www.netcracker.com/privacy-notice)
+- [GitHub](https://github.com/Netcracker)
 
-## Maintainers
+## API Evangelist rating
 
-- Kin Lane — kin@apievangelist.com
+**Kin Score 62.8** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 72.3 |
+| Contract quality | 51.3 |
+| Contract governance | 63.6 |
+| Operational transparency | 28.9 |
+| Developer ergonomics | 75.6 |
+| Access clarity | 36.8 |
+
+**Agent readiness 31.1** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | documented (partial credit) |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | derived (partial credit) |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | — |
+| Event Surface Described | — |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | yes |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | — |
+| Operation Distinctiveness | mostly |
+
+**Regulatory alignment 35.0** — Telecommunications
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/netcracker/](https://apis.io/providers/netcracker/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Netcracker: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/netcracker/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
